@@ -138,11 +138,18 @@ celerybeat.pid
 .env
 .envrc
 .venv
+env.py
 env/
 venv/
 ENV/
 env.bak/
 venv.bak/
+
+#python-version
+.python-version
+
+# fixtures
+blog/fixtures/
 
 # Spyder project settings
 .spyderproject
