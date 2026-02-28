@@ -46,7 +46,8 @@ INSTALLED_APPS = [
 ]
 
 # Note: this is different in the blog app!!
-LOGIN_REDIRECT_URL = 'dashboard'
+# LOGIN_REDIRECT_URL = 'dashboard'      commenting for now until i have a dashboard to redirect to
+LOGIN_REDIRECT_URL = 'login'
 LOGOUT_REDIRECT_URL = 'login'
 LOGIN_URL = 'login'
 
@@ -66,7 +67,7 @@ ROOT_URLCONF = 'jobtracker.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
