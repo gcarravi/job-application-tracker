@@ -46,8 +46,7 @@ INSTALLED_APPS = [
 ]
 
 # Note: this is different in the blog app!!
-# LOGIN_REDIRECT_URL = 'dashboard'      commenting for now until i have a dashboard to redirect to
-LOGIN_REDIRECT_URL = 'login'
+LOGIN_REDIRECT_URL = 'dashboard'
 LOGOUT_REDIRECT_URL = 'login'
 LOGIN_URL = 'login'
 

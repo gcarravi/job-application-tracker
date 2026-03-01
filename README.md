@@ -14,24 +14,33 @@ jobtracker/
 │   ├── urls.py
 │   └── ...
 │
-├── accounts/          # authentication app
+├── accounts/            # authentication app
+│   ├── templates/
+│   │   └── accounts/
+│   │       ├── register.html
+│   │       └── login.html
 │   ├── models.py
 │   ├── views.py
+│   ├── urls.py
 │   └── ...
 │
-├── tracker/           # main business logic
+├── tracker/            # main business logic
+│   ├── templates/
+│   │   └── tracker/
+│   │       └── dashboard.html
 │   ├── models.py
 │   ├── views.py
+│   ├── urls.py
 │   └── ...
 │
 ├── templates/
+│   └── base.html
 ├── static/
 ├── manage.py
 
 
 
 ERDs:
-
 
 A User can create multiple Companies
 A User can create multiple Applications
@@ -90,3 +99,15 @@ Interview
 |     | notes          | Text                  |
 |     | result         | Varchar(100)          |
 |     | created_at     | DateTime              |
+
+
+
+App flow (for now):
+
+/ → Home
+
+/accounts/register/ → Register
+
+/accounts/login/ → Login
+
+/dashboard/ → Protected dashboard
