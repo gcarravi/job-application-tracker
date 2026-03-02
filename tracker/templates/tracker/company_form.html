@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2>
+    {% if object %}
+        Edit Company
+    {% else %}
+        Add Company
+    {% endif %}
+</h2>
+
+<form method="POST">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Save</button>
+</form>
+
+<a href="{% url 'company_list' %}">Back</a>
+
+{% endblock %}

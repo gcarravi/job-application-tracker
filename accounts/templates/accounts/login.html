@@ -1,5 +1,11 @@
 <h2>Login</h2>
 
+{% if request.GET.next %}
+    <div class="alert alert-warning">
+        Please log in to access that page.
+    </div>
+{% endif %}
+
 <form method="POST">
     {% csrf_token %}
     {{ form.as_p }}
@@ -7,5 +13,3 @@
 </form>
 
 <a href="{% url 'register' %}">Register</a>
-
-

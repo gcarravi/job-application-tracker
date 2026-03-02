@@ -111,3 +111,13 @@ App flow (for now):
 /accounts/login/ → Login
 
 /dashboard/ → Protected dashboard
+
+
+
+-----
+
+
+Home page = public landing page
+Login / Register links visible
+Dashboard = protected
+Users must log in to access dashboard

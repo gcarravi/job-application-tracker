@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Your Companies</h2>
+
+<a href="{% url 'company_add' %}">+ Add Company</a>
+
+<hr>
+
+{% if companies %}
+    <ul>
+        {% for company in companies %}
+            <li>
+                <strong>{{ company.name }}</strong>
+                {% if company.website %} | {{ company.website }} {% endif %}
+                {% if company.location %} | {{ company.location }} {% endif %}
+
+                | <a href="{% url 'company_edit' company.pk %}">Edit</a>
+                | <a href="{% url 'company_delete' company.pk %}">Delete</a>
+            </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>No companies yet.</p>
+{% endif %}
+
+{% endblock %}
