@@ -121,3 +121,27 @@ Home page = public landing page
 Login / Register links visible
 Dashboard = protected
 Users must log in to access dashboard
+
+
+------
+
+Page Architecture
+
+1️⃣ / → Landing (Public)
+
+    Hero
+    Register / Login buttons
+    Minimal navbar
+
+2️⃣ /home/ → Authenticated Home
+
+    Welcome message
+    Summary stats (we’ll add soon)
+    Button → “Go to Job Tracker”
+
+3️⃣ /tracker/ → Kanban Board
+
+    Jira-style layout
+    Bootstrap modal for “Add Job”
+    Cards grouped by status
+    Page reload on create (Phase 1)

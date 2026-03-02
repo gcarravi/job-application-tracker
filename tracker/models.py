@@ -19,10 +19,13 @@ class Company(models.Model):
 class Application(models.Model):
 
     STATUS_CHOICES = [
-        ('Applied', 'Applied'),
-        ('Interview', 'Interview'),
-        ('Offer', 'Offer'),
-        ('Rejected', 'Rejected'),
+        ('wishlist', 'Wishlist'),
+        ('applied', 'Applied'),
+        ('interviewing', 'Interviewing'),
+        ('offer', 'Offer'),
+        ('rejected', 'Rejected'),
+        ('ghosted', 'Ghosted'),
+        ('follow_up', 'Follow Up'),
     ]
 
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='applications')
