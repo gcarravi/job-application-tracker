@@ -3,8 +3,7 @@
 
 {% block content %}
 
-<!-- <div class="container-fluid mt-4 vh-100 d-flex flex-column"> -->
-<div class="container-fluid mt-4 d-flex flex-column" style="min-height: 85vh;">
+<div class="container-fluid mt-4 d-flex flex-column flex-grow-1">    
 
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2>Your Job Tracker</h2>
@@ -13,7 +12,8 @@
         </button>
     </div>
 
-    <div class="row g-3 flex-grow-1">
+    <!-- <div class="row g-3 flex-nowrap overflow-auto pb-3 flex-grow-1">   flex-nowrap overflow-auto pb-3 makes the board horizontally scrollable on mobile -->
+    <div class="d-flex gap-3 pb-3 flex-grow-1 overflow-auto overflow-lg-visible board-container-snap">
         {% include "tracker/partials/column.html" with title="Wishlist" apps=wishlist status_value="wishlist" %}
         {% include "tracker/partials/column.html" with title="Applied" apps=applied status_value="applied" %}
         {% include "tracker/partials/column.html" with title="Interviewing" apps=interviewing status_value="interviewing" %}

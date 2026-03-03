@@ -145,3 +145,15 @@ Page Architecture
     Bootstrap modal for “Add Job”
     Cards grouped by status
     Page reload on create (Phase 1)
+
+-----
+
+Since your tracker is stable, the next power move would be:
+
+Drag & drop between columns
+
+Edit job inline
+
+Or Company detail page
+
+Which direction do you want to take next?

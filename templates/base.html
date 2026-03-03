@@ -27,7 +27,7 @@
 
 </head>
 
-<body class="d-flex flex-column h-100 main-bg">
+<body class="d-flex flex-column min-vh-100"> <!--min-vh-100 ensures full viewport height-->
 
     <!-- Navigation -->
     <nav class="navbar navbar-expand-lg navbar-light bg-white">
@@ -56,7 +56,8 @@
         </div>
     </nav>
 
-    <main class="flex-shrink-0 main-bg">
+    <!-- <main class="flex-shrink-0 main-bg"> -->
+    <main class="flex-grow-1 d-flex flex-column">
 
         {% if user.is_authenticated %}
             <p>Logged in as {{ user.username }}</p>
