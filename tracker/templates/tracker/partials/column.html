@@ -1,0 +1,32 @@
+<div class="col d-flex">
+    <div class="board-wrapper d-flex flex-column flex-fill">
+
+        <div class="board-header {{ status_value|slugify }}">
+            {{ title }}
+        </div>
+
+        <div class="board-body flex-grow-1">
+            {% for app in apps %}
+                <div class="job-card">
+                    <div class="job-title">{{ app.job_title }}</div>
+                    <div class="job-company">{{ app.company.name }}</div>
+                    <div class="job-date">
+                        Applied: {{ app.date_applied }}
+                    </div>
+                </div>
+            {% empty %}
+                <div class="empty-state">
+                    No applications
+                </div>
+            {% endfor %}
+        </div>
+
+        <div class="board-footer"
+             data-bs-toggle="modal"
+             data-bs-target="#addJobModal"
+             data-status="{{ status_value }}">
+            + Add job
+        </div>
+
+    </div>
+</div>

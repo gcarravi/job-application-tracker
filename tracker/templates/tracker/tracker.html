@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+
+<!-- <div class="container-fluid mt-4 vh-100 d-flex flex-column"> -->
+<div class="container-fluid mt-4 d-flex flex-column" style="min-height: 85vh;">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Your Job Tracker</h2>
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addJobModal">
+            + Add job
+        </button>
+    </div>
+
+    <div class="row g-3 flex-grow-1">
+        {% include "tracker/partials/column.html" with title="Wishlist" apps=wishlist status_value="wishlist" %}
+        {% include "tracker/partials/column.html" with title="Applied" apps=applied status_value="applied" %}
+        {% include "tracker/partials/column.html" with title="Interviewing" apps=interviewing status_value="interviewing" %}
+        {% include "tracker/partials/column.html" with title="Offer" apps=offer status_value="offer" %}
+        {% include "tracker/partials/column.html" with title="Rejected" apps=rejected status_value="rejected" %}
+        {% include "tracker/partials/column.html" with title="Ghosted" apps=ghosted status_value="ghosted" %}
+        {% include "tracker/partials/column.html" with title="Follow Up" apps=follow_up status_value="follow_up" %}
+    </div>
+</div>
+
+<!-- Add Job Modal -->
+{% if form.errors %}
+    <div class="alert alert-danger">
+        {{ form.errors }}
+    </div>
+{% endif %}
+<div class="modal fade" id="addJobModal" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <form method="POST">
+        {% csrf_token %}
+        <div class="modal-header border-0 pb-0">
+          <h5 class="modal-title">Create a new Job</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body pt-2">
+            <div class="mb-3">
+                <label class="form-label">Company</label>
+                {{ form.company }}
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Job Title</label>
+                {{ form.job_title }}
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Salary Range</label>
+                {{ form.salary_range }}
+            </div>
+
+            <div class="mb-3" id="statusFieldWrapper">
+                <label class="form-label">Status</label>
+                {{ form.status }}
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Date Applied</label>
+                {{ form.date_applied }}
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Notes</label>
+                {{ form.notes }}
+            </div>
+        </div>
+        <div class="modal-footer border-0 pt-0">
+            <button type="submit" class="btn btn-primary px-4">
+                Create
+            </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+
+{% block footer %}{% endblock %}
+

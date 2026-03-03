@@ -1,161 +1,98 @@
-body {
-    background-color: #F9FAFC;
+/* Board Layout */
+.board-column {
+    min-width: 250px;
 }
 
-.brand {
-    font-family: Lato, sans-serif;
-    font-size: 1.4rem;
-    font-weight: 700;
-    color: #4A4A4F;
+.board-wrapper {
+    background: #f4f5f7;
+    border-radius: 8px;
+    padding: 0;
 }
 
-.red-o {
-    color: #E84610;
-}
-
-.thin {
-    font-weight: 300;
-}
-
-.light-bg {
-    background-color: #fff;
-}
-
-.dark-bg {
-    background-color: #445261;
-}
-
-.main-bg {
-    background-color: #F9FAFC;
-}
-
-.card {
-    border: none;
-    background-color: transparent;
-}
-
-.image-container {
-    position: relative;
-}
-
-.image-flash {
-    position: absolute;
-    bottom: 5%;
-    min-width: 30%;
-    left: -2px;
-    background-color: #188181;
-}
-
-.scale {
-    width: 100%;
-    height: auto;
-}
-
-.author {
+.board-header {
+    padding: 10px;
+    font-weight: 600;
+    font-size: 14px;
     color: white;
-    margin: 4px;
-    text-transform: uppercase;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
 }
 
-.masthead {
-    margin-top: 10px;
-    overflow: hidden;
-    position: relative;
-    display: inline-block;
-    height: 33vh;
-    width: 100%;
+/* Column Colors */
+.board-header.wishlist { background: #1d7af3; }
+.board-header.applied { background: #6f42c1; }
+.board-header.interviewing { background: #198754; }
+.board-header.offer { background: #157347; }
+.board-header.rejected { background: #dc3545; }
+.board-header.ghosted { background: #6c757d; }
+.board-header.follow_up { background: #fd7e14; }
+
+/* Body */
+.board-body {
+    padding: 10px;
+    overflow-y: auto;
 }
 
-.masthead-text {
-    background-color: #445261;
-    color: white;
-    position: relative;
+/* Cards */
+.job-card {
+    background: white;
+    border-radius: 6px;
+    padding: 10px;
+    margin-bottom: 10px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    transition: 0.2s ease;
 }
 
-.masthead-image {
-    position: relative;
-    overflow: hidden;
+.job-card:hover {
+    box-shadow: 0 4px 8px rgba(0,0,0,0.12);
 }
 
-.masthead-image:after {
-    content: "";
-    position: absolute;
-    top: 0;
-    right: 90%;
-    height: 100%;
-    width: 150%;
-    background: #445261;
-    -webkit-transform: skew(15deg);
-    -moz-transform: skew(15deg);
-    transform: skew(15deg);
-    z-index: 100;
+.job-title {
+    font-weight: 600;
+    font-size: 14px;
 }
 
-.post-link {
-    text-decoration: none;
-    color: #445261;
+.job-company {
+    font-size: 13px;
+    color: #555;
 }
 
-.post-link:hover,
-.page-link {
-    color: #E84610;
+.job-date {
+    font-size: 12px;
+    color: #888;
 }
 
-.post-title {
-    margin-top: 10%;
-    margin-left: 5%;
+/* Empty */
+.empty-state {
+    font-size: 13px;
+    color: #999;
+    text-align: center;
+    margin-top: 20px;
 }
 
-.post-subtitle {
-    margin-left: 5%;
-    color: lightgray;
+/* Footer */
+.board-footer {
+    padding: 8px;
+    text-align: center;
+    font-size: 13px;
+    background: #ebecf0;
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+    cursor: pointer;
 }
 
-.btn-signup,
-.btn-edit {
-    background-color: #188181;
-    color: #fff;
+
+/* Styles for the modal */
+.modal-content {
+    border-radius: 12px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.1);
 }
 
-.btn-signup:hover,
-.btn-signup:active {
-    background-color: #fff;
-    color: #23BBBB;
+.form-control {
+    border-radius: 8px;
+    padding: 10px 12px;
 }
 
-.link {
-    color: #23BBBB;
-    text-decoration: none;
-}
-
-.link:hover,
-.link:active {
-    color: #445261;
-    text-decoration: underline;
-}
-
-.btn-like {
-    color: #E84610;
-    border: none;
-    background: transparent;
-}
-
-.btn-delete {
-    color: #fff;
-    background: #E84610;
-}
-
-.btn-like:hover,
-.btn-like:active {
-    color: #E84610;
-    background: transparent;
-    border: none;
-}
-
-.faded {
-    color: rgb(172, 175, 175);
-}
-
-.approval {
-    color: rgb(222, 146, 168);
+.modal-title {
+    font-size: 1.1rem;
 }
