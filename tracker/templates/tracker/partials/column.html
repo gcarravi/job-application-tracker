@@ -6,14 +6,12 @@
             {{ title }}
         </div>
 
-        <div class="board-body flex-grow-1 overflow-auto">
+        <div class="board-body flex-grow-1 overflow-auto" data-status="{{ status_value }}">
             {% for app in apps %}
-                <div class="job-card">
+                <div class="job-card" data-job-id="{{ app.id }}">
                     <div class="job-title">{{ app.job_title }}</div>
                     <div class="job-company">{{ app.company.name }}</div>
-                    <div class="job-date">
-                        Applied: {{ app.date_applied }}
-                    </div>
+                    <div class="job-date">Applied: {{ app.date_applied }}</div>
                 </div>
             {% empty %}
                 <div class="empty-state">

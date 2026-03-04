@@ -1,4 +1,5 @@
 from django.urls import path
+from . import views
 from .views import DashboardView, HomeView
 from .views import TrackerBoardView
 from .views import (
@@ -16,4 +17,5 @@ urlpatterns = [
     path("companies/add/", CompanyCreateView.as_view(), name="company_add"),
     path("companies/<int:pk>/edit/", CompanyUpdateView.as_view(), name="company_edit"),
     path("companies/<int:pk>/delete/", CompanyDeleteView.as_view(), name="company_delete"),
+    path('update-job-status/<int:job_id>/', views.update_job_status, name='update-job-status'),
 ]

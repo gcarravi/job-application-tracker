@@ -9,6 +9,9 @@ from django.views.generic import CreateView
 from django.views.generic import UpdateView
 from django.views.generic import DeleteView
 from django.urls import reverse_lazy
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+import json
 from .models import Company, Application
 from .forms import ApplicationForm
 
@@ -16,10 +19,72 @@ from .forms import ApplicationForm
 # def app_tracker(request):
 #     return HttpResponse("Hello, Job Application Tracker - from TRACKER app")
 
-
 @login_required
 def dashboard(request):
     return render(request, 'tracker/dashboard.html')
+
+
+
+# Define allowed statuses (matches the ones in the model)
+ALLOWED_STATUSES = [
+    'wishlist',
+    'applied',
+    'interviewing',
+    'offer',
+    'rejected',
+    'ghosted',
+    'follow_up'
+]
+
+
+
+@csrf_exempt
+def update_job_status(request, job_id):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            new_status = data.get('status')
+
+            # Validate status
+            if new_status not in ALLOWED_STATUSES:
+                return JsonResponse({'success': False, 'error': 'Invalid status'}, status=400)
+
+            # Fetch the actual model
+            job = Application.objects.get(id=job_id)
+            job.status = new_status
+            job.save()
+
+            return JsonResponse({'success': True, 'new_status': new_status})
+        except Application.DoesNotExist:
+            return JsonResponse({'success': False, 'error': 'Job not found'}, status=404)
+        except json.JSONDecodeError:
+            return JsonResponse({'success': False, 'error': 'Invalid JSON'}, status=400)
+        except Exception as e:
+            return JsonResponse({'success': False, 'error': str(e)}, status=500)
+
+    return JsonResponse({'success': False, 'error': 'Invalid request'}, status=400)
+
+
+# @csrf_exempt
+# def update_job_status(request, job_id):
+#     if request.method == 'POST':
+#         import json
+#         data = json.loads(request.body)
+#         status = data.get('status')
+
+#         # Fetch the model, not the form
+#         try:
+#             job = Application.objects.get(id=job_id)
+#             job.status = status
+#             job.save()
+#             return JsonResponse({'success': True})
+#         except Application.DoesNotExist:
+#             return JsonResponse({'success': False, 'error': 'Job not found'}, status=404)
+#         except Exception as e:
+#             return JsonResponse({'success': False, 'error': str(e)}, status=500)
+
+#     return JsonResponse({'success': False}, status=400)
+
 
 
 class DashboardView(LoginRequiredMixin, TemplateView):
@@ -63,7 +128,7 @@ class TrackerBoardView(LoginRequiredMixin, TemplateView):
         context = self.get_context_data()
         context["form"] = form
         return self.render_to_response(context)
-
+    
 
 class CompanyListView(LoginRequiredMixin, ListView):
     model = Company
