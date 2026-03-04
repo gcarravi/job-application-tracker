@@ -18,10 +18,24 @@
 }
 
 
-/* Mobile first */
+/* Mobile first: 1 column nearly fills screen, peek of next */
 .board-column {
-    flex: 0 0 320px;   /* fixed readable mobile width */
-    scroll-snap-align: start; /* each column snaps to start */
+    flex: 0 0 calc(100vw - 3rem);
+    scroll-snap-align: start;
+}
+
+/* Large phones (≥576px): 2 columns visible */
+@media (min-width: 576px) {
+    .board-column {
+        flex: 0 0 calc(50vw - 1.5rem);
+    }
+}
+
+/* Tablet (≥768px): 4 columns visible */
+@media (min-width: 768px) {
+    .board-column {
+        flex: 0 0 calc(25vw - 0.75rem);
+    }
 }
 
 
@@ -131,10 +145,10 @@
 
 
 
-/* Desktop */
+/* Desktop (≥992px): equal width, fill space, prevent extreme squishing */
 @media (min-width: 992px) {
     .board-column {
         flex: 1 1 0;
-        min-width: 0;
+        min-width: 140px;
     }
 }
