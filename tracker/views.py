@@ -2,7 +2,6 @@ from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 # from django.http import HttpResponse
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.shortcuts import redirect
 from django.views.generic import TemplateView
 from django.views.generic import ListView
 from django.views.generic import CreateView
@@ -10,6 +9,7 @@ from django.views.generic import UpdateView
 from django.views.generic import DeleteView
 from django.urls import reverse_lazy
 from django.http import JsonResponse
+from django.shortcuts import redirect, get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
 import json
 from .models import Company, Application
@@ -65,25 +65,40 @@ def update_job_status(request, job_id):
     return JsonResponse({'success': False, 'error': 'Invalid request'}, status=400)
 
 
-# @csrf_exempt
-# def update_job_status(request, job_id):
-#     if request.method == 'POST':
-#         import json
-#         data = json.loads(request.body)
-#         status = data.get('status')
 
-#         # Fetch the model, not the form
-#         try:
-#             job = Application.objects.get(id=job_id)
-#             job.status = status
-#             job.save()
-#             return JsonResponse({'success': True})
-#         except Application.DoesNotExist:
-#             return JsonResponse({'success': False, 'error': 'Job not found'}, status=404)
-#         except Exception as e:
-#             return JsonResponse({'success': False, 'error': str(e)}, status=500)
 
-#     return JsonResponse({'success': False}, status=400)
+@csrf_exempt
+def update_job(request, job_id):
+    if request.method == "POST":
+        job = get_object_or_404(Application, id=job_id)
+
+        data = json.loads(request.body)
+
+        job.status = data.get("status")
+        job.notes = data.get("notes")
+        job.save()
+
+        return JsonResponse({"success": True})
+
+    return JsonResponse({"success": False}, status=400)
+
+
+
+
+def get_job(request, job_id):
+    job = get_object_or_404(Application, id=job_id)
+
+    data = {
+        "id": job.id,
+        "company": job.company.id,
+        "job_title": job.job_title,
+        "salary_range": job.salary_range,
+        "status": job.status,
+        "date_applied": job.date_applied.strftime("%Y-%m-%d") if job.date_applied else "",
+        "notes": job.notes,
+    }
+
+    return JsonResponse(data)
 
 
 

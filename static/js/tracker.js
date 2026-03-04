@@ -1,6 +1,26 @@
 console.log("TRACKER JS LOADED");
 
 
+function getCookie(name) {
+    let cookieValue = null;
+
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+
+    return cookieValue;
+}
+
+
 document.addEventListener("DOMContentLoaded", function () {
 
     const modal = document.getElementById("addJobModal");
@@ -46,12 +66,12 @@ document.addEventListener("DOMContentLoaded", function () {
             statusField.selectedIndex = 0; // reset
         });
     }
-
 });
 
 
 // Initialize Sortable in JS for drag and drop of the cards
 document.addEventListener('DOMContentLoaded', function() {
+
     const columns = document.querySelectorAll('.board-body');
 
     columns.forEach(column => {
@@ -65,6 +85,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 // Only send AJAX if the card actually moved
                 if (evt.from !== evt.to) {
+
+                    // Update empty states for source and target columns
+                    updateEmptyState(evt.to);
+                    updateEmptyState(evt.from);
+
                     fetch(`/update-job-status/${jobId}/`, {
                         method: 'POST',
                         headers: {
@@ -106,3 +131,157 @@ document.addEventListener('DOMContentLoaded', function() {
         return cookieValue;
     }
 });
+
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    const form = document.getElementById("jobForm");
+
+    form.addEventListener("submit", function(e) {
+        e.preventDefault();
+
+        const jobId = document.getElementById("jobIdInput").value;
+        if (!jobId) {
+            this.submit(); // normal create
+            return;
+        }
+
+        fetch(`/update-job/${jobId}/`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": getCookie("csrftoken")
+            },
+            body: JSON.stringify({
+                status: document.querySelector('[name="status"]').value,
+                notes: document.querySelector('[name="notes"]').value
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const card = document.querySelector(`.job-card[data-job-id='${jobId}']`);
+                if (!card) return; // safety: card must exist
+
+                const newStatus = document.querySelector('[name="status"]').value;
+
+                const sourceColumn = card.closest('.board-body');
+                const targetColumn = document.querySelector(`.board-body[data-status='${newStatus}']`);
+
+                if (sourceColumn && targetColumn) {
+                    // Move card
+                    targetColumn.appendChild(card);
+                    card.dataset.status = newStatus;
+
+                    // Update empty states
+                    updateEmptyState(sourceColumn);
+                    updateEmptyState(targetColumn);
+                }
+
+                // Close modal
+                const modalEl = document.getElementById('addJobModal');
+                const modalInstance = bootstrap.Modal.getInstance(modalEl);
+                if (modalInstance) modalInstance.hide();
+            }
+        });
+    });
+});
+
+
+
+
+// JS helper to handle empty states
+function updateEmptyState(columnBody) {
+
+    console.log("Inside updateEmptyState");
+
+    if (!columnBody) return; // safety check
+    // Remove existing empty-state divs
+    columnBody.querySelectorAll('.empty-state').forEach(el => el.remove());
+
+    // If no cards, add empty-state
+    if (columnBody.querySelectorAll('.job-card').length === 0) {
+        const emptyDiv = document.createElement('div');
+        emptyDiv.classList.add('empty-state');
+        emptyDiv.innerText = "No applications";
+        columnBody.appendChild(emptyDiv);
+    }
+}
+
+
+
+
+// Handles opening and updating the cards on the board.
+document.addEventListener('DOMContentLoaded', function () {
+
+    console.log("** Do I still use this function?? **");
+
+    const statusSelect = document.querySelector('[name="status"]');
+
+    statusSelect.addEventListener('change', function () {
+
+        const jobId = document.getElementById('jobIdInput').value;
+        if (!jobId) return; // Ignore if creating new job
+
+        const newStatus = this.value;
+
+        fetch(`/update-job-status/${jobId}/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: JSON.stringify({ status: newStatus })
+        })
+        .then(response => response.json())
+        .then(data => {
+
+            if (data.success) {
+
+                const card = document.querySelector(`.job-card[data-job-id='${jobId}']`);
+                const sourceColumn = card ? card.closest('.board-body') : null;
+                const targetColumn = document.querySelector(`.board-body[data-status='${newStatus}']`);
+
+                if (card && targetColumn) {
+                    targetColumn.appendChild(card);
+                    card.dataset.status = newStatus;
+                    updateEmptyState(sourceColumn);
+                    updateEmptyState(targetColumn);
+                }
+
+            } else {
+                console.error("Failed to update status");
+            }
+
+        });
+    });
+});
+
+
+
+function openEditModal(jobId) {
+
+    fetch(`/get-job/${jobId}/`)
+        .then(response => response.json())
+        .then(data => {
+
+            const modalEl = document.getElementById('addJobModal');
+            const modal = new bootstrap.Modal(modalEl);
+
+            document.getElementById('modalTitle').innerText = "Update Job";
+
+            document.getElementById('jobIdInput').value = data.id;
+
+            document.querySelector('[name="company"]').value = data.company;
+            document.querySelector('[name="job_title"]').value = data.job_title;
+            document.querySelector('[name="salary_range"]').value = data.salary_range;
+            document.querySelector('[name="status"]').value = data.status;
+            document.querySelector('[name="date_applied"]').value = data.date_applied;
+            document.querySelector('[name="notes"]').value = data.notes;
+
+            // Change button text
+            document.querySelector('#jobForm button[type="submit"]').innerText = "Update";
+
+            modal.show();
+        });
+}
