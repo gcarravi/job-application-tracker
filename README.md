@@ -4,7 +4,7 @@ Full-stack web application designed to help users manage and  track their job ap
 
 
 
-Structure for the project:
+Structure:
 
 
 jobtracker/
@@ -101,19 +101,6 @@ Interview
 |     | created_at     | DateTime              |
 
 
-
-App flow (for now):
-
-/ → Home
-
-/accounts/register/ → Register
-
-/accounts/login/ → Login
-
-/dashboard/ → Protected dashboard
-
-
-
 -----
 
 
@@ -147,13 +134,3 @@ Page Architecture
     Page reload on create (Phase 1)
 
 -----
-
-Since your tracker is stable, the next power move would be:
-
-Drag & drop between columns
-
-Edit job inline
-
-Or Company detail page
-
-Which direction do you want to take next?
