@@ -86,6 +86,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Only send AJAX if the card actually moved
                 if (evt.from !== evt.to) {
 
+                    // Update card's data-status so CSS border colour matches new column
+                    evt.item.dataset.status = newStatus;
+
                     // Update empty states for source and target columns
                     updateEmptyState(evt.to);
                     updateEmptyState(evt.from);
@@ -257,6 +260,33 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 
+
+
+function deleteJob(event, jobId) {
+    event.stopPropagation(); // prevent opening the edit modal
+
+    fetch(`/delete-job/${jobId}/`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken')
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            const card = document.querySelector(`.job-card[data-job-id='${jobId}']`);
+            if (card) {
+                const column = card.closest('.board-body');
+                card.remove();
+                updateEmptyState(column);
+            }
+        } else {
+            console.error('Failed to delete job:', data.error);
+        }
+    })
+    .catch(err => console.error('Delete error:', err));
+}
 
 
 function openEditModal(jobId) {

@@ -18,6 +18,7 @@ urlpatterns = [
     path("companies/<int:pk>/edit/", CompanyUpdateView.as_view(), name="company_edit"),
     path("companies/<int:pk>/delete/", CompanyDeleteView.as_view(), name="company_delete"),
     path('update-job-status/<int:job_id>/', views.update_job_status, name='update-job-status'),
+    path('delete-job/<int:job_id>/', views.delete_job, name='delete_job'),
     path("get-job/<int:job_id>/", views.get_job, name="get_job"),
     path("update-job/<int:job_id>/", views.update_job, name="update_job"),
 ]

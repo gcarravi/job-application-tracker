@@ -94,26 +94,79 @@
 
 /* Cards */
 .job-card {
+    position: relative;
     background: white;
     border-radius: 6px;
+    border-left: 4px solid transparent;
     padding: 10px;
     margin-bottom: 10px;
     box-shadow: 0 1px 3px rgba(0,0,0,0.08);
     transition: 0.2s ease;
 }
 
+.job-delete-btn {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    background: none;
+    border: none;
+    padding: 2px 5px;
+    cursor: pointer;
+    color: #ccc;
+    font-size: 11px;
+    line-height: 1;
+    opacity: 0;
+    transition: opacity 0.2s, color 0.2s;
+}
+
+.job-card:hover .job-delete-btn {
+    opacity: 1;
+}
+
+.job-card[data-status="wishlist"]     .job-delete-btn:hover { color: #1d7af3; }
+.job-card[data-status="applied"]      .job-delete-btn:hover { color: #6f42c1; }
+.job-card[data-status="interviewing"] .job-delete-btn:hover { color: #198754; }
+.job-card[data-status="offer"]        .job-delete-btn:hover { color: #157347; }
+.job-card[data-status="rejected"]     .job-delete-btn:hover { color: #dc3545; }
+.job-card[data-status="ghosted"]      .job-delete-btn:hover { color: #6c757d; }
+.job-card[data-status="follow_up"]    .job-delete-btn:hover { color: #fd7e14; }
+
 .job-card:hover {
     box-shadow: 0 4px 8px rgba(0,0,0,0.12);
 }
 
-.job-title {
-    font-weight: 600;
-    font-size: 14px;
-}
+/* Left border colour matches column — updates automatically via data-status */
+.job-card[data-status="wishlist"]     { border-left-color: #1d7af3; }
+.job-card[data-status="applied"]      { border-left-color: #6f42c1; }
+.job-card[data-status="interviewing"] { border-left-color: #198754; }
+.job-card[data-status="offer"]        { border-left-color: #157347; }
+.job-card[data-status="rejected"]     { border-left-color: #dc3545; }
+.job-card[data-status="ghosted"]      { border-left-color: #6c757d; }
+.job-card[data-status="follow_up"]    { border-left-color: #fd7e14; }
 
 .job-company {
-    font-size: 13px;
-    color: #555;
+    font-size: 15px;
+    color: #333;
+    margin-bottom: 2px;
+}
+
+.job-title {
+    font-size: 14px;
+    color: #666;
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.job-other-info {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: #888;
+    margin-top: 8px;
+}
+
+.job-other-info i {
+    color: #aaa;
 }
 
 .job-date {

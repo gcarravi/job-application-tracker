@@ -39,6 +39,15 @@ ALLOWED_STATUSES = [
 
 
 @csrf_exempt
+def delete_job(request, job_id):
+    if request.method == 'POST':
+        job = get_object_or_404(Application, id=job_id)
+        job.delete()
+        return JsonResponse({'success': True})
+    return JsonResponse({'success': False, 'error': 'Invalid request'}, status=400)
+
+
+@csrf_exempt
 def update_job_status(request, job_id):
     if request.method == 'POST':
         try:
