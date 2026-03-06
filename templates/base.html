@@ -1,6 +1,7 @@
 {% load static %}
 
-{% url 'home' as home_url %}
+{% url 'landing' as landing_url %}
+<!-- {% url 'home' as home_url %} -->
 
 
 <!DOCTYPE html>
@@ -36,7 +37,7 @@
     <!-- Navigation -->
     <nav class="navbar navbar-expand-lg navbar-light bg-white">
         <div class="container-fluid">
-            <a class="navbar-brand d-flex align-items-center gap-2" href="{% url 'home' %}">
+            <a class="navbar-brand d-flex align-items-center gap-2" href="{% url 'landing' %}">
                 <svg width="16" height="18" viewBox="0 0 27 18" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <line x1="0" y1="18" x2="18" y2="0" stroke="#0d9488" stroke-width="3" stroke-linecap="round"/>
                     <line x1="9" y1="18" x2="27" y2="0" stroke="#0d9488" stroke-width="3" stroke-linecap="round"/>
@@ -44,7 +45,7 @@
                 <!-- <span class="brand">c<span class="red-o">o</span>de<span class="thin">|star</span></span> -->
                 <span class="brand">tr<span class="red-o">a</span>ck<span class="thin">|wise</span></span>
             </a>
-            <!-- <a class="navbar-brand" href="{% url 'home' %}"><span class="brand">Tr<span class="red-o">a</span>ck<span
+            <!-- <a class="navbar-brand" href="{% url 'landing' %}"><span class="brand">Tr<span class="red-o">a</span>ck<span
                         class="thin">|Wise</span></span></a> --> 
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarText"
                 aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
@@ -60,7 +61,6 @@
                         <a class="nav-link {% if request.path == home_url %}active{% endif %}" aria-current="page"
                             href="#">Job Tracker</a>
                     </li>
-
                     {% if user.is_authenticated %}
                     <li class="nav-item">
                         <a class="nav-link {% if request.path == home_url %}active{% endif %}" aria-current="page"
@@ -120,7 +120,6 @@
         crossorigin="anonymous"></script> -->
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.16.0/Sortable.min.js"></script> -->
     <!-- <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.7/Sortable.min.js"></script> -->
     <script src="{% static 'js/Sortable.min.js' %}"></script>
     <script src="{% static 'js/tracker.js' %}"></script>

@@ -1,6 +1,5 @@
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
-# from django.http import HttpResponse
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import TemplateView
 from django.views.generic import ListView
@@ -16,13 +15,10 @@ from .models import Company, Application
 from .forms import ApplicationForm
 
 # Create your views here.
-# def app_tracker(request):
-#     return HttpResponse("Hello, Job Application Tracker - from TRACKER app")
 
 @login_required
 def dashboard(request):
     return render(request, 'tracker/dashboard.html')
-
 
 
 # Define allowed statuses (matches the ones in the model)
@@ -35,7 +31,6 @@ ALLOWED_STATUSES = [
     'ghosted',
     'follow_up'
 ]
-
 
 
 @csrf_exempt
@@ -112,11 +107,15 @@ def get_job(request, job_id):
 
 
 class DashboardView(LoginRequiredMixin, TemplateView):
-    template_name = "tracker/dashboard.html"    
+    template_name = "tracker/dashboard.html"
 
 
-class HomeView(TemplateView):
-    template_name = "home.html"
+class LandingView(TemplateView):
+    template_name = "landing.html"     
+
+
+# class HomeView(TemplateView):
+#     template_name = "home.html"
 
 
 class TrackerBoardView(LoginRequiredMixin, TemplateView):
@@ -146,7 +145,7 @@ class TrackerBoardView(LoginRequiredMixin, TemplateView):
             application = form.save(commit=False)
             application.user = request.user
             application.save()
-            return redirect("tracker_board")
+            return redirect("tracker")
 
         # If form invalid, re-render page with errors
         context = self.get_context_data()

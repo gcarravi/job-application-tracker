@@ -1,6 +1,7 @@
 from django.urls import path
 from . import views
-from .views import DashboardView, HomeView
+# from .views import DashboardView, HomeView
+from .views import DashboardView, LandingView
 from .views import TrackerBoardView
 from .views import (
     CompanyListView,
@@ -10,9 +11,10 @@ from .views import (
 )
 
 urlpatterns = [
-    path('', HomeView.as_view(), name='home'),
+    # path('', HomeView.as_view(), name='home'),
+    path('', LandingView.as_view(), name='landing'),
     path('dashboard/', DashboardView.as_view(), name='dashboard'),
-    path("tracker/", TrackerBoardView.as_view(), name="tracker_board"),
+    path("tracker/", TrackerBoardView.as_view(), name="tracker"),
     path("companies/", CompanyListView.as_view(), name="company_list"),
     path("companies/add/", CompanyCreateView.as_view(), name="company_add"),
     path("companies/<int:pk>/edit/", CompanyUpdateView.as_view(), name="company_edit"),
