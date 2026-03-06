@@ -114,8 +114,8 @@ class LandingView(TemplateView):
     template_name = "landing.html"     
 
 
-# class HomeView(TemplateView):
-#     template_name = "home.html"
+class HomeView(TemplateView):
+    template_name = "home.html"
 
 
 class TrackerBoardView(LoginRequiredMixin, TemplateView):
