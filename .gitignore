@@ -53,10 +53,11 @@ cover/
 
 # Backup files
 style_copy.css
-home_backup_1.html
-home_backup_dark.html
-style-home-backup-dark.css
-script-home-backup-dark.js
+# home_backup_1.html
+# home_backup_dark.html
+# style-home-backup-dark.css
+# script-home-backup-dark.js
+*backup*
 
 
 # Translations

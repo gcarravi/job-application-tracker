@@ -53,28 +53,29 @@
     }
 }
 
-/* Tablet (≥768px): 4 columns visible */
+/* Tablet (≥768px): 3 columns visible, accounting for sidebar */
 @media (min-width: 768px) {
     .board-column {
-        flex: 0 0 calc(25vw - 0.75rem);
+        flex: 0 0 calc((100vw - 240px - 3rem) / 3);
     }
 }
 
 
 .board-wrapper {
-    background: #f4f5f7;
-    border-radius: 8px;
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.75rem;
     padding: 0;
     min-height: 100%;
+    overflow: hidden;
 }
 
 .board-header {
-    padding: 10px;
+    padding: 0.625rem 0.875rem;
     font-weight: 600;
-    font-size: 14px;
+    font-size: 0.8125rem;
+    letter-spacing: 0.01em;
     color: white;
-    border-top-left-radius: 8px;
-    border-top-right-radius: 8px;
 }
 
 /* Column Colors */
@@ -88,35 +89,38 @@
 
 /* Body */
 .board-body {
-    padding: 10px;
+    padding: 0.625rem;
     overflow-y: auto;
+    background: #f9fafb;
 }
 
 /* Cards */
 .job-card {
     position: relative;
     background: white;
-    border-radius: 6px;
+    border-radius: 0.625rem;
+    border: 1px solid #e5e7eb;
     border-left: 4px solid transparent;
-    padding: 10px;
-    margin-bottom: 10px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
-    transition: 0.2s ease;
+    padding: 0.75rem 0.875rem;
+    margin-bottom: 0.5rem;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+    cursor: pointer;
+    transition: box-shadow 0.15s ease, border-color 0.15s ease;
 }
 
 .job-delete-btn {
     position: absolute;
-    top: 6px;
-    right: 6px;
+    top: 0.375rem;
+    right: 0.375rem;
     background: none;
     border: none;
     padding: 2px 5px;
     cursor: pointer;
-    color: #ccc;
-    font-size: 11px;
+    color: #d1d5db;
+    font-size: 10px;
     line-height: 1;
     opacity: 0;
-    transition: opacity 0.2s, color 0.2s;
+    transition: opacity 0.15s, color 0.15s;
 }
 
 .job-card:hover .job-delete-btn {
@@ -132,7 +136,7 @@
 .job-card[data-status="follow_up"]    .job-delete-btn:hover { color: #fd7e14; }
 
 .job-card:hover {
-    box-shadow: 0 4px 8px rgba(0,0,0,0.12);
+    box-shadow: 0 3px 8px rgba(0,0,0,0.09);
 }
 
 /* Left border colour matches column — updates automatically via data-status */
@@ -145,52 +149,77 @@
 .job-card[data-status="follow_up"]    { border-left-color: #fd7e14; }
 
 .job-company {
-    font-size: 15px;
-    color: #333;
-    margin-bottom: 2px;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: #111827;
+    margin-bottom: 0.125rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding-right: 1rem;
 }
 
 .job-title {
-    font-size: 14px;
-    color: #666;
-    font-weight: 600;
-    margin-bottom: 4px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: #6b7280;
+    margin-top: 0.375rem;
+    margin-bottom: 0.5rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding-right: 1rem;
 }
 
 .job-other-info {
     display: flex;
     justify-content: space-between;
-    font-size: 11px;
-    color: #888;
-    margin-top: 8px;
+    font-size: 0.6875rem;
+    color: #9ca3af;
+    margin-top: 0;
+    gap: 0.25rem;
+}
+
+.job-other-info span {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 0;
 }
 
 .job-other-info i {
-    color: #aaa;
-}
-
-.job-date {
-    font-size: 12px;
-    color: #888;
+    color: #d1d5db;
+    flex-shrink: 0;
 }
 
 /* Empty */
 .empty-state {
-    font-size: 13px;
-    color: #999;
+    font-size: 0.75rem;
+    color: #9ca3af;
     text-align: center;
-    margin-top: 20px;
+    margin-top: 1.5rem;
+    padding: 0 0.5rem;
 }
 
 /* Footer */
 .board-footer {
-    padding: 8px;
+    padding: 0.625rem;
     text-align: center;
-    font-size: 13px;
-    background: #ebecf0;
-    border-bottom-left-radius: 8px;
-    border-bottom-right-radius: 8px;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: #6b7280;
+    background: white;
+    border-top: 1px solid #e5e7eb;
     cursor: pointer;
+    transition: background-color 0.15s, color 0.15s;
+}
+
+.board-footer:hover {
+    background-color: #f9fafb;
+    color: #0d9488;
 }
 
 
