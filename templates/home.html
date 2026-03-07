@@ -1,747 +1,407 @@
+{% load static %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Trackwise - Home</title>
+    <title>Home - Trackwise</title>
 
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-
-    <!-- Bootstrap Icons -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="home-styles.css">
+    <link rel="stylesheet" href="{% static 'css/style-home.css' %}">
 </head>
 <body>
-
-    <!-- ===== SIDEBAR ===== -->
-    <aside class="sidebar" id="sidebar">
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
         <div class="sidebar-header">
-            <a href="index.html" class="d-flex align-items-center text-decoration-none">
-                <div class="logo-box me-2">
-                    <span class="logo-text">T</span>
-                </div>
-                <span class="brand-name">Trackwise</span>
+            <a href="index.html" class="logo-link">
+                <div class="logo-icon">T</div>
+                <span class="logo-text">Trackwise</span>
             </a>
-            <button class="sidebar-close d-lg-none" id="sidebarClose">
-                <i class="bi bi-x-lg"></i>
+            <button class="btn btn-link d-lg-none p-0 text-secondary" onclick="toggleSidebar()">
+                <i class="fas fa-times"></i>
             </button>
         </div>
 
         <nav class="sidebar-nav">
-            <ul class="nav flex-column">
-                <li class="nav-item">
-                    <a class="sidebar-link active" href="home.html">
-                        <i class="bi bi-house-door"></i>
-                        <span>Home</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="sidebar-link" href="#">
-                        <i class="bi bi-kanban"></i>
-                        <span>My Board</span>
-                        <span class="badge-count ms-auto">12</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="sidebar-link" href="#">
-                        <i class="bi bi-calendar3"></i>
-                        <span>Interviews</span>
-                        <span class="badge-count ms-auto">3</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="sidebar-link" href="#">
-                        <i class="bi bi-file-earmark-text"></i>
-                        <span>Documents</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="sidebar-link" href="#">
-                        <i class="bi bi-bar-chart-line"></i>
-                        <span>Analytics</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="sidebar-link" href="#">
-                        <i class="bi bi-search"></i>
-                        <span>Job Search</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="sidebar-link" href="#">
-                        <i class="bi bi-people"></i>
-                        <span>Contacts</span>
-                    </a>
-                </li>
-            </ul>
+            <button class="nav-item active">
+                <i class="fas fa-home"></i>
+                <span>Home</span>
+            </button>
+            <button class="nav-item">
+                <i class="fas fa-th"></i>
+                <span>My Board</span>
+            </button>
+            <button class="nav-item">
+                <i class="fas fa-calendar"></i>
+                <span>Interviews</span>
+            </button>
+            <button class="nav-item">
+                <i class="fas fa-file-alt"></i>
+                <span>Documents</span>
+            </button>
+            <button class="nav-item">
+                <i class="fas fa-chart-bar"></i>
+                <span>Analytics</span>
+            </button>
+            <button class="nav-item">
+                <i class="fas fa-search"></i>
+                <span>Job Search</span>
+            </button>
+            <button class="nav-item">
+                <i class="fas fa-users"></i>
+                <span>Contacts</span>
+            </button>
 
-            <div class="sidebar-divider"></div>
-
-            <p class="sidebar-section-label">Account</p>
-            <ul class="nav flex-column">
-                <li class="nav-item">
-                    <a class="sidebar-link" href="#">
-                        <i class="bi bi-gear"></i>
-                        <span>Settings</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="sidebar-link" href="#">
-                        <i class="bi bi-question-circle"></i>
-                        <span>Help & Support</span>
-                    </a>
-                </li>
-            </ul>
+            <div class="nav-divider"></div>
+            <div class="nav-section-title">Account</div>
+            
+            <button class="nav-item">
+                <i class="fas fa-cog"></i>
+                <span>Settings</span>
+            </button>
+            <button class="nav-item">
+                <i class="fas fa-question-circle"></i>
+                <span>Help & Support</span>
+            </button>
         </nav>
 
-        <!-- Plus upgrade in sidebar -->
-        <div class="sidebar-upgrade-card">
-            <div class="d-flex align-items-center mb-2">
-                <i class="bi bi-lightning-charge-fill me-2" style="color: #facc15;"></i>
-                <span class="fw-semibold">Trackwise Plus</span>
+        <div class="sidebar-footer">
+            <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100" alt="User" class="user-avatar">
+            <div class="user-info">
+                <div class="user-name">Alex Rivera</div>
+                <div class="user-plan">Free Plan</div>
             </div>
-            <p class="small mb-3" style="color: #94a3b8;">Unlock AI insights, unlimited boards & more.</p>
-            <a href="#plus-section" class="btn btn-plus-sidebar w-100 btn-sm">Upgrade Now</a>
-        </div>
-
-        <div class="sidebar-user">
-            <img src="https://images.unsplash.com/photo-1743865318726-0c6966e0c153?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxwcm9mZXNzaW9uYWwlMjB3b21hbiUyMHdvcmtpbmclMjBsYXB0b3AlMjBkZXNrfGVufDF8fHx8MTc3MjgwMDMzN3ww&ixlib=rb-4.1.0&q=80&w=64" 
-                 class="sidebar-avatar" alt="User avatar">
-            <div class="sidebar-user-info">
-                <p class="user-name">Alex Rivera</p>
-                <p class="user-plan">Free Plan</p>
-            </div>
-            <a href="#" class="sidebar-logout" title="Sign out">
-                <i class="bi bi-box-arrow-right"></i>
-            </a>
-        </div>
-    </aside>
-
-    <!-- Sidebar overlay (mobile) -->
-    <div class="sidebar-overlay" id="sidebarOverlay"></div>
-
-    <!-- ===== MAIN CONTENT ===== -->
-    <div class="main-wrapper">
-
-        <!-- Top Bar -->
-        <header class="topbar">
-            <button class="topbar-menu-btn d-lg-none" id="sidebarToggle">
-                <i class="bi bi-list"></i>
+            <button class="btn btn-link p-0 text-secondary" onclick="window.location.href='index.html'">
+                <i class="fas fa-sign-out-alt"></i>
             </button>
-            <div class="topbar-search d-none d-md-flex">
-                <i class="bi bi-search"></i>
-                <input type="text" placeholder="Search applications, companies..." class="topbar-search-input">
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-wrapper">
+        <!-- Topbar -->
+        <div class="topbar">
+            <button class="btn btn-link d-lg-none p-0 menu-toggle text-secondary" onclick="toggleSidebar()">
+                <i class="fas fa-bars fa-lg"></i>
+            </button>
+
+            <!-- <div class="search-box">
+                <i class="fas fa-search text-secondary" style="font-size: 0.875rem;"></i>
+                <input type="text" placeholder="Search applications, companies...">
+            </div> -->
+
+            <div class="job-hunt-box">
+                <h1 class="welcome-title">Job Hunt 2026</h1>
             </div>
-            <div class="topbar-actions ms-auto">
-                <button class="topbar-btn" title="Notifications" data-bs-toggle="offcanvas" data-bs-target="#notificationsPanel">
-                    <i class="bi bi-bell"></i>
-                    <span class="topbar-badge">3</span>
+
+            <div class="d-flex align-items-center gap-2 ms-auto">
+                <button class="notification-btn">
+                    <i class="fas fa-bell"></i>
+                    <span class="notification-badge">3</span>
                 </button>
-                <button class="topbar-btn" title="Add Application" data-bs-toggle="modal" data-bs-target="#addApplicationModal">
-                    <i class="bi bi-plus-lg"></i>
+
+                <button class="btn-teal" data-bs-toggle="modal" data-bs-target="#addAppModal">
+                    <i class="fas fa-plus"></i>
+                    <span>Add Job</span>
                 </button>
-                <div class="dropdown">
-                    <button class="topbar-avatar-btn dropdown-toggle" data-bs-toggle="dropdown">
-                        <img src="https://images.unsplash.com/photo-1743865318726-0c6966e0c153?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxwcm9mZXNzaW9uYWwlMjB3b21hbiUyMHdvcmtpbmclMjBsYXB0b3AlMjBkZXNrfGVufDF8fHx8MTc3MjgwMDMzN3ww&ixlib=rb-4.1.0&q=80&w=64" alt="User">
-                    </button>
-                    <ul class="dropdown-menu dropdown-menu-end">
-                        <li><a class="dropdown-item" href="#"><i class="bi bi-person me-2"></i>Profile</a></li>
-                        <li><a class="dropdown-item" href="#"><i class="bi bi-gear me-2"></i>Settings</a></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item text-danger" href="index.html"><i class="bi bi-box-arrow-right me-2"></i>Sign Out</a></li>
-                    </ul>
-                </div>
+
+                <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100" alt="User" class="user-avatar">
             </div>
-        </header>
+        </div>
 
         <!-- Page Content -->
-        <main class="page-content">
-
-            <!-- ===== WELCOME BANNER ===== -->
-            <div class="welcome-banner">
-                <div class="welcome-text">
-                    <h1 class="welcome-title">Good morning, Alex! <span class="wave">👋</span></h1>
-                    <p class="welcome-sub">You have <strong>3 upcoming interviews</strong> and <strong>2 applications</strong> awaiting a follow-up this week.</p>
-                </div>
-                <div class="welcome-date d-none d-md-block">
-                    <p class="date-day" id="currentDay"></p>
-                    <p class="date-full" id="currentDate"></p>
-                </div>
-            </div>
-
-            <!-- ===== STATS OVERVIEW ===== -->
-            <div class="row g-3 mb-4">
-                <div class="col-6 col-lg-3">
-                    <div class="stat-card stat-blue animate-in" style="--delay: 0s">
-                        <div class="stat-icon"><i class="bi bi-send"></i></div>
-                        <div class="stat-body">
-                            <p class="stat-label">Applications Sent</p>
-                            <h3 class="stat-value counter" data-target="47">0</h3>
-                            <p class="stat-change positive"><i class="bi bi-arrow-up"></i> 8 this week</p>
-                        </div>
+        <div class="content-area">
+            <div class="content-container">
+                <!-- ===== WELCOME BANNER ===== -->
+                <div class="welcome-banner">
+                    <div>
+                        <h1 class="welcome-title">Good morning, Alex! 👋</h1>
+                        <p class="welcome-text mb-0">
+                            You have <strong>3 upcoming interviews</strong> and <strong>2 applications</strong> awaiting a follow-up this week.
+                        </p>
                     </div>
-                </div>
-                <div class="col-6 col-lg-3">
-                    <div class="stat-card stat-purple animate-in" style="--delay: 0.1s">
-                        <div class="stat-icon"><i class="bi bi-chat-dots"></i></div>
-                        <div class="stat-body">
-                            <p class="stat-label">Interviews Scheduled</p>
-                            <h3 class="stat-value counter" data-target="3">0</h3>
-                            <p class="stat-change positive"><i class="bi bi-arrow-up"></i> 1 new today</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-6 col-lg-3">
-                    <div class="stat-card stat-amber animate-in" style="--delay: 0.2s">
-                        <div class="stat-icon"><i class="bi bi-hourglass-split"></i></div>
-                        <div class="stat-body">
-                            <p class="stat-label">Awaiting Response</p>
-                            <h3 class="stat-value counter" data-target="19">0</h3>
-                            <p class="stat-change neutral"><i class="bi bi-dash"></i> No change</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-6 col-lg-3">
-                    <div class="stat-card stat-green animate-in" style="--delay: 0.3s">
-                        <div class="stat-icon"><i class="bi bi-trophy"></i></div>
-                        <div class="stat-body">
-                            <p class="stat-label">Offers Received</p>
-                            <h3 class="stat-value counter" data-target="2">0</h3>
-                            <p class="stat-change positive"><i class="bi bi-arrow-up"></i> 1 new!</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- ===== MIDDLE ROW: Recent Apps + Upcoming ===== -->
-            <div class="row g-3 mb-4">
-
-                <!-- Recent Applications -->
-                <div class="col-lg-7">
-                    <div class="content-card h-100 animate-in" style="--delay: 0.4s">
-                        <div class="content-card-header">
-                            <h2 class="content-card-title">
-                                <i class="bi bi-clock-history me-2 text-primary"></i>Recent Applications
-                            </h2>
-                            <a href="#" class="content-card-link">View all <i class="bi bi-arrow-right"></i></a>
-                        </div>
-                        <div class="applications-list">
-
-                            <div class="app-item">
-                                <div class="app-company-logo" style="background: #f0f9ff; color: #0ea5e9;">G</div>
-                                <div class="app-info">
-                                    <p class="app-title">UX Designer</p>
-                                    <p class="app-company">Google <span class="app-location"><i class="bi bi-geo-alt"></i> Mountain View, CA</span></p>
-                                </div>
-                                <div class="app-meta">
-                                    <span class="app-status status-interview">Interview</span>
-                                    <span class="app-date">Mar 5</span>
-                                </div>
-                            </div>
-
-                            <div class="app-item">
-                                <div class="app-company-logo" style="background: #fdf4ff; color: #a855f7;">S</div>
-                                <div class="app-info">
-                                    <p class="app-title">Product Manager</p>
-                                    <p class="app-company">Spotify <span class="app-location"><i class="bi bi-geo-alt"></i> Remote</span></p>
-                                </div>
-                                <div class="app-meta">
-                                    <span class="app-status status-applied">Applied</span>
-                                    <span class="app-date">Mar 4</span>
-                                </div>
-                            </div>
-
-                            <div class="app-item">
-                                <div class="app-company-logo" style="background: #fff7ed; color: #f97316;">A</div>
-                                <div class="app-info">
-                                    <p class="app-title">Frontend Engineer</p>
-                                    <p class="app-company">Airbnb <span class="app-location"><i class="bi bi-geo-alt"></i> San Francisco, CA</span></p>
-                                </div>
-                                <div class="app-meta">
-                                    <span class="app-status status-review">In Review</span>
-                                    <span class="app-date">Mar 2</span>
-                                </div>
-                            </div>
-
-                            <div class="app-item">
-                                <div class="app-company-logo" style="background: #f0fdf4; color: #22c55e;">N</div>
-                                <div class="app-info">
-                                    <p class="app-title">Data Analyst</p>
-                                    <p class="app-company">Netflix <span class="app-location"><i class="bi bi-geo-alt"></i> Los Gatos, CA</span></p>
-                                </div>
-                                <div class="app-meta">
-                                    <span class="app-status status-offer">Offer</span>
-                                    <span class="app-date">Feb 28</span>
-                                </div>
-                            </div>
-
-                            <div class="app-item">
-                                <div class="app-company-logo" style="background: #eff6ff; color: #3b82f6;">M</div>
-                                <div class="app-info">
-                                    <p class="app-title">Software Engineer II</p>
-                                    <p class="app-company">Meta <span class="app-location"><i class="bi bi-geo-alt"></i> Menlo Park, CA</span></p>
-                                </div>
-                                <div class="app-meta">
-                                    <span class="app-status status-applied">Applied</span>
-                                    <span class="app-date">Feb 26</span>
-                                </div>
-                            </div>
-
-                        </div>
-                        <div class="content-card-footer">
-                            <button class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addApplicationModal">
-                                <i class="bi bi-plus me-1"></i> Add Application
-                            </button>
-                        </div>
+                    <!-- <div class="date-display d-none d-sm-block">
+                        <div class="date-number" id="currentDate">7</div>
+                        <div class="date-info" id="currentDay">Saturday</div>
+                        <div class="date-info" id="currentMonth">March 2026</div>
+                    </div> -->
+                    <div class="welcome-date d-none d-md-block">
+                        <p class="date-day" id="currentDay"></p>
+                        <p class="date-full" id="currentDate"></p>
                     </div>
                 </div>
 
-                <!-- Right Column: Upcoming + Progress -->
-                <div class="col-lg-5 d-flex flex-column gap-3">
-
-                    <!-- Upcoming Interviews -->
-                    <div class="content-card animate-in" style="--delay: 0.5s">
-                        <div class="content-card-header">
-                            <h2 class="content-card-title">
-                                <i class="bi bi-calendar-check me-2 text-purple"></i>Upcoming Interviews
-                            </h2>
-                            <a href="#" class="content-card-link">View all <i class="bi bi-arrow-right"></i></a>
-                        </div>
-                        <div class="interview-list">
-                            <div class="interview-item">
-                                <div class="interview-date-badge">
-                                    <span class="interview-month">MAR</span>
-                                    <span class="interview-day">08</span>
-                                </div>
-                                <div class="interview-info">
-                                    <p class="interview-role">UX Designer</p>
-                                    <p class="interview-meta">Google &bull; 10:00 AM &bull; Video Call</p>
-                                </div>
-                                <span class="interview-type-badge">Technical</span>
+                <!-- ===== STATS CARDS ===== -->
+                <div class="row g-3 mb-4">
+                    <div class="col-12 col-md-6 col-lg-3">
+                        <div class="stat-card">
+                            <div class="stat-icon" style="background-color: #f0fdfa;">
+                                <i class="fas fa-paper-plane" style="color: var(--teal); font-size: 1.375rem;"></i>
                             </div>
-                            <div class="interview-item">
-                                <div class="interview-date-badge">
-                                    <span class="interview-month">MAR</span>
-                                    <span class="interview-day">11</span>
-                                </div>
-                                <div class="interview-info">
-                                    <p class="interview-role">Frontend Engineer</p>
-                                    <p class="interview-meta">Airbnb &bull; 2:30 PM &bull; On-site</p>
-                                </div>
-                                <span class="interview-type-badge">Final</span>
-                            </div>
-                            <div class="interview-item">
-                                <div class="interview-date-badge">
-                                    <span class="interview-month">MAR</span>
-                                    <span class="interview-day">14</span>
-                                </div>
-                                <div class="interview-info">
-                                    <p class="interview-role">Data Analyst</p>
-                                    <p class="interview-meta">Netflix &bull; 11:00 AM &bull; Video Call</p>
-                                </div>
-                                <span class="interview-type-badge">HR</span>
+                            <div>
+                                <div class="stat-label">Applications</div>
+                                <div class="stat-value">47</div>
                             </div>
                         </div>
                     </div>
-
-                    <!-- Weekly Goal Progress -->
-                    <div class="content-card animate-in" style="--delay: 0.6s">
-                        <div class="content-card-header">
-                            <h2 class="content-card-title">
-                                <i class="bi bi-bullseye me-2 text-orange"></i>Weekly Goal
-                            </h2>
-                            <span class="goal-badge">8/10 done</span>
-                        </div>
-                        <p class="small text-muted mb-2">Applications sent this week</p>
-                        <div class="progress-bar-custom mb-2">
-                            <div class="progress-fill" style="width: 80%"></div>
-                        </div>
-                        <div class="d-flex justify-content-between">
-                            <span class="small text-muted">2 more to reach your goal</span>
-                            <span class="small fw-semibold" style="color: var(--primary-color)">80%</span>
-                        </div>
-                    </div>
-
-                </div>
-            </div>
-
-            <!-- ===== FEATURE ACCESS CARDS ===== -->
-            <h2 class="section-heading animate-in" style="--delay: 0.5s">
-                <i class="bi bi-grid-3x3-gap me-2"></i>Quick Access
-            </h2>
-            <div class="row g-3 mb-4">
-
-                <div class="col-6 col-md-4 col-lg-2">
-                    <a href="#" class="quick-card animate-in" style="--delay: 0.6s">
-                        <div class="quick-icon" style="background: #eff6ff; color: #2563eb;">
-                            <i class="bi bi-kanban"></i>
-                        </div>
-                        <p class="quick-label">My Board</p>
-                        <span class="quick-count">12 apps</span>
-                    </a>
-                </div>
-
-                <div class="col-6 col-md-4 col-lg-2">
-                    <a href="#" class="quick-card animate-in" style="--delay: 0.7s">
-                        <div class="quick-icon" style="background: #fdf4ff; color: #a855f7;">
-                            <i class="bi bi-file-earmark-text"></i>
-                        </div>
-                        <p class="quick-label">Documents</p>
-                        <span class="quick-count">5 files</span>
-                    </a>
-                </div>
-
-                <div class="col-6 col-md-4 col-lg-2">
-                    <a href="#" class="quick-card animate-in" style="--delay: 0.8s">
-                        <div class="quick-icon" style="background: #fff7ed; color: #f97316;">
-                            <i class="bi bi-calendar3"></i>
-                        </div>
-                        <p class="quick-label">Calendar</p>
-                        <span class="quick-count">3 events</span>
-                    </a>
-                </div>
-
-                <div class="col-6 col-md-4 col-lg-2">
-                    <a href="#" class="quick-card animate-in" style="--delay: 0.9s">
-                        <div class="quick-icon" style="background: #f0fdf4; color: #22c55e;">
-                            <i class="bi bi-bar-chart-line"></i>
-                        </div>
-                        <p class="quick-label">Analytics</p>
-                        <span class="quick-count">View insights</span>
-                    </a>
-                </div>
-
-                <div class="col-6 col-md-4 col-lg-2">
-                    <a href="#" class="quick-card animate-in" style="--delay: 1s">
-                        <div class="quick-icon" style="background: #fef9c3; color: #ca8a04;">
-                            <i class="bi bi-search"></i>
-                        </div>
-                        <p class="quick-label">Job Search</p>
-                        <span class="quick-count">Find roles</span>
-                    </a>
-                </div>
-
-                <div class="col-6 col-md-4 col-lg-2">
-                    <a href="#" class="quick-card animate-in" style="--delay: 1.1s">
-                        <div class="quick-icon" style="background: #fff1f2; color: #f43f5e;">
-                            <i class="bi bi-people"></i>
-                        </div>
-                        <p class="quick-label">Contacts</p>
-                        <span class="quick-count">8 contacts</span>
-                    </a>
-                </div>
-
-            </div>
-
-            <!-- ===== TIPS ROW ===== -->
-            <h2 class="section-heading animate-in" style="--delay: 0.7s">
-                <i class="bi bi-lightbulb me-2"></i>Tips & Resources
-            </h2>
-            <div class="row g-3 mb-5">
-                <div class="col-md-4">
-                    <div class="tip-card animate-in" style="--delay: 0.8s">
-                        <img src="https://images.unsplash.com/photo-1704655295066-681e61ecca6b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxqb2IlMjBpbnRlcnZpZXclMjBvZmZpY2UlMjBtb2Rlcm58ZW58MXx8fHwxNzcyNzI4MDA0fDA&ixlib=rb-4.1.0&q=80&w=600" class="tip-img" alt="Interview prep">
-                        <div class="tip-body">
-                            <span class="tip-tag">Interview Prep</span>
-                            <p class="tip-title">10 Common Interview Questions & How to Ace Them</p>
-                            <a href="#" class="tip-link">Read more <i class="bi bi-arrow-right"></i></a>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="tip-card animate-in" style="--delay: 0.9s">
-                        <div class="tip-body tip-body-alt" style="background: linear-gradient(135deg, #eff6ff, #dbeafe);">
-                            <div class="tip-icon-lg"><i class="bi bi-file-earmark-check"></i></div>
-                            <span class="tip-tag">Resume</span>
-                            <p class="tip-title">Resume Score Checker — See how well your resume matches job postings</p>
-                            <a href="#" class="tip-link">Try it free <i class="bi bi-arrow-right"></i></a>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="tip-card animate-in" style="--delay: 1s">
-                        <div class="tip-body tip-body-alt" style="background: linear-gradient(135deg, #fdf4ff, #e9d5ff);">
-                            <div class="tip-icon-lg"><i class="bi bi-envelope-open"></i></div>
-                            <span class="tip-tag">Follow-Ups</span>
-                            <p class="tip-title">How to Write the Perfect Follow-Up Email After an Interview</p>
-                            <a href="#" class="tip-link">Read guide <i class="bi bi-arrow-right"></i></a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- ===== TRACKWISE PLUS SECTION ===== -->
-            <section id="plus-section" class="plus-section animate-in" style="--delay: 0.8s">
-                <div class="plus-content">
-                    <div class="plus-badge">
-                        <i class="bi bi-lightning-charge-fill me-1"></i> TRACKWISE PLUS
-                    </div>
-                    <h2 class="plus-title">Supercharge Your Job Search</h2>
-                    <p class="plus-sub">Join Trackwise Plus and unlock powerful features that get you hired faster.</p>
-
-                    <div class="row g-3 mb-4">
-                        <div class="col-md-6 col-lg-3">
-                            <div class="plus-feature-item">
-                                <i class="bi bi-robot plus-feature-icon"></i>
-                                <div>
-                                    <p class="plus-feature-title">AI Cover Letter Generator</p>
-                                    <p class="plus-feature-desc">Generate tailored cover letters in seconds.</p>
-                                </div>
+                    <div class="col-12 col-md-6 col-lg-3">
+                        <div class="stat-card">
+                            <div class="stat-icon" style="background-color: #fdf4ff;">
+                                <i class="fas fa-comment" style="color: #a855f7; font-size: 1.375rem;"></i>
                             </div>
-                        </div>
-                        <div class="col-md-6 col-lg-3">
-                            <div class="plus-feature-item">
-                                <i class="bi bi-graph-up-arrow plus-feature-icon"></i>
-                                <div>
-                                    <p class="plus-feature-title">Advanced Analytics</p>
-                                    <p class="plus-feature-desc">Deep insights into your job search performance.</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6 col-lg-3">
-                            <div class="plus-feature-item">
-                                <i class="bi bi-infinity plus-feature-icon"></i>
-                                <div>
-                                    <p class="plus-feature-title">Unlimited Boards</p>
-                                    <p class="plus-feature-desc">Create unlimited boards for every job hunt.</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6 col-lg-3">
-                            <div class="plus-feature-item">
-                                <i class="bi bi-bell-fill plus-feature-icon"></i>
-                                <div>
-                                    <p class="plus-feature-title">Smart Reminders</p>
-                                    <p class="plus-feature-desc">Never miss a follow-up with AI-powered alerts.</p>
-                                </div>
+                            <div>
+                                <div class="stat-label">Interviews</div>
+                                <div class="stat-value">3</div>
                             </div>
                         </div>
                     </div>
-
-                    <!-- Pricing Toggle -->
-                    <div class="pricing-toggle-wrapper mb-4">
-                        <span class="pricing-toggle-label" id="monthly-label">Monthly</span>
-                        <div class="form-check form-switch pricing-toggle mx-3">
-                            <input class="form-check-input" type="checkbox" id="billingToggle">
-                        </div>
-                        <span class="pricing-toggle-label" id="yearly-label">
-                            Yearly <span class="save-badge">Save 30%</span>
-                        </span>
-                    </div>
-
-                    <div class="row g-3 justify-content-center">
-                        <!-- Free Plan -->
-                        <div class="col-md-4 col-lg-3">
-                            <div class="pricing-card">
-                                <div class="pricing-plan-name">Free</div>
-                                <div class="pricing-price">
-                                    <span class="pricing-currency">$</span>
-                                    <span class="pricing-amount">0</span>
-                                    <span class="pricing-period">/mo</span>
-                                </div>
-                                <ul class="pricing-features">
-                                    <li><i class="bi bi-check-lg text-success"></i> Up to 20 applications</li>
-                                    <li><i class="bi bi-check-lg text-success"></i> 1 board</li>
-                                    <li><i class="bi bi-check-lg text-success"></i> Basic analytics</li>
-                                    <li><i class="bi bi-check-lg text-success"></i> Document storage (1 GB)</li>
-                                    <li class="disabled"><i class="bi bi-x-lg text-muted"></i> AI features</li>
-                                    <li class="disabled"><i class="bi bi-x-lg text-muted"></i> Advanced reminders</li>
-                                </ul>
-                                <button class="btn btn-outline-secondary w-100 btn-sm" disabled>Current Plan</button>
+                    <div class="col-12 col-md-6 col-lg-3">
+                        <div class="stat-card">
+                            <div class="stat-icon" style="background-color: #fff7ed;">
+                                <i class="fas fa-briefcase" style="color: #f97316; font-size: 1.375rem;"></i>
+                            </div>
+                            <div>
+                                <div class="stat-label">In Review</div>
+                                <div class="stat-value">19</div>
                             </div>
                         </div>
+                    </div>
+                    <div class="col-12 col-md-6 col-lg-3">
+                        <div class="stat-card">
+                            <div class="stat-icon" style="background-color: #f0fdf4;">
+                                <i class="fas fa-trophy" style="color: #22c55e; font-size: 1.375rem;"></i>
+                            </div>
+                            <div>
+                                <div class="stat-label">Offers</div>
+                                <div class="stat-value">2</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-                        <!-- Plus Plan (highlighted) -->
-                        <div class="col-md-4 col-lg-3">
-                            <div class="pricing-card pricing-card-plus">
-                                <div class="pricing-popular-badge">Most Popular</div>
-                                <div class="pricing-plan-name">Plus</div>
-                                <div class="pricing-price">
-                                    <span class="pricing-currency">$</span>
-                                    <span class="pricing-amount" id="plusPrice">9</span>
-                                    <span class="pricing-period">/mo</span>
+                <!-- Main Content Grid -->
+                <div class="row g-4 mb-4">
+                    <!-- Recent Applications -->
+                    <div class="col-12 col-lg-6">
+                        <div class="card-custom">
+                            <div class="card-header-custom">
+                                <h2 class="card-title">Recent Applications</h2>
+                                <a href="#" class="view-all-link">
+                                    View all <i class="fas fa-chevron-right" style="font-size: 0.75rem;"></i>
+                                </a>
+                            </div>
+                            <div>
+                                <div class="app-item">
+                                    <div class="app-logo" style="background-color: #f0f9ff; color: #0ea5e9;">G</div>
+                                    <div class="app-info">
+                                        <div class="app-title">UX Designer</div>
+                                        <div class="app-company">
+                                            Google · <i class="fas fa-map-marker-alt" style="font-size: 0.625rem;"></i> Mountain View, CA
+                                        </div>
+                                    </div>
+                                    <span class="status-badge" style="background-color: #fdf4ff; color: #a855f7;">Interview</span>
                                 </div>
-                                <ul class="pricing-features">
-                                    <li><i class="bi bi-check-lg"></i> Unlimited applications</li>
-                                    <li><i class="bi bi-check-lg"></i> Unlimited boards</li>
-                                    <li><i class="bi bi-check-lg"></i> Advanced analytics</li>
-                                    <li><i class="bi bi-check-lg"></i> Document storage (10 GB)</li>
-                                    <li><i class="bi bi-check-lg"></i> AI Cover Letter Generator</li>
-                                    <li><i class="bi bi-check-lg"></i> Smart reminders & alerts</li>
-                                </ul>
-                                <button class="btn btn-plus w-100 btn-sm" data-bs-toggle="modal" data-bs-target="#plusModal">
-                                    <i class="bi bi-lightning-charge-fill me-1"></i> Upgrade to Plus
+                                <div class="app-item">
+                                    <div class="app-logo" style="background-color: #fdf4ff; color: #a855f7;">S</div>
+                                    <div class="app-info">
+                                        <div class="app-title">Product Manager</div>
+                                        <div class="app-company">
+                                            Spotify · <i class="fas fa-map-marker-alt" style="font-size: 0.625rem;"></i> Remote
+                                        </div>
+                                    </div>
+                                    <span class="status-badge" style="background-color: #eff6ff; color: #2563eb;">Applied</span>
+                                </div>
+                                <div class="app-item">
+                                    <div class="app-logo" style="background-color: #fff7ed; color: #f97316;">A</div>
+                                    <div class="app-info">
+                                        <div class="app-title">Frontend Engineer</div>
+                                        <div class="app-company">
+                                            Airbnb · <i class="fas fa-map-marker-alt" style="font-size: 0.625rem;"></i> San Francisco, CA
+                                        </div>
+                                    </div>
+                                    <span class="status-badge" style="background-color: #fff7ed; color: #f97316;">In Review</span>
+                                </div>
+                                <div class="app-item">
+                                    <div class="app-logo" style="background-color: #f0fdf4; color: #22c55e;">N</div>
+                                    <div class="app-info">
+                                        <div class="app-title">Data Analyst</div>
+                                        <div class="app-company">
+                                            Netflix · <i class="fas fa-map-marker-alt" style="font-size: 0.625rem;"></i> Los Gatos, CA
+                                        </div>
+                                    </div>
+                                    <span class="status-badge" style="background-color: #f0fdf4; color: #16a34a;">Offer</span>
+                                </div>
+                                <div class="app-item">
+                                    <div class="app-logo" style="background-color: #eff6ff; color: #3b82f6;">M</div>
+                                    <div class="app-info">
+                                        <div class="app-title">Software Engineer II</div>
+                                        <div class="app-company">
+                                            Meta · <i class="fas fa-map-marker-alt" style="font-size: 0.625rem;"></i> Menlo Park, CA
+                                        </div>
+                                    </div>
+                                    <span class="status-badge" style="background-color: #eff6ff; color: #2563eb;">Applied</span>
+                                </div>
+                            </div>
+                            <div style="padding: 0.875rem 1.25rem; border-top: 1px solid #f1f5f9;">
+                                <button class="btn btn-link p-0 view-all-link" data-bs-toggle="modal" data-bs-target="#addAppModal">
+                                    <i class="fas fa-plus" style="font-size: 0.875rem;"></i> Add Application
                                 </button>
                             </div>
                         </div>
+                    </div>
 
-                        <!-- Pro Plan -->
-                        <div class="col-md-4 col-lg-3">
-                            <div class="pricing-card">
-                                <div class="pricing-plan-name">Pro</div>
-                                <div class="pricing-price">
-                                    <span class="pricing-currency">$</span>
-                                    <span class="pricing-amount" id="proPrice">19</span>
-                                    <span class="pricing-period">/mo</span>
+                    <!-- Upcoming Interviews -->
+                    <div class="col-12 col-lg-6">
+                        <div class="card-custom">
+                            <div class="card-header-custom">
+                                <h2 class="card-title">Upcoming Interviews</h2>
+                                <a href="#" class="view-all-link">
+                                    View all <i class="fas fa-chevron-right" style="font-size: 0.75rem;"></i>
+                                </a>
+                            </div>
+                            <div class="p-3">
+                                <div class="interview-item mb-3">
+                                    <div class="interview-date">
+                                        <div class="interview-month">MAR</div>
+                                        <div class="interview-day">08</div>
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <div style="font-size: 0.875rem; font-weight: 600; color: #111827;">UX Designer</div>
+                                        <div style="font-size: 0.75rem; color: #9ca3af; margin-bottom: 0.25rem;">Google</div>
+                                        <div style="font-size: 0.75rem; font-weight: 500; color: var(--teal);">10:00 AM · Video Call</div>
+                                    </div>
                                 </div>
-                                <ul class="pricing-features">
-                                    <li><i class="bi bi-check-lg text-success"></i> Everything in Plus</li>
-                                    <li><i class="bi bi-check-lg text-success"></i> Priority support</li>
-                                    <li><i class="bi bi-check-lg text-success"></i> Resume scoring</li>
-                                    <li><i class="bi bi-check-lg text-success"></i> Document storage (50 GB)</li>
-                                    <li><i class="bi bi-check-lg text-success"></i> Early access features</li>
-                                    <li><i class="bi bi-check-lg text-success"></i> Custom integrations</li>
-                                </ul>
-                                <button class="btn btn-outline-primary w-100 btn-sm" data-bs-toggle="modal" data-bs-target="#plusModal">Upgrade to Pro</button>
+                                <div class="interview-item mb-3">
+                                    <div class="interview-date">
+                                        <div class="interview-month">MAR</div>
+                                        <div class="interview-day">11</div>
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <div style="font-size: 0.875rem; font-weight: 600; color: #111827;">Frontend Engineer</div>
+                                        <div style="font-size: 0.75rem; color: #9ca3af; margin-bottom: 0.25rem;">Airbnb</div>
+                                        <div style="font-size: 0.75rem; font-weight: 500; color: var(--teal);">2:30 PM · On-site</div>
+                                    </div>
+                                </div>
+                                <div class="interview-item">
+                                    <div class="interview-date">
+                                        <div class="interview-month">MAR</div>
+                                        <div class="interview-day">14</div>
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <div style="font-size: 0.875rem; font-weight: 600; color: #111827;">Data Analyst</div>
+                                        <div style="font-size: 0.75rem; color: #9ca3af; margin-bottom: 0.25rem;">Netflix</div>
+                                        <div style="font-size: 0.75rem; font-weight: 500; color: var(--teal);">11:00 AM · Video Call</div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
+                </div>
 
-                </div>
-            </section>
-
-        </main>
-    </div>
-
-    <!-- ===== NOTIFICATIONS OFFCANVAS ===== -->
-    <div class="offcanvas offcanvas-end" tabindex="-1" id="notificationsPanel">
-        <div class="offcanvas-header border-bottom">
-            <h5 class="offcanvas-title">Notifications</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
-        </div>
-        <div class="offcanvas-body p-0">
-            <div class="notification-item unread">
-                <div class="notif-icon notif-blue"><i class="bi bi-chat-dots"></i></div>
-                <div class="notif-content">
-                    <p class="notif-text">Google scheduled a <strong>technical interview</strong> for March 8th.</p>
-                    <p class="notif-time">2 hours ago</p>
-                </div>
-            </div>
-            <div class="notification-item unread">
-                <div class="notif-icon notif-green"><i class="bi bi-trophy"></i></div>
-                <div class="notif-content">
-                    <p class="notif-text">Congratulations! Netflix extended you an <strong>offer</strong>.</p>
-                    <p class="notif-time">Yesterday</p>
-                </div>
-            </div>
-            <div class="notification-item unread">
-                <div class="notif-icon notif-amber"><i class="bi bi-bell"></i></div>
-                <div class="notif-content">
-                    <p class="notif-text">Reminder: Follow up with <strong>Spotify</strong> — it's been 7 days.</p>
-                    <p class="notif-time">Yesterday</p>
-                </div>
-            </div>
-            <div class="notification-item">
-                <div class="notif-icon notif-purple"><i class="bi bi-file-text"></i></div>
-                <div class="notif-content">
-                    <p class="notif-text">Your resume was viewed by <strong>Airbnb</strong>.</p>
-                    <p class="notif-time">2 days ago</p>
-                </div>
-            </div>
-            <div class="notification-item">
-                <div class="notif-icon notif-blue"><i class="bi bi-send"></i></div>
-                <div class="notif-content">
-                    <p class="notif-text">Application to <strong>Meta</strong> successfully submitted.</p>
-                    <p class="notif-time">3 days ago</p>
+                <!-- Pricing Card -->
+                <div class="pricing-card">
+                    <div class="pricing-icon">⚡</div>
+                    <h3 style="font-size: 1.25rem; font-weight: bold; color: #111827; margin-bottom: 0.5rem;">Upgrade to Trackwise Plus</h3>
+                    <p style="color: #6b7280; font-size: 0.9rem; margin-bottom: 1rem;">
+                        Unlock AI-powered insights, unlimited applications, and advanced analytics.
+                    </p>
+                    <button class="btn-teal" data-bs-toggle="modal" data-bs-target="#pricingModal" style="padding: 0.75rem 1.5rem;">
+                        View Plans — Starting at $6/mo
+                    </button>
+                    <p style="font-size: 0.75rem; color: #9ca3af; margin-top: 0.75rem; margin-bottom: 0;">
+                        7-day free trial • Cancel anytime
+                    </p>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- ===== ADD APPLICATION MODAL ===== -->
-    <div class="modal fade" id="addApplicationModal" tabindex="-1">
+    <!-- Add Application Modal -->
+    <div class="modal fade" id="addAppModal" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
+            <div class="modal-content" style="border-radius: 1rem;">
                 <div class="modal-header">
-                    <h5 class="modal-title"><i class="bi bi-plus-circle me-2 text-primary"></i>Add New Application</h5>
+                    <h5 class="modal-title fw-bold">Add New Application</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
-                    <form id="addAppForm">
-                        <div class="mb-3">
-                            <label class="form-label">Job Title</label>
-                            <input type="text" class="form-control" placeholder="e.g. Software Engineer">
+                    <div class="mb-3">
+                        <label class="form-label small fw-medium">Job Title</label>
+                        <input type="text" class="form-control" placeholder="e.g. Software Engineer">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-medium">Company</label>
+                        <input type="text" class="form-control" placeholder="e.g. Google">
+                    </div>
+                    <div class="row g-3 mb-3">
+                        <div class="col-6">
+                            <label class="form-label small fw-medium">Location</label>
+                            <input type="text" class="form-control" placeholder="e.g. Remote">
                         </div>
-                        <div class="mb-3">
-                            <label class="form-label">Company</label>
-                            <input type="text" class="form-control" placeholder="e.g. Google">
+                        <div class="col-6">
+                            <label class="form-label small fw-medium">Status</label>
+                            <select class="form-select">
+                                <option>Applied</option>
+                                <option>In Review</option>
+                                <option>Interview</option>
+                                <option>Offer</option>
+                                <option>Rejected</option>
+                            </select>
                         </div>
-                        <div class="row g-3 mb-3">
-                            <div class="col-6">
-                                <label class="form-label">Location</label>
-                                <input type="text" class="form-control" placeholder="e.g. Remote">
-                            </div>
-                            <div class="col-6">
-                                <label class="form-label">Status</label>
-                                <select class="form-select">
-                                    <option>Applied</option>
-                                    <option>In Review</option>
-                                    <option>Interview</option>
-                                    <option>Offer</option>
-                                    <option>Rejected</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Date Applied</label>
-                            <input type="date" class="form-control">
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Job URL <span class="text-muted">(optional)</span></label>
-                            <input type="url" class="form-control" placeholder="https://...">
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Notes <span class="text-muted">(optional)</span></label>
-                            <textarea class="form-control" rows="2" placeholder="Any important details..."></textarea>
-                        </div>
-                    </form>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-medium">Notes (optional)</label>
+                        <textarea class="form-control" rows="2" placeholder="Any important details..."></textarea>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-primary" id="saveAppBtn">
-                        <i class="bi bi-check-lg me-1"></i> Save Application
-                    </button>
+                    <button type="button" class="btn-teal" data-bs-dismiss="modal">Save Application</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- ===== PLUS UPGRADE MODAL ===== -->
-    <div class="modal fade" id="plusModal" tabindex="-1">
+    <!-- Pricing Modal -->
+    <div class="modal fade" id="pricingModal" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content plus-modal-content">
-                <div class="modal-header border-0 pb-0">
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body text-center pt-0">
-                    <div class="plus-modal-icon mb-3">
-                        <i class="bi bi-lightning-charge-fill"></i>
+            <div class="modal-content" style="border-radius: 1rem;">
+                <div class="modal-body text-center p-4">
+                    <button type="button" class="btn-close position-absolute top-0 end-0 m-3" data-bs-dismiss="modal"></button>
+                    <div class="pricing-icon mx-auto mb-3">⚡</div>
+                    <h3 style="font-size: 1.5rem; font-weight: bold; margin-bottom: 0.5rem;">Upgrade to Trackwise Plus</h3>
+                    <p class="text-secondary mb-4">Supercharge your job search with AI-powered features.</p>
+                    
+                    <div class="d-flex align-items-center justify-content-center gap-3 mb-4">
+                        <span id="monthlyLabel" class="fw-semibold" style="color: var(--teal);">Monthly</span>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="yearlyToggle" style="cursor: pointer;">
+                        </div>
+                        <span id="yearlyLabel" class="text-secondary">Yearly <span class="badge" style="background-color: #dcfce7; color: #16a34a;">-30%</span></span>
                     </div>
-                    <h4 class="fw-bold text-white mb-2">Upgrade to Trackwise Plus</h4>
-                    <p class="text-white-50 mb-4">You're one step away from supercharging your job search.</p>
-                    <div class="plus-modal-price mb-4">
-                        <span class="plus-modal-amount">$9</span>
-                        <span class="plus-modal-period">/month</span>
+
+                    <div class="mb-4">
+                        <span id="priceDisplay" style="font-size: 3rem; font-weight: 900; color: #111827;">$9</span>
+                        <span class="text-secondary">/month</span>
+                        <p id="billingInfo" class="text-secondary small mt-1"></p>
                     </div>
-                    <button class="btn btn-light w-100 mb-2 fw-semibold">
-                        <i class="bi bi-lightning-charge-fill me-2 text-warning"></i>Start Plus — $9/mo
+
+                    <button class="btn-teal w-100 mb-2" style="padding: 0.875rem;">
+                        ⚡ <span id="ctaText">Start Plus — $9/mo</span>
                     </button>
-                    <button class="btn btn-outline-light w-100 mb-3">
-                        <i class="bi bi-calendar-check me-2"></i>Get Yearly — $6.30/mo (Save 30%)
-                    </button>
-                    <p class="text-white-50 small">Cancel anytime &bull; 7-day free trial &bull; No commitment</p>
+                    <p class="text-secondary small mb-0">Cancel anytime • 7-day free trial • No commitment</p>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
     <!-- Custom JS -->
-    <script src="home-script.js"></script>
+    <script src="{% static 'js/script-home.js' %}"></script>
 </body>
 </html>
