@@ -11,6 +11,7 @@ from django.http import JsonResponse
 from django.shortcuts import redirect, get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
 import json
+from datetime import datetime
 from .models import Company, Application
 from .forms import ApplicationForm
 
@@ -114,8 +115,23 @@ class LandingView(TemplateView):
     template_name = "landing.html"     
 
 
-class HomeView(TemplateView):
+class HomeView(LoginRequiredMixin, TemplateView):
     template_name = "home.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        hour = datetime.now().hour
+        if hour < 12:
+            greeting = "Good morning"
+        elif hour < 18:
+            greeting = "Good afternoon"
+        else:
+            greeting = "Good evening"
+        user = self.request.user
+        context["greeting"] = greeting
+        context["display_name"] = user.first_name or user.username
+        context["full_name"] = f"{user.first_name} {user.last_name}".strip() or user.username
+        return context
 
 
 class TrackerBoardView(LoginRequiredMixin, TemplateView):
