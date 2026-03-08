@@ -131,6 +131,10 @@ class HomeView(LoginRequiredMixin, TemplateView):
         context["greeting"] = greeting
         context["display_name"] = user.first_name or user.username
         context["full_name"] = f"{user.first_name} {user.last_name}".strip() or user.username
+        context["total_applications"] = Application.objects.filter(user=user).count()
+        context["total_interviews"] = Application.objects.filter(user=user, status="interviewing").count()
+        context["total_in_review"] = Application.objects.filter(user=user, status="applied").count()
+        context["total_offers"] = Application.objects.filter(user=user, status="offer").count()
         return context
 
 

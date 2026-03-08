@@ -30,14 +30,14 @@
         </div>
 
         <nav class="sidebar-nav">
-            <button class="nav-item {% block nav_home %}{% endblock %}">
+            <a href="{% url 'home' %}" class="nav-item {% block nav_home %}{% endblock %}">
                 <i class="fas fa-home"></i>
                 <span>Home</span>
-            </button>
-            <button class="nav-item {% block nav_board %}{% endblock %}">
+            </a>
+            <a href="{% url 'tracker' %}" class="nav-item {% block nav_board %}{% endblock %}">
                 <i class="fas fa-th"></i>
                 <span>My Tracker</span>
-            </button>
+            </a>
             <button class="nav-item {% block nav_interviews %}{% endblock %}">
                 <i class="fas fa-calendar"></i>
                 <span>Interviews</span>
