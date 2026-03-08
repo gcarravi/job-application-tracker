@@ -1,8 +1,8 @@
 /* Custom Variables */
 :root {
-    --primary-color: #2563eb;
-    --primary-dark: #1e40af;
-    --secondary-color: #4f46e5;
+    --primary-color: #0d9488;
+    --primary-dark: #0f766e;
+    --secondary-color: #6366f1;
     --text-dark: #1f2937;
     --text-muted: #6b7280;
     --light-bg: #f9fafb;
@@ -68,7 +68,7 @@ body {
     background-color: var(--primary-dark);
     border-color: var(--primary-dark);
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+    box-shadow: 0 4px 12px rgba(13, 148, 136, 0.3);
 }
 
 .btn-outline-secondary {
@@ -85,14 +85,14 @@ body {
 .hero-section {
     padding-top: 120px;
     padding-bottom: 80px;
-    background: linear-gradient(180deg, #eff6ff 0%, #ffffff 100%);
+    background: linear-gradient(180deg, #f0fdfa 0%, #ffffff 100%);
 }
 
 .badge-custom {
     display: inline-flex;
     align-items: center;
     padding: 0.5rem 1rem;
-    background-color: #dbeafe;
+    background-color: #f0fdfa;
     color: var(--primary-color);
     border-radius: 50px;
     font-size: 0.875rem;
@@ -129,7 +129,7 @@ body {
 }
 
 .feature-card:hover {
-    border-color: #93c5fd;
+    border-color: #5eead4;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
     transform: translateY(-5px);
 }
@@ -137,7 +137,7 @@ body {
 .feature-icon {
     width: 48px;
     height: 48px;
-    background-color: #dbeafe;
+    background-color: #f0fdfa;
     border-radius: 10px;
     display: flex;
     align-items: center;
@@ -218,7 +218,7 @@ body {
 .benefit-icon {
     width: 48px;
     height: 48px;
-    background-color: #dbeafe;
+    background-color: #f0fdfa;
     border-radius: 10px;
     display: flex;
     align-items: center;
@@ -232,11 +232,11 @@ body {
 
 .stats-card {
     background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-    box-shadow: 0 20px 60px rgba(37, 99, 235, 0.3);
+    box-shadow: 0 20px 60px rgba(13, 148, 136, 0.3);
 }
 
 .stats-label {
-    color: #dbeafe;
+    color: #f0fdfa;
     font-size: 0.875rem;
 }
 
