@@ -76,8 +76,8 @@
                     <div class="modal-body modal-app-body">
                         <div class="row g-3 mb-3">
                             <div class="col-md-6">
-                                <label class="modal-label">Company</label>
-                                {{ form.company }}
+                                <label class="modal-label">Company Name</label>
+                                {{ form.company_name }}
                             </div>
                             <div class="col-md-6">
                                 <label class="modal-label">Job Title</label>
@@ -86,12 +86,22 @@
                         </div>
                         <div class="row g-3 mb-3">
                             <div class="col-md-6">
-                                <label class="modal-label">Salary Range</label>
-                                {{ form.salary_range }}
+                                <label class="modal-label">Location <span style="font-weight: 400; text-transform: none; letter-spacing: 0;">(optional)</span></label>
+                                {{ form.company_location }}
                             </div>
+                            <div class="col-md-6">
+                                <label class="modal-label">Website <span style="font-weight: 400; text-transform: none; letter-spacing: 0;">(optional)</span></label>
+                                {{ form.company_website }}
+                            </div>
+                        </div>
+                        <div class="row g-3 mb-3">
                             <div class="col-md-6" id="statusFieldWrapper">
                                 <label class="modal-label">Status</label>
                                 {{ form.status }}
+                            </div>
+                            <div class="col-md-6">
+                                <label class="modal-label">Salary Range <span style="font-weight: 400; text-transform: none; letter-spacing: 0;">(optional)</span></label>
+                                {{ form.salary_range }}
                             </div>
                         </div>
                         <div class="mb-3">
