@@ -1,20 +1,5 @@
 /* Board Layout */
-/* .board-column { */
-    /* min-width: 250px; */
-    /* flex: 1;
-    min-width: 0; */
-    /* flex: 0 0 280px; */
-    /* flex: 0 0 85vw;   85% of screen width */
-    /* flex: 0 0 calc(100vw - 2rem); */
-/* } */
 
-
-/* body {
-    font-family: Lato, sans-serif;
-    font-size: 1.4rem;
-    font-weight: 700;
-    color: #4A4A4F;
-} */
 
 .brand {
     font-family: Lato, sans-serif;
@@ -252,29 +237,29 @@ h2 {
     color: white;
 }
 
-/* Styles for the modal */
-.modal-content {
-    border-radius: 12px;
-    box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+/* Modal form field overrides (Django renders form-control; we restyle inside modal-app) */
+.modal-app .form-control {
+    border: 1px solid #e5e7eb;
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    color: #374151;
+    background-color: #f9fafb;
+    padding: 0.5rem 0.75rem;
+    transition: border-color 0.2s, box-shadow 0.2s, background-color 0.2s;
+    font-family: inherit;
+    width: 100%;
 }
 
-.form-control {
-    border-radius: 8px;
-    padding: 10px 12px;
+.modal-app .form-control::placeholder {
+    color: #c3c8cf;
 }
 
-.modal-title {
-    font-size: 1.1rem;
+.modal-app .form-control:focus {
+    border-color: #0d9488;
+    box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.1);
+    background-color: white;
+    outline: none;
 }
-
-/* equal width columns on large screens */
-/* Desktop */
-/* @media (min-width: 992px) {
-    .board-column {
-        flex: 1;       
-        min-width: 0;
-    }
-} */
 
 
 
