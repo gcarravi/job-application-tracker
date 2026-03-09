@@ -227,55 +227,61 @@
 
     <!-- Add Application Modal -->
     <div class="modal fade" id="addAppModal" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content modal-app">
-                <div class="modal-header modal-app-header">
-                    <div class="d-flex align-items-center gap-2">
-                        <div class="modal-icon">
-                            <i class="fas fa-briefcase"></i>
+                <form method="POST" action="{% url 'home' %}">
+                    {% csrf_token %}
+                    <div class="modal-header modal-app-header">
+                        <div class="d-flex align-items-center gap-2">
+                            <div class="modal-icon">
+                                <i class="fas fa-briefcase"></i>
+                            </div>
+                            <h5 class="modal-title modal-app-title">New Application</h5>
                         </div>
-                        <h5 class="modal-title modal-app-title">New Application</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                     </div>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body modal-app-body">
-                    <div class="mb-3">
-                        <label class="modal-label">Job Title</label>
-                        <input type="text" class="modal-input" placeholder="e.g. Software Engineer">
-                    </div>
-                    <div class="mb-3">
-                        <label class="modal-label">Company</label>
-                        <input type="text" class="modal-input" placeholder="e.g. Google">
-                    </div>
-                    <div class="row g-3 mb-3">
-                        <div class="col-6">
-                            <label class="modal-label">Location</label>
-                            <input type="text" class="modal-input" placeholder="e.g. Remote">
+                    <div class="modal-body modal-app-body">
+                        {% if form.errors %}
+                            <div class="alert alert-danger py-2 mb-3" style="font-size: 0.875rem;">
+                                Please correct the errors below.
+                            </div>
+                        {% endif %}
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <label class="modal-label">Company</label>
+                                {{ form.company }}
+                            </div>
+                            <div class="col-md-6">
+                                <label class="modal-label">Job Title</label>
+                                {{ form.job_title }}
+                            </div>
                         </div>
-                        <div class="col-6">
-                            <label class="modal-label">Status</label>
-                            <select class="modal-input">
-                                <option value="applied">Applied</option>
-                                <option value="interviewing">Interviewing</option>
-                                <option value="offer">Offer</option>
-                                <option value="rejected">Rejected</option>
-                                <option value="wishlist">Wishlist</option>
-                                <option value="ghosted">Ghosted</option>
-                                <option value="follow_up">Follow Up</option>
-                            </select>
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <label class="modal-label">Salary Range</label>
+                                {{ form.salary_range }}
+                            </div>
+                            <div class="col-md-6">
+                                <label class="modal-label">Status</label>
+                                {{ form.status }}
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="modal-label">Date Applied</label>
+                            {{ form.date_applied }}
+                        </div>
+                        <div class="mb-0">
+                            <label class="modal-label">Notes <span style="font-weight: 400; text-transform: none; letter-spacing: 0;">(optional)</span></label>
+                            {{ form.notes }}
                         </div>
                     </div>
-                    <div class="mb-0">
-                        <label class="modal-label">Notes <span style="font-weight: 400; text-transform: none; letter-spacing: 0;">(optional)</span></label>
-                        <textarea class="modal-input" rows="3" placeholder="Any important details..."></textarea>
+                    <div class="modal-footer modal-app-footer">
+                        <button type="button" class="btn-modal-cancel" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn-teal">
+                            <i class="fas fa-plus"></i> Save Application
+                        </button>
                     </div>
-                </div>
-                <div class="modal-footer modal-app-footer">
-                    <button type="button" class="btn-modal-cancel" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn-teal" data-bs-dismiss="modal">
-                        <i class="fas fa-plus"></i> Save Application
-                    </button>
-                </div>
+                </form>
             </div>
         </div>
     </div>

@@ -135,7 +135,24 @@ class HomeView(LoginRequiredMixin, TemplateView):
         context["total_interviews"] = Application.objects.filter(user=user, status="interviewing").count()
         context["total_in_review"] = Application.objects.filter(user=user, status="applied").count()
         context["total_offers"] = Application.objects.filter(user=user, status="offer").count()
+        context["form"] = ApplicationForm(user=user)
         return context
+    
+
+    def post(self, request, *args, **kwargs):
+        form = ApplicationForm(request.POST, user=request.user)
+
+        if form.is_valid():
+            application = form.save(commit=False)
+            application.user = request.user
+            application.save()
+            return redirect("tracker")
+
+        # If form invalid, re-render page with errors
+        context = self.get_context_data()
+        context["form"] = form
+        return self.render_to_response(context)
+
 
 
 class TrackerBoardView(LoginRequiredMixin, TemplateView):
@@ -144,6 +161,8 @@ class TrackerBoardView(LoginRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         user = self.request.user
+
+        context["full_name"] = f"{user.first_name} {user.last_name}".strip() or user.username
 
         context["wishlist"] = Application.objects.filter(user=user, status="wishlist")
         context["applied"] = Application.objects.filter(user=user, status="applied")
