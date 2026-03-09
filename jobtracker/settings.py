@@ -30,7 +30,7 @@ print("BASE_DIR:", BASE_DIR)
 SECRET_KEY = 'django-insecure-bnn-%org169y=+2^!q#l0z%%n6(^*k=0+o5a3ow7hk$8swfy2h'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 print("DEBUG:", DEBUG)
 
