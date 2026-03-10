@@ -23,25 +23,23 @@ function getCookie(name) {
 
 document.addEventListener("DOMContentLoaded", function () {
 
-    const modal = document.getElementById("addJobModal");
     const statusField = document.getElementById("id_status");
     const statusWrapper = document.getElementById("statusFieldWrapper");
+
+    function resetModalForAdd() {
+        document.getElementById("jobIdInput").value = "";
+        document.getElementById("modalTitle").innerText = "New Application";
+        document.getElementById("modalSubmitText").innerText = "Save Application";
+        document.getElementById("jobForm").reset();
+    }
 
     // When clicking column footer
     document.querySelectorAll(".board-footer").forEach(function (el) {
         el.addEventListener("click", function () {
+            resetModalForAdd();
 
             const status = this.dataset.status;
-
-            // console.log("Clicked column status:", status);
-            // console.log("Status field element:", statusField);
-
             if (statusField && status) {
-
-                // Reset selection first
-                // statusField.selectedIndex = 0;
-
-                // Find matching option safely
                 for (let i = 0; i < statusField.options.length; i++) {
                     if (statusField.options[i].value === status) {
                         statusField.selectedIndex = i;
@@ -50,20 +48,18 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
             }
 
-            // Hide status field
+            // Hide status field (column footer pre-selects it)
             statusWrapper.style.display = "none";
         });
     });
 
-
-
-     // When clicking main Add Job button
+    // When clicking main Add Application button
     const mainAddBtn = document.querySelector('[data-bs-target="#addJobModal"]:not(.board-footer)');
-
     if (mainAddBtn) {
         mainAddBtn.addEventListener("click", function () {
+            resetModalForAdd();
             statusWrapper.style.display = "block";
-            statusField.selectedIndex = 0; // reset
+            statusField.selectedIndex = 0;
         });
     }
 });
@@ -298,11 +294,13 @@ function openEditModal(jobId) {
             const modalEl = document.getElementById('addJobModal');
             const modal = new bootstrap.Modal(modalEl);
 
-            document.getElementById('modalTitle').innerText = "Update Job";
+            document.getElementById('modalTitle').innerText = "Update Application";
 
             document.getElementById('jobIdInput').value = data.id;
 
-            document.querySelector('[name="company"]').value = data.company;
+            document.querySelector('[name="company_name"]').value = data.company_name;
+            document.querySelector('[name="company_location"]').value = data.company_location;
+            document.querySelector('[name="company_website"]').value = data.company_website;
             document.querySelector('[name="job_title"]').value = data.job_title;
             document.querySelector('[name="salary_range"]').value = data.salary_range;
             document.querySelector('[name="status"]').value = data.status;

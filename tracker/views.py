@@ -120,12 +120,14 @@ def get_job(request, job_id):
 
     data = {
         "id": job.id,
-        "company": job.company.id,
+        "company_name": job.company.name,
+        "company_location": job.company.location or "",
+        "company_website": job.company.website or "",
         "job_title": job.job_title,
-        "salary_range": job.salary_range,
+        "salary_range": job.salary_range or "",
         "status": job.status,
         "date_applied": job.date_applied.strftime("%Y-%m-%d") if job.date_applied else "",
-        "notes": job.notes,
+        "notes": job.notes or "",
     }
 
     return JsonResponse(data)
