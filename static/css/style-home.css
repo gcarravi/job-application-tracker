@@ -279,6 +279,13 @@ body {
     justify-content: space-between;
 }
 
+.welcome-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #111827;
+    margin-bottom: 0.25rem;
+}
+
 .welcome-text {
     font-size: 0.875rem;
     color: #6b7280;
@@ -411,6 +418,8 @@ body {
     font-weight: 800;
     font-size: 0.95rem;
     flex-shrink: 0;
+    background-color: #f0fdfa;
+    color: var(--teal);
 }
 
 .app-info {
@@ -441,7 +450,16 @@ body {
     font-weight: 500;
     padding: 0.25rem 0.625rem;
     border-radius: 9999px;
+    white-space: nowrap;
 }
+
+.status-badge.wishlist     { background-color: #e8f1fe; color: #1d7af3; }
+.status-badge.applied      { background-color: #f0ebff; color: #6f42c1; }
+.status-badge.interviewing { background-color: #e8f5ee; color: #198754; }
+.status-badge.offer        { background-color: #e8f3ed; color: #157347; }
+.status-badge.rejected     { background-color: #fde8eb; color: #dc3545; }
+.status-badge.ghosted      { background-color: #ebebec; color: #6c757d; }
+.status-badge.follow_up    { background-color: #fff0e0; color: #fd7e14; }
 
 .interview-item {
     padding: 1rem;

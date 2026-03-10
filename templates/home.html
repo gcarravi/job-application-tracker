@@ -99,56 +99,22 @@
                     </a>
                 </div>
                 <div>
+                    {% for app in recent_applications %}
                     <div class="app-item">
-                        <div class="app-logo" style="background-color: #f0f9ff; color: #0ea5e9;">G</div>
+                        <div class="app-logo">{{ app.company.name|first|upper }}</div>
                         <div class="app-info">
-                            <div class="app-title">UX Designer</div>
+                            <div class="app-title">{{ app.job_title }}</div>
                             <div class="app-company">
-                                Google · <i class="fas fa-map-marker-alt" style="font-size: 0.625rem;"></i> Mountain View, CA
+                                {{ app.company.name }}{% if app.company.location %} · <i class="fas fa-map-marker-alt" style="font-size: 0.625rem;"></i> {{ app.company.location }}{% endif %}
                             </div>
                         </div>
-                        <span class="status-badge" style="background-color: #fdf4ff; color: #a855f7;">Interview</span>
+                        <span class="status-badge {{ app.status }}">{{ app.get_status_display }}</span>
                     </div>
-                    <div class="app-item">
-                        <div class="app-logo" style="background-color: #fdf4ff; color: #a855f7;">S</div>
-                        <div class="app-info">
-                            <div class="app-title">Product Manager</div>
-                            <div class="app-company">
-                                Spotify · <i class="fas fa-map-marker-alt" style="font-size: 0.625rem;"></i> Remote
-                            </div>
-                        </div>
-                        <span class="status-badge" style="background-color: #eff6ff; color: #2563eb;">Applied</span>
+                    {% empty %}
+                    <div style="font-size: 0.875rem; color: #9ca3af; text-align: center; padding: 1.5rem 0;">
+                        No applications yet
                     </div>
-                    <div class="app-item">
-                        <div class="app-logo" style="background-color: #fff7ed; color: #f97316;">A</div>
-                        <div class="app-info">
-                            <div class="app-title">Frontend Engineer</div>
-                            <div class="app-company">
-                                Airbnb · <i class="fas fa-map-marker-alt" style="font-size: 0.625rem;"></i> San Francisco, CA
-                            </div>
-                        </div>
-                        <span class="status-badge" style="background-color: #fff7ed; color: #f97316;">In Review</span>
-                    </div>
-                    <div class="app-item">
-                        <div class="app-logo" style="background-color: #f0fdf4; color: #22c55e;">N</div>
-                        <div class="app-info">
-                            <div class="app-title">Data Analyst</div>
-                            <div class="app-company">
-                                Netflix · <i class="fas fa-map-marker-alt" style="font-size: 0.625rem;"></i> Los Gatos, CA
-                            </div>
-                        </div>
-                        <span class="status-badge" style="background-color: #f0fdf4; color: #16a34a;">Offer</span>
-                    </div>
-                    <div class="app-item">
-                        <div class="app-logo" style="background-color: #eff6ff; color: #3b82f6;">M</div>
-                        <div class="app-info">
-                            <div class="app-title">Software Engineer II</div>
-                            <div class="app-company">
-                                Meta · <i class="fas fa-map-marker-alt" style="font-size: 0.625rem;"></i> Menlo Park, CA
-                            </div>
-                        </div>
-                        <span class="status-badge" style="background-color: #eff6ff; color: #2563eb;">Applied</span>
-                    </div>
+                    {% endfor %}
                 </div>
                 <div style="padding: 0.875rem 1.25rem; border-top: 1px solid #f1f5f9;">
                     <button class="btn btn-link p-0 view-all-link" data-bs-toggle="modal" data-bs-target="#addAppModal">
@@ -168,39 +134,23 @@
                     </a>
                 </div>
                 <div class="p-3">
-                    <div class="interview-item mb-3">
+                    {% for app in upcoming_interviews %}
+                    <div class="interview-item {% if not forloop.last %}mb-3{% endif %}">
                         <div class="interview-date">
-                            <div class="interview-month">MAR</div>
-                            <div class="interview-day">08</div>
+                            <div class="interview-month">{{ app.date_applied|date:"M"|upper }}</div>
+                            <div class="interview-day">{{ app.date_applied|date:"d" }}</div>
                         </div>
                         <div class="flex-grow-1">
-                            <div style="font-size: 0.875rem; font-weight: 600; color: #111827;">UX Designer</div>
-                            <div style="font-size: 0.75rem; color: #9ca3af; margin-bottom: 0.25rem;">Google</div>
-                            <div style="font-size: 0.75rem; font-weight: 500; color: var(--teal);">10:00 AM · Video Call</div>
+                            <div style="font-size: 0.875rem; font-weight: 600; color: #111827;">{{ app.job_title }}</div>
+                            <div style="font-size: 0.75rem; color: #9ca3af; margin-bottom: 0.25rem;">{{ app.company.name }}</div>
+                            <div style="font-size: 0.75rem; font-weight: 500; color: var(--teal);">Interviewing</div>
                         </div>
                     </div>
-                    <div class="interview-item mb-3">
-                        <div class="interview-date">
-                            <div class="interview-month">MAR</div>
-                            <div class="interview-day">11</div>
-                        </div>
-                        <div class="flex-grow-1">
-                            <div style="font-size: 0.875rem; font-weight: 600; color: #111827;">Frontend Engineer</div>
-                            <div style="font-size: 0.75rem; color: #9ca3af; margin-bottom: 0.25rem;">Airbnb</div>
-                            <div style="font-size: 0.75rem; font-weight: 500; color: var(--teal);">2:30 PM · On-site</div>
-                        </div>
+                    {% empty %}
+                    <div style="font-size: 0.875rem; color: #9ca3af; text-align: center; padding: 1.5rem 0;">
+                        No active interviews
                     </div>
-                    <div class="interview-item">
-                        <div class="interview-date">
-                            <div class="interview-month">MAR</div>
-                            <div class="interview-day">14</div>
-                        </div>
-                        <div class="flex-grow-1">
-                            <div style="font-size: 0.875rem; font-weight: 600; color: #111827;">Data Analyst</div>
-                            <div style="font-size: 0.75rem; color: #9ca3af; margin-bottom: 0.25rem;">Netflix</div>
-                            <div style="font-size: 0.75rem; font-weight: 500; color: var(--teal);">11:00 AM · Video Call</div>
-                        </div>
-                    </div>
+                    {% endfor %}
                 </div>
             </div>
         </div>

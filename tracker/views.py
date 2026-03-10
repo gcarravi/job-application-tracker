@@ -186,6 +186,18 @@ class HomeView(LoginRequiredMixin, TemplateView):
         context["total_interviews"] = Application.objects.filter(user=user, status="interviewing").count()
         context["total_in_review"] = Application.objects.filter(user=user, status="applied").count()
         context["total_offers"] = Application.objects.filter(user=user, status="offer").count()
+        context["upcoming_interviews"] = (
+            Application.objects
+            .filter(user=user, status="interviewing")
+            .select_related("company")
+            .order_by("date_applied")[:5]
+        )
+        context["recent_applications"] = (
+            Application.objects
+            .filter(user=user)
+            .select_related("company")
+            .order_by("-created_at")[:5]
+        )
         context["form"] = ApplicationForm(user=user)
         return context
     
