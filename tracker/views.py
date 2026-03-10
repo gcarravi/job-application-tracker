@@ -1,19 +1,20 @@
-from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views.generic import TemplateView
-from django.views.generic import ListView
-from django.views.generic import CreateView
-from django.views.generic import UpdateView
-from django.views.generic import DeleteView
+from django.contrib.auth.models import User
+from django.views.generic import TemplateView, ListView, CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
 from django.http import JsonResponse
-from django.shortcuts import redirect, get_object_or_404
+from django.shortcuts import redirect, render, get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
+from django.conf import settings
+from django.http import JsonResponse, HttpResponse
 import json
 from datetime import datetime
 from .models import Company, Application
 from .forms import ApplicationForm
+import stripe
+
+stripe.api_key = settings.STRIPE_SECRET_KEY
 
 # Create your views here.
 
@@ -89,6 +90,30 @@ def update_job(request, job_id):
 
 
 
+@csrf_exempt
+def stripe_webhook(request):
+
+    payload = request.body
+    sig_header = request.META['HTTP_STRIPE_SIGNATURE']
+
+    event = stripe.Webhook.construct_event(
+        payload, sig_header, settings.STRIPE_WEBHOOK_SECRET
+    )
+
+    if event['type'] == 'checkout.session.completed':
+
+        session = event['data']['object']
+
+        customer_email = session['customer_details']['email']
+
+        user = User.objects.get(email=customer_email)
+        user.profile.is_premium = True
+        user.profile.save()
+
+    return HttpResponse(status=200)
+
+
+
 
 def get_job(request, job_id):
     job = get_object_or_404(Application, id=job_id)
@@ -105,6 +130,30 @@ def get_job(request, job_id):
 
     return JsonResponse(data)
 
+
+def create_checkout_session(request):
+
+    checkout_session = stripe.checkout.Session.create(
+        payment_method_types=['card'],
+        mode='subscription',
+        line_items=[{
+            'price': 'price_1T99hJC5ICaFnwSEAdv5gQEa',  # your Stripe price id
+            'quantity': 1,
+        }],
+        success_url=request.build_absolute_uri('/payment-success/'),
+        cancel_url=request.build_absolute_uri('/payment-cancel/'),
+    )
+
+    return redirect(checkout_session.url)
+
+
+def payment_success(request):
+    return render(request, "payment_success.html")
+
+
+
+def payment_cancel(request):
+    return render(request, "payment_cancel.html")
 
 
 class DashboardView(LoginRequiredMixin, TemplateView):

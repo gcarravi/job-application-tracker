@@ -29,6 +29,12 @@ print("BASE_DIR:", BASE_DIR)
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-bnn-%org169y=+2^!q#l0z%%n6(^*k=0+o5a3ow7hk$8swfy2h'
 
+#Stripe keys
+STRIPE_PUBLIC_KEY = os.environ.get("STRIPE_PUBLIC_KEY")
+STRIPE_SECRET_KEY = os.environ.get("STRIPE_SECRET_KEY")
+STRIPE_WEBHOOK_SECRET = os.environ.get("STRIPE_WEBHOOK_SECRET")
+
+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
