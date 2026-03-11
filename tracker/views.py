@@ -133,24 +133,23 @@ def get_job(request, job_id):
     return JsonResponse(data)
 
 
-def get_interview(request, app_id):
+def get_interviews(request, app_id):
     application = get_object_or_404(Application, id=app_id, user=request.user)
-    interview = application.interviews.order_by('created_at').first()
-    if interview:
-        data = {
-            "id": interview.id,
-            "interview_type": interview.interview_type,
-            "date": interview.date.strftime("%Y-%m-%dT%H:%M") if interview.date else "",
-            "notes": interview.notes or "",
-            "result": interview.result or "",
-        }
-    else:
-        data = {"id": None, "interview_type": "", "date": "", "notes": "", "result": ""}
-    return JsonResponse(data)
+    interviews = []
+    for iv in application.interviews.order_by('created_at'):
+        interviews.append({
+            "id": iv.id,
+            "interview_type": iv.interview_type,
+            "date": iv.date.strftime("%Y-%m-%dT%H:%M") if iv.date else "",
+            "notes": iv.notes or "",
+            "result": iv.result or "",
+        })
+    return JsonResponse({"interviews": interviews})
 
 
 @csrf_exempt
 def save_interview(request, app_id):
+    """Always creates a new interview round."""
     if request.method == "POST":
         from django.utils import timezone
         from django.utils.dateparse import parse_datetime
@@ -158,29 +157,57 @@ def save_interview(request, app_id):
         data = json.loads(request.body)
 
         date_str = data.get("date")
-        date_val = None
-        if date_str:
-            date_val = parse_datetime(date_str)
-            if date_val and timezone.is_naive(date_val):
-                date_val = timezone.make_aware(date_val)
+        if not date_str:
+            return JsonResponse({"success": False, "error": "Date is required"}, status=400)
 
-        interview = application.interviews.order_by('created_at').first()
+        date_val = parse_datetime(date_str)
+        if date_val and timezone.is_naive(date_val):
+            date_val = timezone.make_aware(date_val)
+        if not date_val:
+            return JsonResponse({"success": False, "error": "Invalid date"}, status=400)
 
-        if interview:
-            interview.interview_type = data.get("interview_type") or interview.interview_type
-            if date_val:
-                interview.date = date_val
-            interview.notes = data.get("notes", "")
-            interview.result = data.get("result", "")
-            interview.save()
-        elif date_val:
-            Interview.objects.create(
-                application=application,
-                interview_type=data.get("interview_type") or "HR",
-                date=date_val,
-                notes=data.get("notes", ""),
-                result=data.get("result", ""),
-            )
+        interview = Interview.objects.create(
+            application=application,
+            interview_type=data.get("interview_type") or "HR",
+            date=date_val,
+            notes=data.get("notes", ""),
+            result=data.get("result", ""),
+        )
+        return JsonResponse({"success": True, "id": interview.id})
+    return JsonResponse({"success": False}, status=400)
+
+
+@csrf_exempt
+def update_interview(request, interview_id):
+    if request.method == "POST":
+        from django.utils import timezone
+        from django.utils.dateparse import parse_datetime
+        interview = get_object_or_404(Interview, id=interview_id, application__user=request.user)
+        data = json.loads(request.body)
+
+        date_str = data.get("date")
+        if not date_str:
+            return JsonResponse({"success": False, "error": "Date is required"}, status=400)
+
+        date_val = parse_datetime(date_str)
+        if date_val and timezone.is_naive(date_val):
+            date_val = timezone.make_aware(date_val)
+        if date_val:
+            interview.date = date_val
+
+        interview.interview_type = data.get("interview_type") or interview.interview_type
+        interview.notes = data.get("notes", "")
+        interview.result = data.get("result", "")
+        interview.save()
+        return JsonResponse({"success": True})
+    return JsonResponse({"success": False}, status=400)
+
+
+@csrf_exempt
+def delete_interview(request, interview_id):
+    if request.method == "POST":
+        interview = get_object_or_404(Interview, id=interview_id, application__user=request.user)
+        interview.delete()
         return JsonResponse({"success": True})
     return JsonResponse({"success": False}, status=400)
 

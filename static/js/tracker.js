@@ -113,31 +113,24 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    // Save Interview button
-    document.getElementById('saveInterviewBtn').addEventListener('click', function () {
+    // Add Interview Round button
+    document.getElementById('addInterviewRoundBtn').addEventListener('click', function () {
         const jobId = document.getElementById('jobIdInput').value;
         if (!jobId) return;
+        if (document.querySelector('.iv-unsaved')) return; // one unsaved at a time
 
-        fetch(`/save-interview/${jobId}/`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': getCookie('csrftoken')
-            },
-            body: JSON.stringify({
-                interview_type: document.getElementById('interviewType').value,
-                date: document.getElementById('interviewDate').value,
-                result: document.getElementById('interviewResult').value,
-                notes: document.getElementById('interviewNotes').value,
-            })
-        })
-        .then(r => r.json())
-        .then(data => {
-            if (data.success) {
-                const modalEl = document.getElementById('addJobModal');
-                bootstrap.Modal.getInstance(modalEl)?.hide();
-            }
-        });
+        const container = document.getElementById('interviewRoundsContainer');
+        const emptyState = container.querySelector('.iv-empty-state');
+        if (emptyState) emptyState.remove();
+
+        const existingCount = container.querySelectorAll('.interview-round-card').length;
+        const card = createRoundCard(
+            { id: null, interview_type: 'HR', date: '', result: '', notes: '' },
+            existingCount + 1,
+            jobId
+        );
+        container.prepend(card);
+        card.querySelector('.iv-date').focus();
     });
 
     // Save Notes button
@@ -398,18 +391,122 @@ function openEditModal(jobId) {
 
             document.getElementById('modalSubmitText').innerText = 'Save Changes';
 
-            // Load interview data
-            fetch(`/get-interview/${data.id}/`)
-                .then(r => r.json())
-                .then(iv => {
-                    if (iv.interview_type) document.getElementById('interviewType').value = iv.interview_type;
-                    document.getElementById('interviewDate').value = iv.date || '';
-                    document.getElementById('interviewResult').value = iv.result || '';
-                    document.getElementById('interviewNotes').value = iv.notes || '';
-                });
+            // Load interview rounds
+            loadInterviews(data.id);
 
             const modalEl = document.getElementById('addJobModal');
             const modal = new bootstrap.Modal(modalEl);
             modal.show();
         });
+}
+
+
+// ===== INTERVIEW ROUNDS =====
+
+function loadInterviews(jobId) {
+    fetch(`/get-interviews/${jobId}/`)
+        .then(r => r.json())
+        .then(data => renderInterviewRounds(data.interviews, jobId));
+}
+
+function renderInterviewRounds(interviews, jobId) {
+    const container = document.getElementById('interviewRoundsContainer');
+    container.innerHTML = '';
+
+    if (interviews.length === 0) {
+        container.innerHTML = '<p class="iv-empty-state">No interview rounds yet. Click "Add Interview Round" to get started.</p>';
+        return;
+    }
+
+    // interviews are oldest-first; display newest-first, Round 1 = oldest
+    const total = interviews.length;
+    interviews.slice().reverse().forEach((iv, idx) => {
+        const roundNum = total - idx;
+        container.appendChild(createRoundCard(iv, roundNum, jobId));
+    });
+}
+
+function createRoundCard(iv, roundNum, jobId) {
+    const isNew = !iv.id;
+    const card = document.createElement('div');
+    card.className = 'interview-round-card' + (isNew ? ' iv-unsaved' : '');
+
+    card.innerHTML = `
+        <div class="interview-round-label">Round ${roundNum}</div>
+        <div class="row g-3 mb-3">
+            <div class="col-md-6">
+                <label class="modal-label">Interview Type</label>
+                <select class="form-control iv-type">
+                    <option value="HR"${iv.interview_type === 'HR' ? ' selected' : ''}>HR</option>
+                    <option value="Technical"${iv.interview_type === 'Technical' ? ' selected' : ''}>Technical</option>
+                    <option value="Final"${iv.interview_type === 'Final' ? ' selected' : ''}>Final</option>
+                </select>
+            </div>
+            <div class="col-md-6">
+                <label class="modal-label">Date &amp; Time</label>
+                <input type="datetime-local" class="form-control iv-date" value="${iv.date || ''}">
+            </div>
+        </div>
+        <div class="mb-3">
+            <label class="modal-label">Result <span class="modal-optional">(optional)</span></label>
+            <input type="text" class="form-control iv-result" value="${iv.result || ''}" placeholder="e.g. Passed, Pending...">
+        </div>
+        <div class="mb-3">
+            <label class="modal-label">Notes <span class="modal-optional">(optional)</span></label>
+            <textarea class="form-control iv-notes" rows="3" placeholder="Questions asked, key points, follow-ups...">${iv.notes || ''}</textarea>
+        </div>
+        <div class="d-flex justify-content-end gap-2">
+            <button type="button" class="btn-modal-cancel delete-round-btn">
+                <i class="fas fa-trash-alt me-1"></i> Delete
+            </button>
+            <button type="button" class="btn-teal save-round-btn">
+                <i class="fas fa-save me-1"></i> Save
+            </button>
+        </div>
+    `;
+
+    // Save
+    card.querySelector('.save-round-btn').addEventListener('click', function () {
+        const dateVal = card.querySelector('.iv-date').value;
+        if (!dateVal) {
+            card.querySelector('.iv-date').style.borderColor = '#dc3545';
+            card.querySelector('.iv-date').focus();
+            return;
+        }
+        card.querySelector('.iv-date').style.borderColor = '';
+
+        const url = isNew ? `/save-interview/${jobId}/` : `/update-interview/${iv.id}/`;
+        fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken') },
+            body: JSON.stringify({
+                interview_type: card.querySelector('.iv-type').value,
+                date: dateVal,
+                result: card.querySelector('.iv-result').value,
+                notes: card.querySelector('.iv-notes').value,
+            })
+        })
+        .then(r => r.json())
+        .then(data => { if (data.success) loadInterviews(jobId); });
+    });
+
+    // Delete
+    card.querySelector('.delete-round-btn').addEventListener('click', function () {
+        if (isNew) {
+            card.remove();
+            const container = document.getElementById('interviewRoundsContainer');
+            if (!container.querySelector('.interview-round-card')) {
+                container.innerHTML = '<p class="iv-empty-state">No interview rounds yet. Click "Add Interview Round" to get started.</p>';
+            }
+            return;
+        }
+        fetch(`/delete-interview/${iv.id}/`, {
+            method: 'POST',
+            headers: { 'X-CSRFToken': getCookie('csrftoken') }
+        })
+        .then(r => r.json())
+        .then(data => { if (data.success) loadInterviews(jobId); });
+    });
+
+    return card;
 }

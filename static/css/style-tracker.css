@@ -414,6 +414,51 @@
     color: #111827;
 }
 
+/* ===== INTERVIEW ROUND CARDS ===== */
+.interview-round-card {
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.75rem;
+    padding: 1.25rem;
+    margin-bottom: 1rem;
+}
+
+.interview-round-card:last-child {
+    margin-bottom: 0;
+}
+
+.interview-round-card.iv-unsaved {
+    border-color: var(--teal);
+    background: #f0fdfa;
+}
+
+.interview-round-label {
+    font-size: 0.6875rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--teal);
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.interview-round-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: #d1fae5;
+}
+
+.iv-empty-state {
+    font-size: 0.875rem;
+    color: #9ca3af;
+    text-align: center;
+    padding: 2rem 0;
+    margin: 0;
+}
+
 .modal-optional {
     font-weight: 400;
     text-transform: none;

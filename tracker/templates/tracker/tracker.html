@@ -154,34 +154,13 @@
 
                 <!-- TAB: INTERVIEW DETAILS -->
                 <div id="tab-interview" class="modal-tab-panel" style="display:none;">
-                    <div class="modal-body modal-app-body">
-                        <div class="row g-3 mb-3">
-                            <div class="col-md-6">
-                                <label class="modal-label">Interview Type</label>
-                                <select id="interviewType" class="form-control">
-                                    <option value="HR">HR</option>
-                                    <option value="Technical">Technical</option>
-                                    <option value="Final">Final</option>
-                                </select>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="modal-label">Date & Time</label>
-                                <input type="datetime-local" id="interviewDate" class="form-control">
-                            </div>
-                        </div>
-                        <div class="mb-3">
-                            <label class="modal-label">Result <span class="modal-optional">(optional)</span></label>
-                            <input type="text" id="interviewResult" class="form-control" placeholder="e.g. Passed, Pending...">
-                        </div>
-                        <div class="mb-0">
-                            <label class="modal-label">Interview Notes <span class="modal-optional">(optional)</span></label>
-                            <textarea id="interviewNotes" class="form-control" rows="5" placeholder="Questions asked, key points, follow-ups..."></textarea>
-                        </div>
+                    <div id="interviewRoundsContainer" class="modal-app-body" style="overflow-y:auto; max-height:420px;">
+                        <!-- Interview rounds rendered by JS -->
                     </div>
-                    <div class="modal-footer modal-app-footer">
+                    <div class="modal-footer modal-app-footer d-flex justify-content-between">
                         <button type="button" class="btn-modal-cancel" data-bs-dismiss="modal">Cancel</button>
-                        <button type="button" class="btn-teal" id="saveInterviewBtn">
-                            <i class="fas fa-save me-1"></i> Save Interview
+                        <button type="button" class="btn-teal" id="addInterviewRoundBtn">
+                            <i class="fas fa-plus me-1"></i> Add Interview Round
                         </button>
                     </div>
                 </div>
