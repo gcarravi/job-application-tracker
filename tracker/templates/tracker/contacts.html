@@ -5,6 +5,16 @@
 
 {% block nav_contacts %}active{% endblock %}
 
+{% block extra_css %}
+<style>
+@media (max-width: 767px) {
+    .contacts-page-wrap { padding: 1rem 0.75rem 1.5rem; }
+    .contacts-table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    .ct-col-phone, .ct-col-linkedin, .ct-col-notes { display: none; }
+}
+</style>
+{% endblock %}
+
 {% block topbar_center %}
     <span class="topbar-title">Contacts</span>
 {% endblock %}
@@ -15,7 +25,7 @@
 
 {% block content %}
 
-<div style="padding: 1.5rem 1.5rem 2rem;">
+<div class="contacts-page-wrap" style="padding: 1.5rem 1.5rem 2rem;">
 
     <!-- Page header -->
     <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;margin-bottom:1.5rem;flex-wrap:wrap;">
@@ -50,16 +60,16 @@
     {% else %}
 
     <!-- Table -->
-    <div style="background:white;border:1px solid #e5e7eb;border-radius:0.875rem;overflow:hidden;">
-        <table style="width:100%;border-collapse:collapse;">
+    <div class="contacts-table-scroll" style="background:white;border:1px solid #e5e7eb;border-radius:0.875rem;overflow:hidden;">
+        <table style="width:100%;min-width:520px;border-collapse:collapse;">
             <thead>
                 <tr style="border-bottom:1px solid #f1f5f9;">
                     <th style="padding:0.75rem 1.25rem;text-align:left;font-size:0.6875rem;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:#9ca3af;">Name</th>
                     <th style="padding:0.75rem 1rem;text-align:left;font-size:0.6875rem;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:#9ca3af;">Position</th>
                     <th style="padding:0.75rem 1rem;text-align:left;font-size:0.6875rem;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:#9ca3af;">Email</th>
-                    <th style="padding:0.75rem 1rem;text-align:left;font-size:0.6875rem;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:#9ca3af;">Phone</th>
-                    <th style="padding:0.75rem 1rem;text-align:left;font-size:0.6875rem;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:#9ca3af;">LinkedIn</th>
-                    <th style="padding:0.75rem 1rem;text-align:left;font-size:0.6875rem;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:#9ca3af;">Notes</th>
+                    <th class="ct-col-phone" style="padding:0.75rem 1rem;text-align:left;font-size:0.6875rem;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:#9ca3af;">Phone</th>
+                    <th class="ct-col-linkedin" style="padding:0.75rem 1rem;text-align:left;font-size:0.6875rem;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:#9ca3af;">LinkedIn</th>
+                    <th class="ct-col-notes" style="padding:0.75rem 1rem;text-align:left;font-size:0.6875rem;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:#9ca3af;">Notes</th>
                     <th style="padding:0.75rem 1rem;width:3.5rem;"></th>
                 </tr>
             </thead>
@@ -98,7 +108,7 @@
                     </td>
 
                     <!-- Phone -->
-                    <td style="padding:0.875rem 1rem;">
+                    <td class="ct-col-phone" style="padding:0.875rem 1rem;">
                         {% if contact.phone %}
                             <span style="font-size:0.875rem;color:#374151;">{{ contact.phone }}</span>
                         {% else %}
@@ -107,7 +117,7 @@
                     </td>
 
                     <!-- LinkedIn -->
-                    <td style="padding:0.875rem 1rem;">
+                    <td class="ct-col-linkedin" style="padding:0.875rem 1rem;">
                         {% if contact.linkedin_url %}
                             <a href="{{ contact.linkedin_url }}" target="_blank" rel="noopener"
                                style="font-size:0.875rem;color:var(--teal);text-decoration:none;display:flex;align-items:center;gap:0.375rem;">
@@ -120,7 +130,7 @@
                     </td>
 
                     <!-- Notes -->
-                    <td style="padding:0.875rem 1rem;max-width:200px;">
+                    <td class="ct-col-notes" style="padding:0.875rem 1rem;max-width:200px;">
                         {% if contact.notes %}
                             <span style="font-size:0.8125rem;color:#6b7280;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ contact.notes|truncatechars:40 }}</span>
                         {% else %}

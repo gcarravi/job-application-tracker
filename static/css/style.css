@@ -183,6 +183,11 @@ body {
     font-size: 1.2rem;
     font-weight: 600;
     color: #111827;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 0;
+    flex-shrink: 1;
 }
 
 .search-box {
@@ -689,5 +694,13 @@ textarea.modal-input {
 
     .welcome-date {
         display: none;
+    }
+
+    .topbar-title {
+        font-size: 1rem;
+    }
+
+    .content-area {
+        padding: 0.75rem;
     }
 }
