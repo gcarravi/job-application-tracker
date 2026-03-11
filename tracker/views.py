@@ -1,4 +1,5 @@
 from django.contrib.auth.decorators import login_required
+from django.db.models import Subquery, OuterRef
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
 from django.views.generic import TemplateView, ListView, CreateView, UpdateView, DeleteView
@@ -266,9 +267,23 @@ class HomeView(LoginRequiredMixin, TemplateView):
         context["total_in_review"] = Application.objects.filter(user=user, status="applied").count()
         context["total_offers"] = Application.objects.filter(user=user, status="offer").count()
         from django.utils import timezone
+        # For each application, find the ID of its earliest future interview
+        next_iv_subquery = (
+            Interview.objects
+            .filter(application=OuterRef('pk'), date__gte=timezone.now())
+            .order_by('date')
+            .values('id')[:1]
+        )
+        next_iv_ids = (
+            Application.objects
+            .filter(user=user)
+            .annotate(next_iv_id=Subquery(next_iv_subquery))
+            .filter(next_iv_id__isnull=False)
+            .values_list('next_iv_id', flat=True)
+        )
         context["upcoming_interviews"] = (
             Interview.objects
-            .filter(application__user=user, date__gte=timezone.now())
+            .filter(id__in=next_iv_ids)
             .select_related("application", "application__company")
             .order_by("date")[:5]
         )
