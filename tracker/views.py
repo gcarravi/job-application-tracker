@@ -337,6 +337,7 @@ class HomeView(LoginRequiredMixin, TemplateView):
         context["greeting"] = greeting
         context["display_name"] = user.first_name or user.username
         context["full_name"] = f"{user.first_name} {user.last_name}".strip() or user.username
+        context["user_initials"] = (user.first_name[:1] + user.last_name[:1]).upper() or user.username[:2].upper()
         context["total_applications"] = Application.objects.filter(user=user).count()
         context["total_interviews"] = Application.objects.filter(user=user, status="interviewing").count()
         context["total_in_review"] = Application.objects.filter(user=user, status="applied").count()
@@ -396,6 +397,7 @@ class TrackerBoardView(LoginRequiredMixin, TemplateView):
         user = self.request.user
 
         context["full_name"] = f"{user.first_name} {user.last_name}".strip() or user.username
+        context["user_initials"] = (user.first_name[:1] + user.last_name[:1]).upper() or user.username[:2].upper()
 
         context["wishlist"] = Application.objects.filter(user=user, status="wishlist")
         context["applied"] = Application.objects.filter(user=user, status="applied")
@@ -471,11 +473,12 @@ class InterviewsView(LoginRequiredMixin, TemplateView):
         context = super().get_context_data(**kwargs)
         user = self.request.user
         context["full_name"] = f"{user.first_name} {user.last_name}".strip() or user.username
+        context["user_initials"] = (user.first_name[:1] + user.last_name[:1]).upper() or user.username[:2].upper()
         context["applications"] = (
             Application.objects
             .filter(user=user, status="interviewing")
             .select_related("company")
-            .prefetch_related("interviews")
+            .prefetch_related("interviews", "interviews__interviewers")
             .order_by("-created_at")
         )
         context["total_rounds"] = Interview.objects.filter(
@@ -491,5 +494,6 @@ class ContactsView(LoginRequiredMixin, TemplateView):
         context = super().get_context_data(**kwargs)
         user = self.request.user
         context["full_name"] = f"{user.first_name} {user.last_name}".strip() or user.username
+        context["user_initials"] = (user.first_name[:1] + user.last_name[:1]).upper() or user.username[:2].upper()
         context["contacts"] = Contact.objects.filter(user=user).order_by('first_name', 'last_name')
         return context
