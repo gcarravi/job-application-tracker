@@ -386,4 +386,24 @@ class CompanyDeleteView(LoginRequiredMixin, DeleteView):
     success_url = reverse_lazy("company_list")
 
     def get_queryset(self):
-        return Company.objects.filter(user=self.request.user)    
+        return Company.objects.filter(user=self.request.user)
+
+
+class InterviewsView(LoginRequiredMixin, TemplateView):
+    template_name = "tracker/interviews.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        user = self.request.user
+        context["full_name"] = f"{user.first_name} {user.last_name}".strip() or user.username
+        context["applications"] = (
+            Application.objects
+            .filter(user=user, status="interviewing")
+            .select_related("company")
+            .prefetch_related("interviews")
+            .order_by("-created_at")
+        )
+        context["total_rounds"] = Interview.objects.filter(
+            application__user=user, application__status="interviewing"
+        ).count()
+        return context

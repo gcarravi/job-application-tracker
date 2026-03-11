@@ -66,8 +66,10 @@ class Application(models.Model):
 class Interview(models.Model):
 
     INTERVIEW_TYPES = [
-        ('HR', 'HR'),
-        ('Technical', 'Technical'),
+        ('Human Resources', 'Human Resources'),
+        ('Design Interview', 'Design Interview'),
+        ('Technical Interview', 'Technical Interview'),
+        ('Technical Hands On', 'Technical Hands On'),
         ('Final', 'Final'),
     ]
 

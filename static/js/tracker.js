@@ -437,8 +437,10 @@ function createRoundCard(iv, roundNum, jobId) {
             <div class="col-md-6">
                 <label class="modal-label">Interview Type <span class="iv-required">*</span></label>
                 <select class="form-control iv-type" required>
-                    <option value="HR"${iv.interview_type === 'HR' ? ' selected' : ''}>HR</option>
-                    <option value="Technical"${iv.interview_type === 'Technical' ? ' selected' : ''}>Technical</option>
+                    <option value="Human Resources"${iv.interview_type === 'Human Resources' ? ' selected' : ''}>Human Resources</option>
+                    <option value="Design Interview"${iv.interview_type === 'Design Interview' ? ' selected' : ''}>Design Interview</option>
+                    <option value="Technical Interview"${iv.interview_type === 'Technical Interview' ? ' selected' : ''}>Technical Interview</option>
+                    <option value="Technical Hands On"${iv.interview_type === 'Technical Hands On' ? ' selected' : ''}>Technical Hands On</option>
                     <option value="Final"${iv.interview_type === 'Final' ? ' selected' : ''}>Final</option>
                 </select>
             </div>

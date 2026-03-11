@@ -2,7 +2,7 @@ from django.urls import path
 from . import views
 # from .views import DashboardView, HomeView
 from .views import DashboardView, LandingView, HomeView
-from .views import TrackerBoardView
+from .views import TrackerBoardView, InterviewsView
 from .views import (
     CompanyListView,
     CompanyCreateView,
@@ -15,6 +15,7 @@ urlpatterns = [
     path('home/', HomeView.as_view(), name='home'),
     path('dashboard/', DashboardView.as_view(), name='dashboard'),
     path("tracker/", TrackerBoardView.as_view(), name="tracker"),
+    path("interviews/", InterviewsView.as_view(), name="interviews"),
     path("companies/", CompanyListView.as_view(), name="company_list"),
     path("companies/add/", CompanyCreateView.as_view(), name="company_add"),
     path("companies/<int:pk>/edit/", CompanyUpdateView.as_view(), name="company_edit"),
