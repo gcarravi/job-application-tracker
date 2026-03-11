@@ -435,16 +435,16 @@ function createRoundCard(iv, roundNum, jobId) {
         <div class="interview-round-label">Round ${roundNum}</div>
         <div class="row g-3 mb-3">
             <div class="col-md-6">
-                <label class="modal-label">Interview Type</label>
-                <select class="form-control iv-type">
+                <label class="modal-label">Interview Type <span class="iv-required">*</span></label>
+                <select class="form-control iv-type" required>
                     <option value="HR"${iv.interview_type === 'HR' ? ' selected' : ''}>HR</option>
                     <option value="Technical"${iv.interview_type === 'Technical' ? ' selected' : ''}>Technical</option>
                     <option value="Final"${iv.interview_type === 'Final' ? ' selected' : ''}>Final</option>
                 </select>
             </div>
             <div class="col-md-6">
-                <label class="modal-label">Date &amp; Time</label>
-                <input type="datetime-local" class="form-control iv-date" value="${iv.date || ''}">
+                <label class="modal-label">Date &amp; Time <span class="iv-required">*</span></label>
+                <input type="datetime-local" class="form-control iv-date" value="${iv.date || ''}" required>
             </div>
         </div>
         <div class="mb-3">
@@ -467,21 +467,34 @@ function createRoundCard(iv, roundNum, jobId) {
 
     // Save
     card.querySelector('.save-round-btn').addEventListener('click', function () {
-        const dateVal = card.querySelector('.iv-date').value;
-        if (!dateVal) {
-            card.querySelector('.iv-date').style.borderColor = '#dc3545';
-            card.querySelector('.iv-date').focus();
-            return;
+        const typeEl = card.querySelector('.iv-type');
+        const dateEl = card.querySelector('.iv-date');
+        let valid = true;
+
+        if (!typeEl.value) {
+            typeEl.style.borderColor = '#dc3545';
+            valid = false;
+        } else {
+            typeEl.style.borderColor = '';
         }
-        card.querySelector('.iv-date').style.borderColor = '';
+
+        if (!dateEl.value) {
+            dateEl.style.borderColor = '#dc3545';
+            if (valid) dateEl.focus();
+            valid = false;
+        } else {
+            dateEl.style.borderColor = '';
+        }
+
+        if (!valid) return;
 
         const url = isNew ? `/save-interview/${jobId}/` : `/update-interview/${iv.id}/`;
         fetch(url, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken') },
             body: JSON.stringify({
-                interview_type: card.querySelector('.iv-type').value,
-                date: dateVal,
+                interview_type: typeEl.value,
+                date: dateEl.value,
                 result: card.querySelector('.iv-result').value,
                 notes: card.querySelector('.iv-notes').value,
             })

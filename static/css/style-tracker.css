@@ -459,6 +459,11 @@
     margin: 0;
 }
 
+.iv-required {
+    color: #dc3545;
+    font-weight: 600;
+}
+
 .modal-optional {
     font-weight: 400;
     text-transform: none;

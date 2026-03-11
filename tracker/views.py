@@ -267,11 +267,11 @@ class HomeView(LoginRequiredMixin, TemplateView):
         context["total_in_review"] = Application.objects.filter(user=user, status="applied").count()
         context["total_offers"] = Application.objects.filter(user=user, status="offer").count()
         from django.utils import timezone
-        # For each application, find the ID of its earliest future interview
+        # For each application, find the ID of its highest round (latest created) future interview
         next_iv_subquery = (
             Interview.objects
             .filter(application=OuterRef('pk'), date__gte=timezone.now())
-            .order_by('date')
+            .order_by('-created_at')
             .values('id')[:1]
         )
         next_iv_ids = (
