@@ -2,7 +2,7 @@ from django.urls import path
 from . import views
 # from .views import DashboardView, HomeView
 from .views import DashboardView, LandingView, HomeView
-from .views import TrackerBoardView, InterviewsView
+from .views import TrackerBoardView, InterviewsView, ContactsView
 from .views import (
     CompanyListView,
     CompanyCreateView,
@@ -28,6 +28,11 @@ urlpatterns = [
     path("save-interview/<int:app_id>/", views.save_interview, name="save_interview"),
     path("update-interview/<int:interview_id>/", views.update_interview, name="update_interview"),
     path("delete-interview/<int:interview_id>/", views.delete_interview, name="delete_interview"),
+    path("contacts/", ContactsView.as_view(), name="contacts"),
+    path("contacts/api/", views.get_contacts_api, name="get_contacts_api"),
+    path("contacts/save/", views.save_contact, name="save_contact"),
+    path("contacts/<int:contact_id>/update/", views.update_contact, name="update_contact"),
+    path("contacts/<int:contact_id>/delete/", views.delete_contact, name="delete_contact"),
     path('subscribe/', views.create_checkout_session, name="subscribe"),
     path("stripe/webhook/", views.stripe_webhook),
     path("payment-success/", views.payment_success, name="payment_success"),

@@ -11,7 +11,7 @@ from django.conf import settings
 from django.http import JsonResponse, HttpResponse
 import json
 from datetime import datetime
-from .models import Company, Application, Interview
+from .models import Company, Application, Interview, Contact
 from .forms import ApplicationForm
 import stripe
 
@@ -85,6 +85,15 @@ def update_job(request, job_id):
             job.job_title = data["job_title"]
         if "salary_range" in data:
             job.salary_range = data["salary_range"]
+        if "recruiter_id" in data:
+            rid = data["recruiter_id"]
+            if rid:
+                try:
+                    job.recruiter = Contact.objects.get(id=rid, user=job.user)
+                except Contact.DoesNotExist:
+                    pass
+            else:
+                job.recruiter = None
         job.save()
         return JsonResponse({"success": True})
     return JsonResponse({"success": False}, status=400)
@@ -129,25 +138,30 @@ def get_job(request, job_id):
         "status": job.status,
         "date_applied": job.date_applied.strftime("%Y-%m-%d") if job.date_applied else "",
         "notes": job.notes or "",
+        "recruiter_id": job.recruiter_id or "",
+        "recruiter_name": job.recruiter.full_name if job.recruiter else "",
     }
 
     return JsonResponse(data)
 
 
+@login_required
 def get_interviews(request, app_id):
     application = get_object_or_404(Application, id=app_id, user=request.user)
     interviews = []
-    for iv in application.interviews.order_by('created_at'):
+    for iv in application.interviews.order_by('created_at').prefetch_related('interviewers'):
         interviews.append({
             "id": iv.id,
             "interview_type": iv.interview_type,
             "date": iv.date.strftime("%Y-%m-%dT%H:%M") if iv.date else "",
             "notes": iv.notes or "",
             "result": iv.result or "",
+            "interviewer_ids": [c.id for c in iv.interviewers.all()],
         })
     return JsonResponse({"interviews": interviews})
 
 
+@login_required
 @csrf_exempt
 def save_interview(request, app_id):
     """Always creates a new interview round."""
@@ -169,15 +183,19 @@ def save_interview(request, app_id):
 
         interview = Interview.objects.create(
             application=application,
-            interview_type=data.get("interview_type") or "HR",
+            interview_type=data.get("interview_type") or "Human Resources",
             date=date_val,
             notes=data.get("notes", ""),
             result=data.get("result", ""),
         )
+        interviewer_ids = data.get("interviewer_ids", [])
+        if interviewer_ids:
+            interview.interviewers.set(Contact.objects.filter(id__in=interviewer_ids, user=request.user))
         return JsonResponse({"success": True, "id": interview.id})
     return JsonResponse({"success": False}, status=400)
 
 
+@login_required
 @csrf_exempt
 def update_interview(request, interview_id):
     if request.method == "POST":
@@ -187,28 +205,85 @@ def update_interview(request, interview_id):
         data = json.loads(request.body)
 
         date_str = data.get("date")
-        if not date_str:
-            return JsonResponse({"success": False, "error": "Date is required"}, status=400)
-
-        date_val = parse_datetime(date_str)
-        if date_val and timezone.is_naive(date_val):
-            date_val = timezone.make_aware(date_val)
-        if date_val:
-            interview.date = date_val
+        if date_str:
+            date_val = parse_datetime(date_str)
+            if date_val and timezone.is_naive(date_val):
+                date_val = timezone.make_aware(date_val)
+            if date_val:
+                interview.date = date_val
 
         interview.interview_type = data.get("interview_type") or interview.interview_type
         interview.notes = data.get("notes", "")
         interview.result = data.get("result", "")
         interview.save()
+        if "interviewer_ids" in data:
+            interview.interviewers.set(Contact.objects.filter(id__in=data["interviewer_ids"], user=request.user))
         return JsonResponse({"success": True})
     return JsonResponse({"success": False}, status=400)
 
 
+@login_required
 @csrf_exempt
 def delete_interview(request, interview_id):
     if request.method == "POST":
         interview = get_object_or_404(Interview, id=interview_id, application__user=request.user)
         interview.delete()
+        return JsonResponse({"success": True})
+    return JsonResponse({"success": False}, status=400)
+
+
+@login_required
+def get_contacts_api(request):
+    contacts = Contact.objects.filter(user=request.user).order_by('first_name', 'last_name')
+    data = [{"id": c.id, "name": c.full_name, "job_title": c.job_title, "email": c.email} for c in contacts]
+    return JsonResponse({"contacts": data})
+
+
+@login_required
+@csrf_exempt
+def save_contact(request):
+    if request.method == "POST":
+        data = json.loads(request.body)
+        if not data.get("first_name"):
+            return JsonResponse({"success": False, "error": "First name required"}, status=400)
+        contact = Contact.objects.create(
+            user=request.user,
+            first_name=data.get("first_name", ""),
+            last_name=data.get("last_name", ""),
+            email=data.get("email", ""),
+            phone=data.get("phone", ""),
+            job_title=data.get("job_title", ""),
+            linkedin_url=data.get("linkedin_url") or None,
+            notes=data.get("notes", ""),
+        )
+        return JsonResponse({"success": True, "id": contact.id, "name": contact.full_name, "job_title": contact.job_title, "email": contact.email, "phone": contact.phone})
+    return JsonResponse({"success": False}, status=400)
+
+
+@login_required
+@csrf_exempt
+def update_contact(request, contact_id):
+    if request.method == "POST":
+        contact = get_object_or_404(Contact, id=contact_id, user=request.user)
+        data = json.loads(request.body)
+        contact.first_name = data.get("first_name", contact.first_name)
+        contact.last_name = data.get("last_name", contact.last_name)
+        contact.email = data.get("email", contact.email)
+        contact.phone = data.get("phone", contact.phone)
+        contact.job_title = data.get("job_title", contact.job_title)
+        contact.linkedin_url = data.get("linkedin_url") or None
+        contact.notes = data.get("notes", contact.notes or "")
+        contact.save()
+        return JsonResponse({"success": True, "name": contact.full_name, "job_title": contact.job_title, "email": contact.email, "phone": contact.phone})
+    return JsonResponse({"success": False}, status=400)
+
+
+@login_required
+@csrf_exempt
+def delete_contact(request, contact_id):
+    if request.method == "POST":
+        contact = get_object_or_404(Contact, id=contact_id, user=request.user)
+        contact.delete()
         return JsonResponse({"success": True})
     return JsonResponse({"success": False}, status=400)
 
@@ -406,4 +481,15 @@ class InterviewsView(LoginRequiredMixin, TemplateView):
         context["total_rounds"] = Interview.objects.filter(
             application__user=user, application__status="interviewing"
         ).count()
+        return context
+
+
+class ContactsView(LoginRequiredMixin, TemplateView):
+    template_name = "tracker/contacts.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        user = self.request.user
+        context["full_name"] = f"{user.first_name} {user.last_name}".strip() or user.username
+        context["contacts"] = Contact.objects.filter(user=user).order_by('first_name', 'last_name')
         return context

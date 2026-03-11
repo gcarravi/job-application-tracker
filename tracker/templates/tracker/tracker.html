@@ -138,6 +138,12 @@
                                 <label class="modal-label">Date Applied</label>
                                 {{ form.date_applied }}
                             </div>
+                            <div class="mb-3" id="recruiterFieldWrapper">
+                                <label class="modal-label">Recruiter / Headhunter <span class="modal-optional">(optional)</span></label>
+                                <select id="recruiterSelect" class="form-control">
+                                    <option value="">— None —</option>
+                                </select>
+                            </div>
                             <div class="mb-0" id="notesInEditTab">
                                 <label class="modal-label">Notes <span class="modal-optional">(optional)</span></label>
                                 {{ form.notes }}

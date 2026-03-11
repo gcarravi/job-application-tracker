@@ -55,10 +55,10 @@
                 <i class="fas fa-search"></i>
                 <span>Job Search</span>
             </button>
-            <button class="nav-item {% block nav_contacts %}{% endblock %}">
+            <a href="{% url 'contacts' %}" class="nav-item {% block nav_contacts %}{% endblock %}">
                 <i class="fas fa-users"></i>
                 <span>Contacts</span>
-            </button>
+            </a>
 
             <div class="nav-divider"></div>
             <div class="nav-section-title">Account</div>

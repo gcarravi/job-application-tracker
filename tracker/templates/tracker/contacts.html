@@ -1,0 +1,252 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block page_title %}Contacts - Trackwise{% endblock %}
+
+{% block nav_contacts %}active{% endblock %}
+
+{% block topbar_center %}
+    <span class="topbar-board-title">Contacts</span>
+{% endblock %}
+
+{% block topbar_actions %}
+    <button class="btn-teal" id="addContactBtn">
+        <i class="fas fa-plus me-1"></i> Add Contact
+    </button>
+    <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100" alt="User" class="user-avatar">
+{% endblock %}
+
+{% block content %}
+
+<div style="padding: 1.5rem 1.5rem 2rem;">
+
+{% if not contacts %}
+    <div class="d-flex flex-column align-items-center justify-content-center" style="padding: 4rem 1rem; text-align: center;">
+        <div style="width:56px;height:56px;border-radius:50%;background:#f0fdfa;display:flex;align-items:center;justify-content:center;margin-bottom:1.25rem;">
+            <i class="fas fa-users" style="color:var(--teal);font-size:1.5rem;"></i>
+        </div>
+        <h3 style="font-size:1.125rem;font-weight:600;color:#111827;margin-bottom:0.5rem;">No contacts yet</h3>
+        <p style="font-size:0.9rem;color:#6b7280;max-width:360px;">
+            Add recruiters, headhunters and interviewers here. You can then link them to your job applications and interview rounds.
+        </p>
+    </div>
+{% else %}
+    <div class="row g-3" id="contactsGrid">
+        {% for contact in contacts %}
+        <div class="col-12 col-md-6 col-lg-4" id="contact-card-{{ contact.id }}">
+            <div style="background:white;border:1px solid #e5e7eb;border-radius:0.875rem;padding:1.25rem;box-shadow:0 1px 3px rgba(0,0,0,0.04);height:100%;">
+                <div style="display:flex;align-items:flex-start;gap:0.875rem;">
+                    <div style="width:2.75rem;height:2.75rem;border-radius:50%;background:#f0fdfa;color:var(--teal);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:1.125rem;flex-shrink:0;">
+                        {{ contact.first_name|first|upper }}
+                    </div>
+                    <div style="flex:1;min-width:0;">
+                        <div style="font-size:0.9375rem;font-weight:600;color:#111827;">{{ contact.first_name }} {{ contact.last_name }}</div>
+                        {% if contact.job_title %}<div style="font-size:0.8125rem;color:#6b7280;margin-top:0.125rem;">{{ contact.job_title }}</div>{% endif %}
+                    </div>
+                    <div style="display:flex;gap:0.375rem;flex-shrink:0;">
+                        <button class="edit-contact-btn" data-id="{{ contact.id }}"
+                            data-first="{{ contact.first_name }}" data-last="{{ contact.last_name }}"
+                            data-email="{{ contact.email }}" data-phone="{{ contact.phone }}"
+                            data-title="{{ contact.job_title }}" data-linkedin="{{ contact.linkedin_url|default:'' }}"
+                            data-notes="{{ contact.notes|default:'' }}"
+                            style="background:none;border:1px solid #e5e7eb;border-radius:0.5rem;padding:0.25rem 0.5rem;cursor:pointer;color:#6b7280;font-size:0.75rem;transition:all 0.15s;">
+                            <i class="fas fa-pen"></i>
+                        </button>
+                        <button class="delete-contact-btn" data-id="{{ contact.id }}"
+                            style="background:none;border:1px solid #e5e7eb;border-radius:0.5rem;padding:0.25rem 0.5rem;cursor:pointer;color:#9ca3af;font-size:0.75rem;transition:all 0.15s;">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                    </div>
+                </div>
+                <div style="margin-top:0.875rem;display:flex;flex-direction:column;gap:0.375rem;">
+                    {% if contact.email %}
+                    <div style="font-size:0.8125rem;color:#374151;display:flex;align-items:center;gap:0.5rem;">
+                        <i class="fas fa-envelope" style="color:#9ca3af;width:0.875rem;text-align:center;"></i>
+                        <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ contact.email }}</span>
+                    </div>
+                    {% endif %}
+                    {% if contact.phone %}
+                    <div style="font-size:0.8125rem;color:#374151;display:flex;align-items:center;gap:0.5rem;">
+                        <i class="fas fa-phone" style="color:#9ca3af;width:0.875rem;text-align:center;"></i>
+                        <span>{{ contact.phone }}</span>
+                    </div>
+                    {% endif %}
+                    {% if contact.linkedin_url %}
+                    <div style="font-size:0.8125rem;display:flex;align-items:center;gap:0.5rem;">
+                        <i class="fab fa-linkedin" style="color:#9ca3af;width:0.875rem;text-align:center;"></i>
+                        <a href="{{ contact.linkedin_url }}" target="_blank" style="color:var(--teal);text-decoration:none;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">LinkedIn</a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+{% endif %}
+
+</div>
+
+<!-- Contact Modal -->
+<div class="modal fade" id="contactModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border-radius:1rem;border:none;overflow:hidden;">
+            <div class="modal-app-header d-flex align-items-center justify-content-between">
+                <div class="d-flex align-items-center gap-2">
+                    <div class="modal-icon"><i class="fas fa-user"></i></div>
+                    <h5 class="modal-app-title mb-0" id="contactModalTitle">New Contact</h5>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" style="padding:1.25rem 1.5rem;">
+                <input type="hidden" id="contactIdInput">
+                <div class="row g-3 mb-3">
+                    <div class="col-md-6">
+                        <label class="modal-label">First Name <span class="iv-required">*</span></label>
+                        <input type="text" id="cFirstName" class="form-control" placeholder="Jane">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="modal-label">Last Name <span class="modal-optional">(optional)</span></label>
+                        <input type="text" id="cLastName" class="form-control" placeholder="Smith">
+                    </div>
+                </div>
+                <div class="row g-3 mb-3">
+                    <div class="col-md-6">
+                        <label class="modal-label">Email <span class="modal-optional">(optional)</span></label>
+                        <input type="email" id="cEmail" class="form-control" placeholder="jane@agency.com">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="modal-label">Phone <span class="modal-optional">(optional)</span></label>
+                        <input type="text" id="cPhone" class="form-control" placeholder="+44 7700 000000">
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="modal-label">Job Title <span class="modal-optional">(optional)</span></label>
+                    <input type="text" id="cJobTitle" class="form-control" placeholder="e.g. Senior Recruiter, Engineering Manager">
+                </div>
+                <div class="mb-3">
+                    <label class="modal-label">LinkedIn URL <span class="modal-optional">(optional)</span></label>
+                    <input type="url" id="cLinkedin" class="form-control" placeholder="https://linkedin.com/in/...">
+                </div>
+                <div class="mb-0">
+                    <label class="modal-label">Notes <span class="modal-optional">(optional)</span></label>
+                    <textarea id="cNotes" class="form-control" rows="3" placeholder="Any notes about this contact..."></textarea>
+                </div>
+            </div>
+            <div class="modal-footer modal-app-footer d-flex justify-content-between">
+                <button type="button" class="btn-modal-cancel" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn-teal" id="saveContactBtn">
+                    <i class="fas fa-save me-1"></i> <span id="saveContactText">Save Contact</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        for (let cookie of document.cookie.split(';')) {
+            cookie = cookie.trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+    const modal = new bootstrap.Modal(document.getElementById('contactModal'));
+
+    function resetForm() {
+        document.getElementById('contactIdInput').value = '';
+        document.getElementById('cFirstName').value = '';
+        document.getElementById('cLastName').value = '';
+        document.getElementById('cEmail').value = '';
+        document.getElementById('cPhone').value = '';
+        document.getElementById('cJobTitle').value = '';
+        document.getElementById('cLinkedin').value = '';
+        document.getElementById('cNotes').value = '';
+        document.getElementById('contactModalTitle').innerText = 'New Contact';
+        document.getElementById('saveContactText').innerText = 'Save Contact';
+    }
+
+    document.getElementById('addContactBtn').addEventListener('click', function () {
+        resetForm();
+        modal.show();
+    });
+
+    document.querySelectorAll('.edit-contact-btn').forEach(btn => {
+        btn.addEventListener('click', function () {
+            document.getElementById('contactIdInput').value = this.dataset.id;
+            document.getElementById('cFirstName').value = this.dataset.first;
+            document.getElementById('cLastName').value = this.dataset.last;
+            document.getElementById('cEmail').value = this.dataset.email;
+            document.getElementById('cPhone').value = this.dataset.phone;
+            document.getElementById('cJobTitle').value = this.dataset.title;
+            document.getElementById('cLinkedin').value = this.dataset.linkedin;
+            document.getElementById('cNotes').value = this.dataset.notes;
+            document.getElementById('contactModalTitle').innerText = 'Edit Contact';
+            document.getElementById('saveContactText').innerText = 'Save Changes';
+            modal.show();
+        });
+    });
+
+    document.getElementById('saveContactBtn').addEventListener('click', function () {
+        const firstName = document.getElementById('cFirstName').value.trim();
+        if (!firstName) {
+            document.getElementById('cFirstName').style.borderColor = '#dc3545';
+            document.getElementById('cFirstName').focus();
+            return;
+        }
+        document.getElementById('cFirstName').style.borderColor = '';
+
+        const contactId = document.getElementById('contactIdInput').value;
+        const url = contactId ? `/contacts/${contactId}/update/` : `/contacts/save/`;
+        const payload = {
+            first_name: firstName,
+            last_name: document.getElementById('cLastName').value.trim(),
+            email: document.getElementById('cEmail').value.trim(),
+            phone: document.getElementById('cPhone').value.trim(),
+            job_title: document.getElementById('cJobTitle').value.trim(),
+            linkedin_url: document.getElementById('cLinkedin').value.trim() || null,
+            notes: document.getElementById('cNotes').value.trim(),
+        };
+
+        fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken') },
+            body: JSON.stringify(payload)
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.success) {
+                modal.hide();
+                window.location.reload();
+            }
+        });
+    });
+
+    document.querySelectorAll('.delete-contact-btn').forEach(btn => {
+        btn.addEventListener('click', function () {
+            if (!confirm('Delete this contact?')) return;
+            fetch(`/contacts/${this.dataset.id}/delete/`, {
+                method: 'POST',
+                headers: { 'X-CSRFToken': getCookie('csrftoken') }
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById(`contact-card-${this.dataset.id}`)?.remove();
+                }
+            });
+        });
+    });
+});
+</script>
+{% endblock %}

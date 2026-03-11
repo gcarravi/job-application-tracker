@@ -30,6 +30,8 @@ const STATUS_LABELS = {
     'follow_up': 'Follow Up',
 };
 
+let userContacts = [];
+
 
 // ===== TAB SWITCHING =====
 function switchTab(tabId) {
@@ -62,6 +64,17 @@ function setEditMode() {
     document.getElementById('modalTabBar').style.display = 'flex';
     document.getElementById('notesInEditTab').style.display = 'none';
     switchTab('tab-edit');
+}
+
+function populateContactSelect(selectEl, selectedId) {
+    selectEl.innerHTML = '<option value="">— None —</option>';
+    userContacts.forEach(c => {
+        const opt = document.createElement('option');
+        opt.value = c.id;
+        opt.textContent = c.name + (c.job_title ? ` — ${c.job_title}` : '');
+        if (String(c.id) === String(selectedId)) opt.selected = true;
+        selectEl.appendChild(opt);
+    });
 }
 
 
@@ -125,7 +138,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         const existingCount = container.querySelectorAll('.interview-round-card').length;
         const card = createRoundCard(
-            { id: null, interview_type: 'HR', date: '', result: '', notes: '' },
+            { id: null, interview_type: 'Human Resources', date: '', result: '', notes: '' },
             existingCount + 1,
             jobId
         );
@@ -232,6 +245,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 notes: document.querySelector('[name="notes"]').value,
                 job_title: document.querySelector('[name="job_title"]').value,
                 salary_range: document.querySelector('[name="salary_range"]').value,
+                recruiter_id: document.getElementById('recruiterSelect').value,
             })
         })
         .then(response => response.json())
@@ -353,51 +367,49 @@ function deleteJob(event, jobId) {
 
 
 function openEditModal(jobId) {
+    Promise.all([
+        fetch(`/get-job/${jobId}/`).then(r => r.json()),
+        fetch(`/contacts/api/`).then(r => r.json()),
+    ])
+    .then(([data, contactsData]) => {
+        userContacts = contactsData.contacts;
 
-    fetch(`/get-job/${jobId}/`)
-        .then(response => response.json())
-        .then(data => {
+        setEditMode();
 
-            // Switch to edit mode UI
-            setEditMode();
+        document.getElementById('detailTitle').innerText = data.job_title;
 
-            // Populate detail header
-            document.getElementById('detailTitle').innerText = data.job_title;
+        let meta = '';
+        if (data.company_name) meta += `<span class="meta-chip"><i class="fas fa-building"></i> ${data.company_name}</span>`;
+        if (data.company_location) meta += `<span class="meta-chip"><i class="fas fa-map-marker-alt"></i> ${data.company_location}</span>`;
+        if (data.salary_range) meta += `<span class="meta-chip"><i class="fas fa-pound-sign"></i> ${data.salary_range}</span>`;
+        if (data.date_applied) meta += `<span class="meta-chip"><i class="fas fa-calendar-alt"></i> ${data.date_applied}</span>`;
+        document.getElementById('detailMeta').innerHTML = meta;
 
-            let meta = '';
-            if (data.company_name) meta += `<span class="meta-chip"><i class="fas fa-building"></i> ${data.company_name}</span>`;
-            if (data.company_location) meta += `<span class="meta-chip"><i class="fas fa-map-marker-alt"></i> ${data.company_location}</span>`;
-            if (data.salary_range) meta += `<span class="meta-chip"><i class="fas fa-pound-sign"></i> ${data.salary_range}</span>`;
-            if (data.date_applied) meta += `<span class="meta-chip"><i class="fas fa-calendar-alt"></i> ${data.date_applied}</span>`;
-            document.getElementById('detailMeta').innerHTML = meta;
+        const pill = document.getElementById('detailStatusPill');
+        pill.className = `modal-status-pill ${data.status}`;
+        pill.innerText = STATUS_LABELS[data.status] || data.status;
 
-            const pill = document.getElementById('detailStatusPill');
-            pill.className = `modal-status-pill ${data.status}`;
-            pill.innerText = STATUS_LABELS[data.status] || data.status;
+        document.getElementById('jobIdInput').value = data.id;
+        document.querySelector('[name="company_name"]').value = data.company_name;
+        document.querySelector('[name="company_location"]').value = data.company_location;
+        document.querySelector('[name="company_website"]').value = data.company_website;
+        document.querySelector('[name="job_title"]').value = data.job_title;
+        document.querySelector('[name="salary_range"]').value = data.salary_range;
+        document.querySelector('[name="status"]').value = data.status;
+        document.querySelector('[name="date_applied"]').value = data.date_applied;
+        document.querySelector('[name="notes"]').value = data.notes;
 
-            // Populate edit form
-            document.getElementById('jobIdInput').value = data.id;
-            document.querySelector('[name="company_name"]').value = data.company_name;
-            document.querySelector('[name="company_location"]').value = data.company_location;
-            document.querySelector('[name="company_website"]').value = data.company_website;
-            document.querySelector('[name="job_title"]').value = data.job_title;
-            document.querySelector('[name="salary_range"]').value = data.salary_range;
-            document.querySelector('[name="status"]').value = data.status;
-            document.querySelector('[name="date_applied"]').value = data.date_applied;
-            document.querySelector('[name="notes"]').value = data.notes;
+        populateContactSelect(document.getElementById('recruiterSelect'), data.recruiter_id);
 
-            // Populate notes tab
-            document.getElementById('appNotesArea').value = data.notes;
+        document.getElementById('appNotesArea').value = data.notes;
+        document.getElementById('modalSubmitText').innerText = 'Save Changes';
 
-            document.getElementById('modalSubmitText').innerText = 'Save Changes';
+        loadInterviews(data.id);
 
-            // Load interview rounds
-            loadInterviews(data.id);
-
-            const modalEl = document.getElementById('addJobModal');
-            const modal = new bootstrap.Modal(modalEl);
-            modal.show();
-        });
+        const modalEl = document.getElementById('addJobModal');
+        const modal = new bootstrap.Modal(modalEl);
+        modal.show();
+    });
 }
 
 
@@ -406,7 +418,10 @@ function openEditModal(jobId) {
 function loadInterviews(jobId) {
     fetch(`/get-interviews/${jobId}/`)
         .then(r => r.json())
-        .then(data => renderInterviewRounds(data.interviews, jobId));
+        .then(data => {
+            console.log('[loadInterviews] response:', JSON.stringify(data.interviews));
+            renderInterviewRounds(data.interviews, jobId);
+        });
 }
 
 function renderInterviewRounds(interviews, jobId) {
@@ -457,6 +472,10 @@ function createRoundCard(iv, roundNum, jobId) {
             <label class="modal-label">Notes <span class="modal-optional">(optional)</span></label>
             <textarea class="form-control iv-notes" rows="3" placeholder="Questions asked, key points, follow-ups...">${iv.notes || ''}</textarea>
         </div>
+        <div class="mb-3 iv-interviewers-section">
+            <label class="modal-label">Interviewer(s) <span class="modal-optional">(optional)</span></label>
+            <div class="iv-interviewers-list"></div>
+        </div>
         <div class="d-flex justify-content-end gap-2">
             <button type="button" class="btn-modal-cancel delete-round-btn">
                 <i class="fas fa-trash-alt me-1"></i> Delete
@@ -466,6 +485,25 @@ function createRoundCard(iv, roundNum, jobId) {
             </button>
         </div>
     `;
+
+    const interviewersList = card.querySelector('.iv-interviewers-list');
+    const selectedIds = (iv.interviewer_ids || []).map(String);
+    console.log(`[createRoundCard] round ${roundNum} iv.interviewer_ids:`, iv.interviewer_ids, '→ selectedIds:', selectedIds);
+    if (userContacts.length === 0) {
+        card.querySelector('.iv-interviewers-section').style.display = 'none';
+    } else {
+        userContacts.forEach(c => {
+            const uid = `iv-cb-${roundNum}-${c.id}`;
+            const isChecked = selectedIds.includes(String(c.id));
+            const wrapper = document.createElement('div');
+            wrapper.className = 'iv-interviewer-cb-row';
+            wrapper.innerHTML = `
+                <input type="checkbox" class="iv-interviewer-cb" id="${uid}" value="${c.id}"${isChecked ? ' checked' : ''}>
+                <label for="${uid}">${c.name}${c.job_title ? ` <span class="iv-cb-title">— ${c.job_title}</span>` : ''}</label>
+            `;
+            interviewersList.appendChild(wrapper);
+        });
+    }
 
     // Save
     card.querySelector('.save-round-btn').addEventListener('click', function () {
@@ -490,6 +528,13 @@ function createRoundCard(iv, roundNum, jobId) {
 
         if (!valid) return;
 
+        const saveBtn = card.querySelector('.save-round-btn');
+        saveBtn.disabled = true;
+        saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Saving…';
+
+        const selectedInterviewerIds = Array.from(card.querySelectorAll('.iv-interviewer-cb:checked')).map(cb => parseInt(cb.value));
+        console.log('[IV Save] sending interviewer_ids:', selectedInterviewerIds);
+
         const url = isNew ? `/save-interview/${jobId}/` : `/update-interview/${iv.id}/`;
         fetch(url, {
             method: 'POST',
@@ -499,10 +544,29 @@ function createRoundCard(iv, roundNum, jobId) {
                 date: dateEl.value,
                 result: card.querySelector('.iv-result').value,
                 notes: card.querySelector('.iv-notes').value,
+                interviewer_ids: selectedInterviewerIds,
             })
         })
         .then(r => r.json())
-        .then(data => { if (data.success) loadInterviews(jobId); });
+        .then(data => {
+            console.log('[IV Save] server response:', data);
+            if (data.success) {
+                // Re-sync the recruiter select to avoid stale display
+                const currentRecruiterId = document.getElementById('recruiterSelect').value;
+                loadInterviews(jobId);
+                // Restore recruiter selection in case DOM re-render affected it
+                document.getElementById('recruiterSelect').value = currentRecruiterId;
+            } else {
+                console.error('Save interview failed:', data.error || 'Unknown error');
+                saveBtn.disabled = false;
+                saveBtn.innerHTML = '<i class="fas fa-exclamation-circle me-1"></i> Save failed — retry';
+            }
+        })
+        .catch(err => {
+            console.error('Save interview error:', err);
+            saveBtn.disabled = false;
+            saveBtn.innerHTML = '<i class="fas fa-exclamation-circle me-1"></i> Save failed — retry';
+        });
     });
 
     // Delete
