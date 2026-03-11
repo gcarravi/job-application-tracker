@@ -59,67 +59,147 @@
     {% endif %}
 
     <div class="modal fade" id="addJobModal" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered modal-lg">
-            <div class="modal-content modal-app">
-                <form method="POST" id="jobForm">
-                    {% csrf_token %}
-                    <input type="hidden" id="jobIdInput">
-                    <div class="modal-header modal-app-header">
-                        <div class="d-flex align-items-center gap-2">
-                            <div class="modal-icon">
-                                <i class="fas fa-briefcase"></i>
-                            </div>
-                            <h5 class="modal-title modal-app-title" id="modalTitle">New Application</h5>
-                        </div>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        <div class="modal-dialog modal-dialog-centered modal-xl">
+            <div class="modal-content modal-detail-content">
+
+                <!-- ADD MODE HEADER -->
+                <div id="addModeHeader" class="modal-header modal-app-header">
+                    <div class="d-flex align-items-center gap-2">
+                        <div class="modal-icon"><i class="fas fa-briefcase"></i></div>
+                        <h5 class="modal-title modal-app-title" id="modalTitle">New Application</h5>
                     </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <!-- EDIT MODE HEADER -->
+                <div id="editModeHeader" class="modal-detail-header" style="display:none;">
+                    <div class="d-flex justify-content-between align-items-start gap-3">
+                        <div class="flex-grow-1" style="min-width:0;">
+                            <h4 class="modal-detail-title" id="detailTitle"></h4>
+                            <div class="modal-detail-meta" id="detailMeta"></div>
+                        </div>
+                        <div class="d-flex align-items-center gap-2 flex-shrink-0">
+                            <span class="modal-status-pill" id="detailStatusPill"></span>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB BAR (edit mode only) -->
+                <div id="modalTabBar" class="modal-tab-bar" style="display:none;">
+                    <button class="modal-tab-btn active" data-tab="tab-edit">
+                        <i class="fas fa-pen me-1"></i> Edit
+                    </button>
+                    <button class="modal-tab-btn" data-tab="tab-interview">
+                        <i class="fas fa-comments me-1"></i> Interview Details
+                    </button>
+                    <button class="modal-tab-btn" data-tab="tab-notes">
+                        <i class="fas fa-sticky-note me-1"></i> Notes
+                    </button>
+                </div>
+
+                <!-- TAB: EDIT (also the Add form) -->
+                <div id="tab-edit" class="modal-tab-panel">
+                    <form method="POST" id="jobForm">
+                        {% csrf_token %}
+                        <input type="hidden" id="jobIdInput">
+                        <div class="modal-body modal-app-body">
+                            <div class="row g-3 mb-3">
+                                <div class="col-md-6">
+                                    <label class="modal-label">Company Name</label>
+                                    {{ form.company_name }}
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="modal-label">Job Title</label>
+                                    {{ form.job_title }}
+                                </div>
+                            </div>
+                            <div class="row g-3 mb-3">
+                                <div class="col-md-6">
+                                    <label class="modal-label">Location <span class="modal-optional">(optional)</span></label>
+                                    {{ form.company_location }}
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="modal-label">Website <span class="modal-optional">(optional)</span></label>
+                                    {{ form.company_website }}
+                                </div>
+                            </div>
+                            <div class="row g-3 mb-3">
+                                <div class="col-md-6" id="statusFieldWrapper">
+                                    <label class="modal-label">Status</label>
+                                    {{ form.status }}
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="modal-label">Salary Range <span class="modal-optional">(optional)</span></label>
+                                    {{ form.salary_range }}
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="modal-label">Date Applied</label>
+                                {{ form.date_applied }}
+                            </div>
+                            <div class="mb-0" id="notesInEditTab">
+                                <label class="modal-label">Notes <span class="modal-optional">(optional)</span></label>
+                                {{ form.notes }}
+                            </div>
+                        </div>
+                        <div class="modal-footer modal-app-footer">
+                            <button type="button" class="btn-modal-cancel" data-bs-dismiss="modal">Cancel</button>
+                            <button type="submit" class="btn-teal">
+                                <i class="fas fa-plus"></i> <span id="modalSubmitText">Save Application</span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- TAB: INTERVIEW DETAILS -->
+                <div id="tab-interview" class="modal-tab-panel" style="display:none;">
                     <div class="modal-body modal-app-body">
                         <div class="row g-3 mb-3">
                             <div class="col-md-6">
-                                <label class="modal-label">Company Name</label>
-                                {{ form.company_name }}
+                                <label class="modal-label">Interview Type</label>
+                                <select id="interviewType" class="form-control">
+                                    <option value="HR">HR</option>
+                                    <option value="Technical">Technical</option>
+                                    <option value="Final">Final</option>
+                                </select>
                             </div>
                             <div class="col-md-6">
-                                <label class="modal-label">Job Title</label>
-                                {{ form.job_title }}
-                            </div>
-                        </div>
-                        <div class="row g-3 mb-3">
-                            <div class="col-md-6">
-                                <label class="modal-label">Location <span style="font-weight: 400; text-transform: none; letter-spacing: 0;">(optional)</span></label>
-                                {{ form.company_location }}
-                            </div>
-                            <div class="col-md-6">
-                                <label class="modal-label">Website <span style="font-weight: 400; text-transform: none; letter-spacing: 0;">(optional)</span></label>
-                                {{ form.company_website }}
-                            </div>
-                        </div>
-                        <div class="row g-3 mb-3">
-                            <div class="col-md-6" id="statusFieldWrapper">
-                                <label class="modal-label">Status</label>
-                                {{ form.status }}
-                            </div>
-                            <div class="col-md-6">
-                                <label class="modal-label">Salary Range <span style="font-weight: 400; text-transform: none; letter-spacing: 0;">(optional)</span></label>
-                                {{ form.salary_range }}
+                                <label class="modal-label">Date & Time</label>
+                                <input type="datetime-local" id="interviewDate" class="form-control">
                             </div>
                         </div>
                         <div class="mb-3">
-                            <label class="modal-label">Date Applied</label>
-                            {{ form.date_applied }}
+                            <label class="modal-label">Result <span class="modal-optional">(optional)</span></label>
+                            <input type="text" id="interviewResult" class="form-control" placeholder="e.g. Passed, Pending...">
                         </div>
                         <div class="mb-0">
-                            <label class="modal-label">Notes <span style="font-weight: 400; text-transform: none; letter-spacing: 0;">(optional)</span></label>
-                            {{ form.notes }}
+                            <label class="modal-label">Interview Notes <span class="modal-optional">(optional)</span></label>
+                            <textarea id="interviewNotes" class="form-control" rows="5" placeholder="Questions asked, key points, follow-ups..."></textarea>
                         </div>
                     </div>
                     <div class="modal-footer modal-app-footer">
                         <button type="button" class="btn-modal-cancel" data-bs-dismiss="modal">Cancel</button>
-                        <button type="submit" class="btn-teal">
-                            <i class="fas fa-plus"></i> <span id="modalSubmitText">Save Application</span>
+                        <button type="button" class="btn-teal" id="saveInterviewBtn">
+                            <i class="fas fa-save me-1"></i> Save Interview
                         </button>
                     </div>
-                </form>
+                </div>
+
+                <!-- TAB: NOTES -->
+                <div id="tab-notes" class="modal-tab-panel" style="display:none;">
+                    <div class="modal-body modal-app-body">
+                        <label class="modal-label">Notes</label>
+                        <textarea id="appNotesArea" class="form-control" rows="10" placeholder="Add any thoughts, follow-ups or reminders..."></textarea>
+                    </div>
+                    <div class="modal-footer modal-app-footer">
+                        <button type="button" class="btn-modal-cancel" data-bs-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn-teal" id="saveNotesBtn">
+                            <i class="fas fa-save me-1"></i> Save Notes
+                        </button>
+                    </div>
+                </div>
+
             </div>
         </div>
     </div>

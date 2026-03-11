@@ -10,7 +10,7 @@ from django.conf import settings
 from django.http import JsonResponse, HttpResponse
 import json
 from datetime import datetime
-from .models import Company, Application
+from .models import Company, Application, Interview
 from .forms import ApplicationForm
 import stripe
 
@@ -77,15 +77,15 @@ def update_job_status(request, job_id):
 def update_job(request, job_id):
     if request.method == "POST":
         job = get_object_or_404(Application, id=job_id)
-
         data = json.loads(request.body)
-
-        job.status = data.get("status")
-        job.notes = data.get("notes")
+        job.status = data.get("status", job.status)
+        job.notes = data.get("notes", job.notes)
+        if "job_title" in data:
+            job.job_title = data["job_title"]
+        if "salary_range" in data:
+            job.salary_range = data["salary_range"]
         job.save()
-
         return JsonResponse({"success": True})
-
     return JsonResponse({"success": False}, status=400)
 
 
@@ -131,6 +131,58 @@ def get_job(request, job_id):
     }
 
     return JsonResponse(data)
+
+
+def get_interview(request, app_id):
+    application = get_object_or_404(Application, id=app_id, user=request.user)
+    interview = application.interviews.order_by('created_at').first()
+    if interview:
+        data = {
+            "id": interview.id,
+            "interview_type": interview.interview_type,
+            "date": interview.date.strftime("%Y-%m-%dT%H:%M") if interview.date else "",
+            "notes": interview.notes or "",
+            "result": interview.result or "",
+        }
+    else:
+        data = {"id": None, "interview_type": "", "date": "", "notes": "", "result": ""}
+    return JsonResponse(data)
+
+
+@csrf_exempt
+def save_interview(request, app_id):
+    if request.method == "POST":
+        from django.utils import timezone
+        from django.utils.dateparse import parse_datetime
+        application = get_object_or_404(Application, id=app_id, user=request.user)
+        data = json.loads(request.body)
+
+        date_str = data.get("date")
+        date_val = None
+        if date_str:
+            date_val = parse_datetime(date_str)
+            if date_val and timezone.is_naive(date_val):
+                date_val = timezone.make_aware(date_val)
+
+        interview = application.interviews.order_by('created_at').first()
+
+        if interview:
+            interview.interview_type = data.get("interview_type") or interview.interview_type
+            if date_val:
+                interview.date = date_val
+            interview.notes = data.get("notes", "")
+            interview.result = data.get("result", "")
+            interview.save()
+        elif date_val:
+            Interview.objects.create(
+                application=application,
+                interview_type=data.get("interview_type") or "HR",
+                date=date_val,
+                notes=data.get("notes", ""),
+                result=data.get("result", ""),
+            )
+        return JsonResponse({"success": True})
+    return JsonResponse({"success": False}, status=400)
 
 
 def create_checkout_session(request):
@@ -186,11 +238,12 @@ class HomeView(LoginRequiredMixin, TemplateView):
         context["total_interviews"] = Application.objects.filter(user=user, status="interviewing").count()
         context["total_in_review"] = Application.objects.filter(user=user, status="applied").count()
         context["total_offers"] = Application.objects.filter(user=user, status="offer").count()
+        from django.utils import timezone
         context["upcoming_interviews"] = (
-            Application.objects
-            .filter(user=user, status="interviewing")
-            .select_related("company")
-            .order_by("date_applied")[:5]
+            Interview.objects
+            .filter(application__user=user, date__gte=timezone.now())
+            .select_related("application", "application__company")
+            .order_by("date")[:5]
         )
         context["recent_applications"] = (
             Application.objects

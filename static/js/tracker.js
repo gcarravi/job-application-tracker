@@ -20,6 +20,50 @@ function getCookie(name) {
     return cookieValue;
 }
 
+const STATUS_LABELS = {
+    'wishlist': 'Wishlist',
+    'applied': 'Applied',
+    'interviewing': 'Interviewing',
+    'offer': 'Offer',
+    'rejected': 'Rejected',
+    'ghosted': 'Ghosted',
+    'follow_up': 'Follow Up',
+};
+
+
+// ===== TAB SWITCHING =====
+function switchTab(tabId) {
+    document.querySelectorAll('.modal-tab-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.tab === tabId);
+    });
+    ['tab-edit', 'tab-interview', 'tab-notes'].forEach(id => {
+        document.getElementById(id).style.display = id === tabId ? '' : 'none';
+    });
+}
+
+
+// ===== MODAL MODE HELPERS =====
+function setAddMode() {
+    document.getElementById('addModeHeader').style.display = '';
+    document.getElementById('editModeHeader').style.display = 'none';
+    document.getElementById('modalTabBar').style.display = 'none';
+    document.getElementById('tab-interview').style.display = 'none';
+    document.getElementById('tab-notes').style.display = 'none';
+    document.getElementById('tab-edit').style.display = '';
+    document.getElementById('notesInEditTab').style.display = '';
+    document.querySelectorAll('.modal-tab-btn').forEach((btn, i) => {
+        btn.classList.toggle('active', i === 0);
+    });
+}
+
+function setEditMode() {
+    document.getElementById('addModeHeader').style.display = 'none';
+    document.getElementById('editModeHeader').style.display = '';
+    document.getElementById('modalTabBar').style.display = 'flex';
+    document.getElementById('notesInEditTab').style.display = 'none';
+    switchTab('tab-edit');
+}
+
 
 document.addEventListener("DOMContentLoaded", function () {
 
@@ -31,7 +75,15 @@ document.addEventListener("DOMContentLoaded", function () {
         document.getElementById("modalTitle").innerText = "New Application";
         document.getElementById("modalSubmitText").innerText = "Save Application";
         document.getElementById("jobForm").reset();
+        setAddMode();
     }
+
+    // Tab button clicks
+    document.querySelectorAll('.modal-tab-btn').forEach(btn => {
+        btn.addEventListener('click', function () {
+            switchTab(this.dataset.tab);
+        });
+    });
 
     // When clicking column footer
     document.querySelectorAll(".board-footer").forEach(function (el) {
@@ -47,8 +99,6 @@ document.addEventListener("DOMContentLoaded", function () {
                     }
                 }
             }
-
-            // Hide status field (column footer pre-selects it)
             statusWrapper.style.display = "none";
         });
     });
@@ -62,6 +112,61 @@ document.addEventListener("DOMContentLoaded", function () {
             statusField.selectedIndex = 0;
         });
     }
+
+    // Save Interview button
+    document.getElementById('saveInterviewBtn').addEventListener('click', function () {
+        const jobId = document.getElementById('jobIdInput').value;
+        if (!jobId) return;
+
+        fetch(`/save-interview/${jobId}/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: JSON.stringify({
+                interview_type: document.getElementById('interviewType').value,
+                date: document.getElementById('interviewDate').value,
+                result: document.getElementById('interviewResult').value,
+                notes: document.getElementById('interviewNotes').value,
+            })
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.success) {
+                const modalEl = document.getElementById('addJobModal');
+                bootstrap.Modal.getInstance(modalEl)?.hide();
+            }
+        });
+    });
+
+    // Save Notes button
+    document.getElementById('saveNotesBtn').addEventListener('click', function () {
+        const jobId = document.getElementById('jobIdInput').value;
+        if (!jobId) return;
+
+        const notes = document.getElementById('appNotesArea').value;
+
+        fetch(`/update-job/${jobId}/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: JSON.stringify({
+                status: document.querySelector('[name="status"]').value,
+                notes: notes,
+            })
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.success) {
+                document.querySelector('[name="notes"]').value = notes;
+                const modalEl = document.getElementById('addJobModal');
+                bootstrap.Modal.getInstance(modalEl)?.hide();
+            }
+        });
+    });
 });
 
 
@@ -72,20 +177,15 @@ document.addEventListener('DOMContentLoaded', function() {
 
     columns.forEach(column => {
         new Sortable(column, {
-            group: 'jobs',          // allow dragging between columns
+            group: 'jobs',
             animation: 150,
             ghostClass: 'dragging',
             onEnd: function(evt) {
                 const jobId = evt.item.dataset.jobId;
                 const newStatus = evt.to.dataset.status;
 
-                // Only send AJAX if the card actually moved
                 if (evt.from !== evt.to) {
-
-                    // Update card's data-status so CSS border colour matches new column
                     evt.item.dataset.status = newStatus;
-
-                    // Update empty states for source and target columns
                     updateEmptyState(evt.to);
                     updateEmptyState(evt.from);
 
@@ -101,7 +201,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     .then(data => {
                         if (!data.success) {
                             console.error('Failed to update status:', data.error);
-                            // Optionally, revert card to original column
                             evt.from.insertBefore(evt.item, evt.from.children[evt.oldIndex]);
                         }
                     })
@@ -113,22 +212,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     });
-
-    // Helper to get CSRF token
-    function getCookie(name) {
-        let cookieValue = null;
-        if (document.cookie && document.cookie !== '') {
-            const cookies = document.cookie.split(';');
-            for (let i = 0; i < cookies.length; i++) {
-                const cookie = cookies[i].trim();
-                if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                    break;
-                }
-            }
-        }
-        return cookieValue;
-    }
 });
 
 
@@ -153,52 +236,47 @@ document.addEventListener("DOMContentLoaded", function () {
             },
             body: JSON.stringify({
                 status: document.querySelector('[name="status"]').value,
-                notes: document.querySelector('[name="notes"]').value
+                notes: document.querySelector('[name="notes"]').value,
+                job_title: document.querySelector('[name="job_title"]').value,
+                salary_range: document.querySelector('[name="salary_range"]').value,
             })
         })
         .then(response => response.json())
         .then(data => {
             if (data.success) {
                 const card = document.querySelector(`.job-card[data-job-id='${jobId}']`);
-                if (!card) return; // safety: card must exist
+                if (!card) return;
 
                 const newStatus = document.querySelector('[name="status"]').value;
-
                 const sourceColumn = card.closest('.board-body');
                 const targetColumn = document.querySelector(`.board-body[data-status='${newStatus}']`);
 
                 if (sourceColumn && targetColumn) {
-                    // Move card
                     targetColumn.appendChild(card);
                     card.dataset.status = newStatus;
-
-                    // Update empty states
                     updateEmptyState(sourceColumn);
                     updateEmptyState(targetColumn);
                 }
 
-                // Close modal
+                // Update card text
+                const newTitle = document.querySelector('[name="job_title"]').value;
+                if (newTitle) {
+                    const titleEl = card.querySelector('.job-title');
+                    if (titleEl) titleEl.innerText = newTitle;
+                }
+
                 const modalEl = document.getElementById('addJobModal');
-                const modalInstance = bootstrap.Modal.getInstance(modalEl);
-                if (modalInstance) modalInstance.hide();
+                bootstrap.Modal.getInstance(modalEl)?.hide();
             }
         });
     });
 });
 
 
-
-
 // JS helper to handle empty states
 function updateEmptyState(columnBody) {
-
-    console.log("Inside updateEmptyState");
-
-    if (!columnBody) return; // safety check
-    // Remove existing empty-state divs
+    if (!columnBody) return;
     columnBody.querySelectorAll('.empty-state').forEach(el => el.remove());
-
-    // If no cards, add empty-state
     if (columnBody.querySelectorAll('.job-card').length === 0) {
         const emptyDiv = document.createElement('div');
         emptyDiv.classList.add('empty-state');
@@ -208,21 +286,22 @@ function updateEmptyState(columnBody) {
 }
 
 
-
-
-// Handles opening and updating the cards on the board.
 document.addEventListener('DOMContentLoaded', function () {
-
-    console.log("** Do I still use this function?? **");
 
     const statusSelect = document.querySelector('[name="status"]');
 
     statusSelect.addEventListener('change', function () {
-
         const jobId = document.getElementById('jobIdInput').value;
-        if (!jobId) return; // Ignore if creating new job
+        if (!jobId) return;
 
         const newStatus = this.value;
+
+        // Update status pill in detail header
+        const pill = document.getElementById('detailStatusPill');
+        if (pill) {
+            pill.className = `modal-status-pill ${newStatus}`;
+            pill.innerText = STATUS_LABELS[newStatus] || newStatus;
+        }
 
         fetch(`/update-job-status/${jobId}/`, {
             method: 'POST',
@@ -234,9 +313,7 @@ document.addEventListener('DOMContentLoaded', function () {
         })
         .then(response => response.json())
         .then(data => {
-
             if (data.success) {
-
                 const card = document.querySelector(`.job-card[data-job-id='${jobId}']`);
                 const sourceColumn = card ? card.closest('.board-body') : null;
                 const targetColumn = document.querySelector(`.board-body[data-status='${newStatus}']`);
@@ -247,19 +324,16 @@ document.addEventListener('DOMContentLoaded', function () {
                     updateEmptyState(sourceColumn);
                     updateEmptyState(targetColumn);
                 }
-
             } else {
                 console.error("Failed to update status");
             }
-
         });
     });
 });
 
 
-
 function deleteJob(event, jobId) {
-    event.stopPropagation(); // prevent opening the edit modal
+    event.stopPropagation();
 
     fetch(`/delete-job/${jobId}/`, {
         method: 'POST',
@@ -291,13 +365,25 @@ function openEditModal(jobId) {
         .then(response => response.json())
         .then(data => {
 
-            const modalEl = document.getElementById('addJobModal');
-            const modal = new bootstrap.Modal(modalEl);
+            // Switch to edit mode UI
+            setEditMode();
 
-            document.getElementById('modalTitle').innerText = "Update Application";
+            // Populate detail header
+            document.getElementById('detailTitle').innerText = data.job_title;
 
+            let meta = '';
+            if (data.company_name) meta += `<span class="meta-chip"><i class="fas fa-building"></i> ${data.company_name}</span>`;
+            if (data.company_location) meta += `<span class="meta-chip"><i class="fas fa-map-marker-alt"></i> ${data.company_location}</span>`;
+            if (data.salary_range) meta += `<span class="meta-chip"><i class="fas fa-pound-sign"></i> ${data.salary_range}</span>`;
+            if (data.date_applied) meta += `<span class="meta-chip"><i class="fas fa-calendar-alt"></i> ${data.date_applied}</span>`;
+            document.getElementById('detailMeta').innerHTML = meta;
+
+            const pill = document.getElementById('detailStatusPill');
+            pill.className = `modal-status-pill ${data.status}`;
+            pill.innerText = STATUS_LABELS[data.status] || data.status;
+
+            // Populate edit form
             document.getElementById('jobIdInput').value = data.id;
-
             document.querySelector('[name="company_name"]').value = data.company_name;
             document.querySelector('[name="company_location"]').value = data.company_location;
             document.querySelector('[name="company_website"]').value = data.company_website;
@@ -307,9 +393,23 @@ function openEditModal(jobId) {
             document.querySelector('[name="date_applied"]').value = data.date_applied;
             document.querySelector('[name="notes"]').value = data.notes;
 
-            // Change button text
-            document.querySelector('#jobForm button[type="submit"]').innerText = "Update";
+            // Populate notes tab
+            document.getElementById('appNotesArea').value = data.notes;
 
+            document.getElementById('modalSubmitText').innerText = 'Save Changes';
+
+            // Load interview data
+            fetch(`/get-interview/${data.id}/`)
+                .then(r => r.json())
+                .then(iv => {
+                    if (iv.interview_type) document.getElementById('interviewType').value = iv.interview_type;
+                    document.getElementById('interviewDate').value = iv.date || '';
+                    document.getElementById('interviewResult').value = iv.result || '';
+                    document.getElementById('interviewNotes').value = iv.notes || '';
+                });
+
+            const modalEl = document.getElementById('addJobModal');
+            const modal = new bootstrap.Modal(modalEl);
             modal.show();
         });
 }

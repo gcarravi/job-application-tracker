@@ -134,16 +134,16 @@
                     </a>
                 </div>
                 <div class="p-3">
-                    {% for app in upcoming_interviews %}
+                    {% for iv in upcoming_interviews %}
                     <div class="interview-item {% if not forloop.last %}mb-3{% endif %}">
                         <div class="interview-date">
-                            <div class="interview-month">{{ app.date_applied|date:"M"|upper }}</div>
-                            <div class="interview-day">{{ app.date_applied|date:"d" }}</div>
+                            <div class="interview-month">{{ iv.date|date:"M"|upper }}</div>
+                            <div class="interview-day">{{ iv.date|date:"d" }}</div>
                         </div>
                         <div class="flex-grow-1">
-                            <div style="font-size: 0.875rem; font-weight: 600; color: #111827;">{{ app.job_title }}</div>
-                            <div style="font-size: 0.75rem; color: #9ca3af; margin-bottom: 0.25rem;">{{ app.company.name }}</div>
-                            <div style="font-size: 0.75rem; font-weight: 500; color: var(--teal);">Interviewing</div>
+                            <div style="font-size: 0.875rem; font-weight: 600; color: #111827;">{{ iv.application.job_title }}</div>
+                            <div style="font-size: 0.75rem; color: #9ca3af; margin-bottom: 0.25rem;">{{ iv.application.company.name }}</div>
+                            <div style="font-size: 0.75rem; font-weight: 500; color: var(--teal);">{{ iv.interview_type }}</div>
                         </div>
                     </div>
                     {% empty %}

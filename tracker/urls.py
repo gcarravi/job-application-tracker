@@ -23,6 +23,8 @@ urlpatterns = [
     path('delete-job/<int:job_id>/', views.delete_job, name='delete_job'),
     path("get-job/<int:job_id>/", views.get_job, name="get_job"),
     path("update-job/<int:job_id>/", views.update_job, name="update_job"),
+    path("get-interview/<int:app_id>/", views.get_interview, name="get_interview"),
+    path("save-interview/<int:app_id>/", views.save_interview, name="save_interview"),
     path('subscribe/', views.create_checkout_session, name="subscribe"),
     path("stripe/webhook/", views.stripe_webhook),
     path("payment-success/", views.payment_success, name="payment_success"),
