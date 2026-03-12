@@ -72,18 +72,18 @@
 
                 <!-- Application header -->
                 <div style="padding:1.25rem 1.5rem;border-bottom:1px solid #f1f5f9;display:flex;align-items:center;gap:1rem;flex-wrap:wrap;">
-                    <div style="width:2.5rem;height:2.5rem;border-radius:0.625rem;background:#f0fdfa;color:var(--teal);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:1.125rem;flex-shrink:0;">
+                    <div class="d-none d-sm-flex" style="width:2.5rem;height:2.5rem;border-radius:0.625rem;background:#f0fdfa;color:var(--teal);align-items:center;justify-content:center;font-weight:700;font-size:1.125rem;flex-shrink:0;">
                         {{ app.company.name|first|upper }}
                     </div>
                     <div style="flex:1;min-width:0;">
                         <div style="font-size:1rem;font-weight:600;color:#111827;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ app.job_title }}</div>
-                        <div style="font-size:0.8125rem;color:#6b7280;display:flex;gap:0.75rem;flex-wrap:wrap;margin-top:0.125rem;">
+                        <div style="font-size:0.8125rem;color:#6b7280;display:flex;gap:0.75rem;flex-wrap:wrap;margin-top:0.375rem;">
                             <span><i class="fas fa-building" style="color:#9ca3af;margin-right:0.3rem;"></i>{{ app.company.name }}</span>
                             {% if app.company.location %}<span><i class="fas fa-map-marker-alt" style="color:#9ca3af;margin-right:0.3rem;"></i>{{ app.company.location }}</span>{% endif %}
                             <span><i class="fas fa-calendar-alt" style="color:#9ca3af;margin-right:0.3rem;"></i>Applied {{ app.date_applied }}</span>
                         </div>
                     </div>
-                    <span class="status-badge interviewing" style="flex-shrink:0;">Interviewing</span>
+                    <span class="status-badge interviewing d-none d-sm-inline" style="flex-shrink:0;">Interviewing</span>
                 </div>
 
                 <!-- Interview rounds -->
