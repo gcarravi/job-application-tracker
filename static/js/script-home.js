@@ -13,32 +13,5 @@ function updateDate() {
     document.getElementById('currentDate').textContent = months[now.getMonth()] + ' ' + now.getDate() + ', ' + now.getFullYear();
 }
 
-// Pricing Toggle
-document.getElementById('yearlyToggle')?.addEventListener('change', function () {
-    const yearly = this.checked;
-    const priceDisplay = document.getElementById('priceDisplay');
-    const billingInfo = document.getElementById('billingInfo');
-    const ctaText = document.getElementById('ctaText');
-    const monthlyLabel = document.getElementById('monthlyLabel');
-    const yearlyLabel = document.getElementById('yearlyLabel');
-
-    if (yearly) {
-        priceDisplay.textContent = '$6';
-        billingInfo.textContent = 'Billed as $76/year';
-        ctaText.textContent = 'Start Plus — $6/mo';
-        monthlyLabel.className = 'text-secondary';
-        yearlyLabel.className = 'fw-semibold';
-        yearlyLabel.style.color = 'var(--teal)';
-    } else {
-        priceDisplay.textContent = '$9';
-        billingInfo.textContent = '';
-        ctaText.textContent = 'Start Plus — $9/mo';
-        monthlyLabel.className = 'fw-semibold';
-        monthlyLabel.style.color = 'var(--teal)';
-        yearlyLabel.className = 'text-secondary';
-        yearlyLabel.style.color = '';
-    }
-});
-
 // Initialize
 updateDate();
