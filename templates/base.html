@@ -79,9 +79,12 @@
                 <div class="user-name">{{ full_name }}</div>
                 <div class="user-plan">Free Plan</div>
             </div>
-            <button class="btn btn-link p-0 text-secondary" onclick="window.location.href='index.html'">
-                <i class="fas fa-sign-out-alt"></i>
-            </button>
+            <form method="post" action="{% url 'logout' %}">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-link p-0 text-secondary" title="Log out">
+                    <i class="fas fa-sign-out-alt"></i>
+                </button>
+            </form>
         </div>
     </div>
 
@@ -98,6 +101,22 @@
 
             <div class="d-flex align-items-center gap-2 ms-auto">
                 {% block topbar_actions %}{% endblock %}
+                <div class="user-avatar-wrap" id="userAvatarWrap">
+                    <div class="user-avatar topbar-avatar" id="userAvatarBtn">{{ user_initials }}</div>
+                    <div class="user-dropdown-menu" id="userDropdownMenu">
+                        <div class="user-dropdown-header">
+                            <div class="user-dropdown-name">{{ full_name }}</div>
+                            <div class="user-dropdown-plan">Free Plan</div>
+                        </div>
+                        <div class="user-dropdown-divider"></div>
+                        <form method="post" action="{% url 'logout' %}">
+                            {% csrf_token %}
+                            <button type="submit" class="user-dropdown-item user-dropdown-logout">
+                                <i class="fas fa-sign-out-alt"></i> Log out
+                            </button>
+                        </form>
+                    </div>
+                </div>
             </div>
         </div>
 

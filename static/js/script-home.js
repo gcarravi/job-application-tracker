@@ -15,3 +15,19 @@ function updateDate() {
 
 // Initialize
 updateDate();
+
+// User avatar dropdown
+const userAvatarBtn = document.getElementById('userAvatarBtn');
+const userDropdownMenu = document.getElementById('userDropdownMenu');
+if (userAvatarBtn && userDropdownMenu) {
+    userAvatarBtn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        userDropdownMenu.classList.toggle('open');
+    });
+    userDropdownMenu.addEventListener('click', function (e) {
+        e.stopPropagation();
+    });
+    document.addEventListener('click', function () {
+        userDropdownMenu.classList.remove('open');
+    });
+}

@@ -58,7 +58,6 @@ INSTALLED_APPS = [
 
 # Note: this is different in the blog app!!
 LOGIN_REDIRECT_URL = 'home'
-LOGOUT_REDIRECT_URL = 'login'
 LOGIN_URL = 'login'
 
 
