@@ -389,13 +389,6 @@ body {
 }
 
 
-.job-hunt-box .welcome-title {
-    font-size: 1.125rem;
-    font-weight: bold;
-    color: #111827;
-    margin-bottom: 0.25rem;
-}
-
 .welcome-date {
     text-align: right;
     flex-shrink: 0;
@@ -612,18 +605,6 @@ body {
 }
 
 /* Modal */
-.modal-backdrop-custom {
-    position: fixed;
-    inset: 0;
-    background-color: rgba(0, 0, 0, 0.5);
-    z-index: 1050;
-    display: none;
-}
-
-.modal-backdrop-custom.show {
-    display: block;
-}
-
 .modal-app {
     border: 1px solid #e5e7eb;
     border-radius: 0.875rem;
