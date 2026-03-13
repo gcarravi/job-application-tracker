@@ -1,7 +1,7 @@
 from django.urls import path
 from . import views
 from .views import LandingView, HomeView
-from .views import TrackerBoardView, InterviewsView, ContactsView
+from .views import TrackerBoardView, InterviewsView, ContactsView, HelpView
 from .views import (
     CompanyListView,
     CompanyCreateView,
@@ -35,4 +35,5 @@ urlpatterns = [
     path("stripe/webhook/", views.stripe_webhook),
     path("payment-success/", views.payment_success, name="payment_success"),
     path("payment-cancel/", views.payment_cancel, name="payment_cancel"),
+    path("help/", HelpView.as_view(), name="help"),
 ]

@@ -1,0 +1,358 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block page_title %}Help & Support - Trackwise{% endblock %}
+
+{% block nav_help %}active{% endblock %}
+
+{% block topbar_center %}
+    <span class="topbar-title">Help & Support</span>
+{% endblock %}
+
+{% block topbar_actions %}{% endblock %}
+
+{% block content %}
+<div class="help-page-outer">
+
+    <!-- Getting Started -->
+    <section class="help-section">
+        <h2 class="help-section-title">Getting Started</h2>
+        <p class="help-section-subtitle">New to Trackwise? Follow these steps to get up and running.</p>
+
+        <div class="getting-started-grid">
+            <div class="gs-step">
+                <div class="gs-step-icon">
+                    <i class="fas fa-building"></i>
+                </div>
+                <div class="gs-step-number">1</div>
+                <h3 class="gs-step-title">Add a Company</h3>
+                <p class="gs-step-desc">Go to <strong>Companies</strong> and add the company you are applying to. This links your applications to an employer.</p>
+            </div>
+            <div class="gs-step">
+                <div class="gs-step-icon">
+                    <i class="fas fa-file-alt"></i>
+                </div>
+                <div class="gs-step-number">2</div>
+                <h3 class="gs-step-title">Create an Application</h3>
+                <p class="gs-step-desc">Click <strong>+ Add Application</strong> on the Tracker board. Enter the job title, status, salary, date applied, and any notes.</p>
+            </div>
+            <div class="gs-step">
+                <div class="gs-step-icon">
+                    <i class="fas fa-columns"></i>
+                </div>
+                <div class="gs-step-number">3</div>
+                <h3 class="gs-step-title">Track on the Board</h3>
+                <p class="gs-step-desc">Your application appears on the Tracker board. Drag and drop cards between columns as your application progresses.</p>
+            </div>
+            <div class="gs-step">
+                <div class="gs-step-icon">
+                    <i class="fas fa-calendar-check"></i>
+                </div>
+                <div class="gs-step-number">4</div>
+                <h3 class="gs-step-title">Log Interviews</h3>
+                <p class="gs-step-desc">Open an application card and add interview rounds. Record the type, date, outcome, and link any contacts such as recruiters or interviewers.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="help-section">
+        <h2 class="help-section-title">Frequently Asked Questions</h2>
+        <p class="help-section-subtitle">Quick answers to the most common questions.</p>
+
+        <div class="accordion help-accordion" id="faqAccordion">
+
+            <div class="accordion-item help-accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button help-accordion-btn collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">
+                        How do I move an application to a different stage?
+                    </button>
+                </h2>
+                <div id="faq1" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                    <div class="accordion-body help-accordion-body">
+                        On the Tracker board, simply drag and drop the application card into the column that matches its new status. The status is saved automatically.
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion-item help-accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button help-accordion-btn collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq2">
+                        How do I add or edit an interview round?
+                    </button>
+                </h2>
+                <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                    <div class="accordion-body help-accordion-body">
+                        Click on an application card to open it, then scroll to the Interviews section. Click <strong>Add Interview</strong> to log a new round. To edit an existing round, click the edit icon next to it.
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion-item help-accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button help-accordion-btn collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq3">
+                        How do I link a contact to an application?
+                    </button>
+                </h2>
+                <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                    <div class="accordion-body help-accordion-body">
+                        First add the person to your <strong>Contacts</strong> directory. Then open the application card and use the contacts field to search and link them. A contact can be linked to multiple applications and interview rounds.
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion-item help-accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button help-accordion-btn collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq4">
+                        How do I delete an application?
+                    </button>
+                </h2>
+                <div id="faq4" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                    <div class="accordion-body help-accordion-body">
+                        Open the application card on the Tracker board and click the <strong>Delete</strong> option. This will permanently remove the application along with all of its interview rounds.
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion-item help-accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button help-accordion-btn collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq5">
+                        What is the difference between Free and Premium?
+                    </button>
+                </h2>
+                <div id="faq5" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                    <div class="accordion-body help-accordion-body">
+                        The Free plan gives you access to the core tracking features. Premium unlocks additional features. You can upgrade at any time from the <strong>Upgrade</strong> link in the sidebar.
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion-item help-accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button help-accordion-btn collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq6">
+                        How do I cancel my Premium subscription?
+                    </button>
+                </h2>
+                <div id="faq6" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                    <div class="accordion-body help-accordion-body">
+                        To cancel your subscription, contact us at <a href="mailto:support@trackwise.app" class="help-link">support@trackwise.app</a> and we will cancel it for you promptly. You will retain Premium access until the end of your current billing period.
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion-item help-accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button help-accordion-btn collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq7">
+                        Can I use Trackwise on my phone?
+                    </button>
+                </h2>
+                <div id="faq7" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                    <div class="accordion-body help-accordion-body">
+                        Yes. Trackwise is fully responsive. The Tracker board on mobile displays columns with horizontal scroll so you can swipe between stages.
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Contact Support -->
+    <section class="help-section">
+        <h2 class="help-section-title">Still need help?</h2>
+        <p class="help-section-subtitle">We're here for you. Send us a message and we'll get back to you as soon as possible.</p>
+
+        <div class="help-contact-card">
+            <div class="help-contact-icon">
+                <i class="fas fa-envelope"></i>
+            </div>
+            <div>
+                <div class="help-contact-label">Email Support</div>
+                <a href="mailto:support@trackwise.app" class="help-contact-email">support@trackwise.app</a>
+            </div>
+        </div>
+    </section>
+
+</div>
+
+<style>
+.help-page-outer {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem 4rem;
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
+}
+
+.help-section-title {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 0.375rem;
+}
+
+.help-section-subtitle {
+    font-size: 0.9375rem;
+    color: var(--text-secondary);
+    margin-bottom: 1.5rem;
+}
+
+/* Getting Started */
+.getting-started-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+}
+
+@media (max-width: 575px) {
+    .getting-started-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.gs-step {
+    position: relative;
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 0.75rem;
+    padding: 1.25rem 1.25rem 1.25rem 1rem;
+}
+
+.gs-step-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 0.5rem;
+    background: var(--teal-light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 2rem;
+    color: var(--teal);
+    font-size: 1rem;
+}
+
+.gs-step-number {
+    position: absolute;
+    top: 1.25rem;
+    right: 1.25rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--teal);
+    background: var(--teal-light);
+    border-radius: 2rem;
+    width: 22px;
+    height: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.gs-step-title {
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 0.375rem;
+}
+
+.gs-step-desc {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin: 0;
+}
+
+/* Accordion */
+.help-accordion {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.help-accordion-item {
+    border: 1px solid var(--border) !important;
+    border-radius: 0.625rem !important;
+    overflow: hidden;
+}
+
+.help-accordion-btn {
+    font-size: 0.9375rem;
+    font-weight: 500;
+    color: var(--text-primary);
+    background: white !important;
+    box-shadow: none !important;
+    padding: 1rem 1.25rem;
+}
+
+.help-accordion-btn:not(.collapsed) {
+    color: var(--teal) !important;
+    background: var(--teal-light) !important;
+}
+
+.help-accordion-btn::after {
+    filter: none;
+}
+
+.help-accordion-btn:not(.collapsed)::after {
+    filter: invert(42%) sepia(93%) saturate(400%) hue-rotate(130deg);
+}
+
+.help-accordion-body {
+    font-size: 0.9375rem;
+    color: var(--text-secondary);
+    line-height: 1.7;
+    padding: 0.875rem 1.25rem 1.125rem;
+    background: white;
+}
+
+.help-link {
+    color: var(--teal);
+    text-decoration: none;
+}
+
+.help-link:hover {
+    text-decoration: underline;
+}
+
+/* Contact card */
+.help-contact-card {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 0.75rem;
+    padding: 1.25rem 1.5rem;
+    max-width: 360px;
+}
+
+.help-contact-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 0.625rem;
+    background: var(--teal-light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--teal);
+    font-size: 1.125rem;
+    flex-shrink: 0;
+}
+
+.help-contact-label {
+    font-size: 0.8125rem;
+    color: var(--text-muted);
+    margin-bottom: 0.125rem;
+}
+
+.help-contact-email {
+    font-size: 0.9375rem;
+    font-weight: 500;
+    color: var(--teal);
+    text-decoration: none;
+}
+
+.help-contact-email:hover {
+    text-decoration: underline;
+}
+</style>
+{% endblock %}

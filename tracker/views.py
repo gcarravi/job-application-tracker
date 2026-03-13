@@ -17,6 +17,16 @@ import stripe
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
 
+# Mixin that injects user_initials and full_name into every view that uses base.html
+class UserContextMixin:
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        user = self.request.user
+        context["full_name"] = f"{user.first_name} {user.last_name}".strip() or user.username
+        context["user_initials"] = (user.first_name[:1] + user.last_name[:1]).upper() or user.username[:2].upper()
+        return context
+
+
 # Create your views here.
 
 @login_required
@@ -324,7 +334,7 @@ class LandingView(TemplateView):
     template_name = "landing.html"     
 
 
-class HomeView(LoginRequiredMixin, TemplateView):
+class HomeView(UserContextMixin, LoginRequiredMixin, TemplateView):
     template_name = "home.html"
 
     def get_context_data(self, **kwargs):
@@ -339,8 +349,6 @@ class HomeView(LoginRequiredMixin, TemplateView):
         user = self.request.user
         context["greeting"] = greeting
         context["display_name"] = user.first_name or user.username
-        context["full_name"] = f"{user.first_name} {user.last_name}".strip() or user.username
-        context["user_initials"] = (user.first_name[:1] + user.last_name[:1]).upper() or user.username[:2].upper()
         context["total_applications"] = Application.objects.filter(user=user).count()
         context["total_interviews"] = Application.objects.filter(user=user, status="interviewing").count()
         context["total_in_review"] = Application.objects.filter(user=user, status="applied").count()
@@ -392,15 +400,12 @@ class HomeView(LoginRequiredMixin, TemplateView):
 
 
 
-class TrackerBoardView(LoginRequiredMixin, TemplateView):
+class TrackerBoardView(UserContextMixin, LoginRequiredMixin, TemplateView):
     template_name = "tracker/tracker.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         user = self.request.user
-
-        context["full_name"] = f"{user.first_name} {user.last_name}".strip() or user.username
-        context["user_initials"] = (user.first_name[:1] + user.last_name[:1]).upper() or user.username[:2].upper()
 
         context["wishlist"] = Application.objects.filter(user=user, status="wishlist")
         context["applied"] = Application.objects.filter(user=user, status="applied")
@@ -469,14 +474,16 @@ class CompanyDeleteView(LoginRequiredMixin, DeleteView):
         return Company.objects.filter(user=self.request.user)
 
 
-class InterviewsView(LoginRequiredMixin, TemplateView):
+class HelpView(UserContextMixin, LoginRequiredMixin, TemplateView):
+    template_name = "tracker/help.html"
+
+
+class InterviewsView(UserContextMixin, LoginRequiredMixin, TemplateView):
     template_name = "tracker/interviews.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         user = self.request.user
-        context["full_name"] = f"{user.first_name} {user.last_name}".strip() or user.username
-        context["user_initials"] = (user.first_name[:1] + user.last_name[:1]).upper() or user.username[:2].upper()
         context["applications"] = (
             Application.objects
             .filter(user=user, status="interviewing")
@@ -490,13 +497,11 @@ class InterviewsView(LoginRequiredMixin, TemplateView):
         return context
 
 
-class ContactsView(LoginRequiredMixin, TemplateView):
+class ContactsView(UserContextMixin, LoginRequiredMixin, TemplateView):
     template_name = "tracker/contacts.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         user = self.request.user
-        context["full_name"] = f"{user.first_name} {user.last_name}".strip() or user.username
-        context["user_initials"] = (user.first_name[:1] + user.last_name[:1]).upper() or user.username[:2].upper()
         context["contacts"] = Contact.objects.filter(user=user).order_by('first_name', 'last_name')
         return context
