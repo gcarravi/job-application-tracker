@@ -1,7 +1,7 @@
 from django.urls import path
 from . import views
 from .views import LandingView, HomeView
-from .views import TrackerBoardView, InterviewsView, ContactsView, HelpView
+from .views import TrackerBoardView, InterviewsView, ContactsView, HelpView, AnalyticsView
 from .views import (
     CompanyListView,
     CompanyCreateView,
@@ -36,4 +36,5 @@ urlpatterns = [
     path("payment-success/", views.payment_success, name="payment_success"),
     path("payment-cancel/", views.payment_cancel, name="payment_cancel"),
     path("help/", HelpView.as_view(), name="help"),
+    path("analytics/", AnalyticsView.as_view(), name="analytics"),
 ]

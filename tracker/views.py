@@ -1,5 +1,6 @@
 from django.contrib.auth.decorators import login_required
-from django.db.models import Subquery, OuterRef
+from django.db.models import Subquery, OuterRef, Count
+from django.utils import timezone
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
 from django.views.generic import TemplateView, ListView, CreateView, UpdateView, DeleteView
@@ -10,7 +11,8 @@ from django.views.decorators.csrf import csrf_exempt
 from django.conf import settings
 from django.http import JsonResponse, HttpResponse
 import json
-from datetime import datetime
+from datetime import datetime, date, timedelta
+import calendar as _cal
 from .models import Company, Application, Interview, Contact
 from .forms import ApplicationForm
 import stripe
@@ -353,7 +355,6 @@ class HomeView(UserContextMixin, LoginRequiredMixin, TemplateView):
         context["total_interviews"] = Application.objects.filter(user=user, status="interviewing").count()
         context["total_in_review"] = Application.objects.filter(user=user, status="applied").count()
         context["total_offers"] = Application.objects.filter(user=user, status="offer").count()
-        from django.utils import timezone
         # For each application, find the ID of its highest round (latest created) future interview
         next_iv_subquery = (
             Interview.objects
@@ -504,4 +505,86 @@ class ContactsView(UserContextMixin, LoginRequiredMixin, TemplateView):
         context = super().get_context_data(**kwargs)
         user = self.request.user
         context["contacts"] = Contact.objects.filter(user=user).order_by('first_name', 'last_name')
+        return context
+
+
+class AnalyticsView(UserContextMixin, LoginRequiredMixin, TemplateView):
+    template_name = "tracker/analytics.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        user = self.request.user
+        now = timezone.now()
+        today = now.date()
+
+        apps = Application.objects.filter(user=user)
+        total = apps.count()
+
+        # Stat cards
+        this_week = apps.filter(created_at__gte=now - timedelta(days=7)).count()
+        this_month = apps.filter(created_at__gte=now - timedelta(days=30)).count()
+        interviewing_count = apps.filter(status='interviewing').count()
+        offer_count = apps.filter(status='offer').count()
+        conversion = round((interviewing_count + offer_count) / total * 100) if total > 0 else 0
+
+        # Conversion metrics
+        responded = apps.filter(status__in=['interviewing', 'offer', 'rejected', 'ghosted']).count()
+        response_rate = round(responded / total * 100) if total > 0 else 0
+        offer_rate = round(offer_count / total * 100) if total > 0 else 0
+        total_interviews = Interview.objects.filter(application__user=user).count()
+
+        # Status breakdown (donut chart)
+        status_data = dict(
+            apps.values_list('status').annotate(c=Count('id')).values_list('status', 'c')
+        )
+        status_order = ['wishlist', 'applied', 'interviewing', 'offer', 'rejected', 'ghosted', 'follow_up']
+        status_labels = ['Wishlist', 'Applied', 'Interviewing', 'Offer', 'Rejected', 'Ghosted', 'Follow Up']
+        status_colors = ['#94a3b8', '#3b82f6', '#0d9488', '#22c55e', '#ef4444', '#9ca3af', '#f59e0b']
+        status_counts_list = [status_data.get(s, 0) for s in status_order]
+
+        # Monthly applications — last 6 months (by date_applied)
+        monthly_labels = []
+        monthly_counts = []
+        for i in range(5, -1, -1):
+            month = today.month - i
+            year = today.year
+            while month <= 0:
+                month += 12
+                year -= 1
+            first_day = date(year, month, 1)
+            last_day = date(year, month, _cal.monthrange(year, month)[1])
+            count = apps.filter(date_applied__gte=first_day, date_applied__lte=last_day).count()
+            monthly_labels.append(first_day.strftime('%b %Y'))
+            monthly_counts.append(count)
+
+        # Funnel
+        active_total = apps.filter(
+            status__in=['applied', 'interviewing', 'offer', 'rejected', 'ghosted', 'follow_up']
+        ).count()
+        got_interview = apps.filter(status__in=['interviewing', 'offer']).count()
+        funnel_max = active_total if active_total > 0 else 1
+        funnel = [
+            {'label': 'Total Applied', 'count': active_total, 'pct': 100},
+            {'label': 'Got Interview', 'count': got_interview,
+             'pct': round(got_interview / funnel_max * 100)},
+            {'label': 'Received Offer', 'count': offer_count,
+             'pct': round(offer_count / funnel_max * 100)},
+        ]
+
+        context.update({
+            'total': total,
+            'this_week': this_week,
+            'this_month': this_month,
+            'conversion': conversion,
+            'response_rate': response_rate,
+            'offer_rate': offer_rate,
+            'total_interviews': total_interviews,
+            'status_labels': json.dumps(status_labels),
+            'status_counts': json.dumps(status_counts_list),
+            'status_colors': json.dumps(status_colors),
+            'monthly_labels': json.dumps(monthly_labels),
+            'monthly_counts': json.dumps(monthly_counts),
+            'funnel': funnel,
+            'funnel_max': funnel_max,
+        })
         return context
