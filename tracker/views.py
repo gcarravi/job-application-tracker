@@ -320,10 +320,6 @@ def payment_cancel(request):
     return render(request, "payment_cancel.html")
 
 
-class DashboardView(LoginRequiredMixin, TemplateView):
-    template_name = "tracker/dashboard.html"
-
-
 class LandingView(TemplateView):
     template_name = "landing.html"     
 
