@@ -1,136 +1,493 @@
-# job-application-tracker
-Full-stack web application designed to help users manage and  track their job applications in a structured, secure, and user-friendly environment.
+# Trackwise – Job Application Tracker
 
+Trackwise is a full-stack web application designed to help job seekers organise, track, and manage their job applications in one place.
 
+Job hunting often involves juggling multiple applications, interview rounds, recruiter contacts, and notes across different companies. Trackwise provides a centralised dashboard and visual tracking system that allows users to monitor the progress of their applications from submission through interviews and final outcomes.
 
+**Live demo:** [trackwise.app](https://trackwise.app) *(update with your Heroku URL)*
 
-Structure:
+![ScreenShot of Home Page Hero on different devices ](static/images/apple-responsive-devices-mockup.png)
 
+---
 
+## Table of Contents
+
+- [Project Goals](#project-goals)
+- [User Experience (UX)](#user-experience-ux)
+- [Application Architecture](#application-architecture)
+- [Database Design](#database-design)
+- [Application Flow](#application-flow)
+- [Features](#features)
+- [Subscription & Payments](#subscription--payments)
+- [Future Improvements](#future-improvements)
+- [Technologies Used](#technologies-used)
+- [Local Development Setup](#local-development-setup)
+- [Environment Variables](#environment-variables)
+- [Testing](#testing)
+- [Deployment](#deployment)
+- [Credits](#credits)
+
+---
+
+## Project Goals
+
+The goal of Trackwise is to simplify the job search process by providing a structured workflow and visual overview of application progress.
+
+The application focuses on:
+
+- Organisation of job applications
+- Clear visual tracking of application stages
+- Maintaining records of interviews and recruiter contacts
+- Providing a secure and personalised dashboard for each user
+
+---
+
+## User Experience (UX)
+
+### User Goals
+
+Users should be able to:
+
+- Register and log into the application securely
+- Add companies and job applications
+- Track the status of each application via a drag-and-drop kanban board
+- Record multiple interview rounds per application
+- Store recruiter and interviewer contact details
+- Maintain notes related to applications and interviews
+- View all applications currently in the Interviewing stage
+
+---
+
+## Application Architecture
+
+The application follows a modular Django architecture, separating authentication from the core application logic.
+
+```
 jobtracker/
 │
-├── jobtracker/        # project config
+├── jobtracker/        # Project configuration
 │   ├── settings.py
-│   ├── urls.py
-│   └── ...
+│   └── urls.py
 │
-├── accounts/            # authentication app
-│   ├── templates/
-│   │   └── accounts/
-│   │       ├── register.html
-│   │       └── login.html
+├── accounts/          # Authentication system
+│   ├── templates/accounts/
+│   │   ├── register.html
+│   │   └── login.html
 │   ├── models.py
 │   ├── views.py
-│   ├── urls.py
-│   └── ...
+│   └── urls.py
 │
-├── tracker/            # main business logic
-│   ├── templates/
-│   │   └── tracker/
-│   │       └── dashboard.html
+├── tracker/           # Job tracking functionality
+│   ├── templates/tracker/
 │   ├── models.py
 │   ├── views.py
-│   ├── urls.py
-│   └── ...
+│   └── urls.py
 │
 ├── templates/
 │   └── base.html
+│
 ├── static/
-├── manage.py
+│
+└── manage.py
+```
 
+This architecture separates:
 
+- Authentication logic
+- Business logic
+- Templates
+- Static assets
 
-ERDs:
+---
 
-A User can create multiple Companies
-A User can create multiple Applications
-A Company can have multiple Applications
-An Application can have multiple Interviews
+## Database Design
 
+The application uses a relational database structure designed around the job application lifecycle.
 
+### Core Relationships
+
+- A User can create multiple Companies
+- A User can create multiple Applications
+- A Company can have multiple Applications
+- An Application can have multiple Interviews
+- Contacts can be linked to both Applications and Interviews
+
+### Entity Relationship Diagram (ERD)
+
+```
 User
+ │
+ ├── Company
+ │     └── Application
+ │            └── Interview
+ │
+ └── Contact
+       ↑         ↑
+  Application  Interview
+```
 
-| Key | Name        | Type         |
-| --- | ----------- | ------------ |
-| PK  | id          | Integer      |
-|     | username    | Varchar(150) |
-|     | email       | Varchar(254) |
-|     | password    | Varchar(128) |
-|     | is_active   | Boolean      |
-|     | date_joined | DateTime     |
+### Relationships
 
+| From | To | Type |
+|---|---|---|
+| User | Company | One-to-Many |
+| User | Application | One-to-Many |
+| Company | Application | One-to-Many |
+| Application | Interview | One-to-Many |
+| Application | Contact | Many-to-Many |
+| Interview | Contact | Many-to-Many |
 
-Company
+This allows recruiters or interviewers to be reused across multiple applications and interview rounds.
 
-| Key | Name       | Type           |
-| --- | ---------- | -------------- |
-| PK  | id         | Integer        |
-| FK  | user_id    | Integer (User) |
-|     | name       | Varchar(255)   |
-|     | website    | Varchar(200)   |
-|     | location   | Varchar(255)   |
-|     | created_at | DateTime       |
+### Database Tables
 
+#### User
 
-Application
+| Key | Name | Type |
+|-----|------|------|
+| PK | id | Integer |
+| | username | Varchar |
+| | email | Varchar |
+| | password | Varchar |
+| | is_active | Boolean |
+| | date_joined | DateTime |
 
-| Key | Name         | Type              |
-| --- | ------------ | ----------------- |
-| PK  | id           | Integer           |
-| FK  | user_id      | Integer (User)    |
-| FK  | company_id   | Integer (Company) |
-|     | job_title    | Varchar(255)      |
-|     | salary_range | Varchar(100)      |
-|     | status       | Varchar(20)       |
-|     | date_applied | Date              |
-|     | notes        | Text              |
-|     | created_at   | DateTime          |
+#### UserProfile
 
+Extends the built-in User model with subscription information.
 
+| Key | Name | Type |
+|-----|------|------|
+| PK | id | Integer |
+| FK | user_id | Integer (User) |
+| | is_premium | Boolean |
+| | stripe_customer_id | Varchar (nullable) |
 
-Interview
+#### Company
 
-| Key | Name           | Type                  |
-| --- | -------------- | --------------------- |
-| PK  | id             | Integer               |
-| FK  | application_id | Integer (Application) |
-|     | interview_type | Varchar(50)           |
-|     | date           | DateTime              |
-|     | notes          | Text                  |
-|     | result         | Varchar(100)          |
-|     | created_at     | DateTime              |
+| Key | Name | Type |
+|-----|------|------|
+| PK | id | Integer |
+| FK | user_id | Integer (User) |
+| | name | Varchar |
+| | website | Varchar |
+| | location | Varchar |
+| | created_at | DateTime |
 
+#### Application
 
------
+| Key | Name | Type |
+|-----|------|------|
+| PK | id | Integer |
+| FK | user_id | Integer (User) |
+| FK | company_id | Integer (Company) |
+| | job_title | Varchar |
+| | salary_range | Varchar |
+| | status | Varchar |
+| | date_applied | Date |
+| | notes | Text |
+| | created_at | DateTime |
 
+#### Interview
 
-Home page = public landing page
-Login / Register links visible
-Dashboard = protected
-Users must log in to access dashboard
+| Key | Name | Type |
+|-----|------|------|
+| PK | id | Integer |
+| FK | application_id | Integer (Application) |
+| | interview_type | Varchar |
+| | date | DateTime |
+| | notes | Text |
+| | result | Varchar |
+| | created_at | DateTime |
 
+#### Contact
 
-------
+Contacts represent external people involved in the hiring process, such as recruiters or interviewers. They are not system users and do not use Django's authentication model.
 
-Page Architecture
+| Key | Name | Type |
+|-----|------|------|
+| PK | id | Integer |
+| FK | user_id | Integer (User) |
+| | first_name | Varchar |
+| | last_name | Varchar (nullable) |
+| | email | EmailField (nullable) |
+| | phone | Varchar (nullable) |
+| | job_title | Varchar (nullable) |
+| | linkedin_url | URLField (nullable) |
+| | notes | Text (nullable) |
+| | created_at | DateTime |
 
-1️⃣ / → Landing (Public)
+#### Contact Relationships
 
-    Hero
-    Register / Login buttons
-    Minimal navbar
+| Model | Relationship |
+|-------|-------------|
+| Application | Many-to-Many → Contact |
+| Interview | Many-to-Many → Contact |
 
-2️⃣ /home/ → Authenticated Home
+---
 
-    Welcome message
-    Summary stats (we’ll add soon)
-    Button → “Go to Job Tracker”
+## Application Flow
 
-3️⃣ /tracker/ → Kanban Board
+```
+User registers
+      ↓
+User logs in
+      ↓
+User creates company
+      ↓
+User adds job application
+      ↓
+Application appears on tracker board
+      ↓
+User drags cards between status columns
+      ↓
+User records interview rounds
+      ↓
+User links recruiters or interviewers as contacts
+```
 
-    Jira-style layout
-    Bootstrap modal for “Add Job”
-    Cards grouped by status
-    Page reload on create (Phase 1)
+---
 
------
+## Features
+
+### Landing Page
+
+A public-facing marketing page introduces Trackwise to new visitors, outlines key features, and provides sign-up and login links.
+
+### Authentication
+
+- User registration
+- Secure login and logout
+- Protected views — all app pages require authentication
+
+### Job Tracker Board
+
+The tracker page provides a kanban-style layout that groups applications by status. Cards can be **dragged and dropped** between columns to update their status in real time (powered by SortableJS).
+
+Status columns include:
+
+- Applied
+- Interviewing
+- Offer
+- Rejected
+
+Each application card displays:
+
+- Job title
+- Company
+- Application date
+- Notes
+- Current status
+
+### Interview Management
+
+Users can track multiple interview rounds per application.
+
+Features include:
+
+- Add interview rounds with type, date, notes, and outcome
+- Edit or delete existing rounds
+- Display full interview history per application
+
+If no interviews exist, the UI shows: *"No interview rounds yet"*
+
+### Interview Dashboard
+
+The Interviews page displays all applications currently in the Interviewing stage, giving a focused view of active processes.
+
+Each card shows:
+
+- Job title
+- Company information
+- Interview rounds with notes and results
+
+### Company Management
+
+Users can maintain a list of companies they are applying to, with full CRUD operations (create, edit, delete).
+
+### Contacts Directory
+
+Users can maintain a directory of recruiters and interviewers.
+
+Contact information can include:
+
+- Name
+- Email
+- Phone
+- LinkedIn profile
+- Job title
+- Notes
+
+Contacts can be linked to both applications and individual interview rounds, and can be reused across multiple opportunities.
+
+---
+
+## Subscription & Payments
+
+Trackwise uses a **freemium model** powered by [Stripe](https://stripe.com).
+
+- Free users have access to core tracking features
+- Premium users unlock additional features
+- Subscriptions are managed via Stripe Checkout
+- Payments are confirmed via Stripe webhooks, which automatically update the user's account
+- Premium status is displayed in the sidebar and user menu
+
+### Payment Flow
+
+```
+User clicks "Upgrade to Premium"
+      ↓
+Redirected to Stripe Checkout
+      ↓
+Payment confirmed
+      ↓
+Stripe sends webhook to /stripe/webhook/
+      ↓
+User's account upgraded to Premium
+      ↓
+Redirected to payment success page
+```
+
+---
+
+## Future Improvements
+
+Possible future enhancements include:
+
+- Application statistics and analytics dashboard
+- Search and filtering across applications
+- Email interview reminders
+- File uploads for CV versions
+- Job board integrations
+- Calendar integration
+
+---
+
+## Technologies Used
+
+### Languages
+
+- HTML
+- CSS
+- JavaScript
+- Python
+
+### Frameworks & Libraries
+
+- Django
+- Bootstrap 5
+- SortableJS (drag-and-drop kanban)
+- Stripe (payments)
+- WhiteNoise (static file serving)
+
+### Tools
+
+- Git & GitHub
+- VS Code
+- Django ORM
+- PostgreSQL (production)
+- SQLite (local development fallback)
+- Heroku (deployment)
+
+---
+
+## Local Development Setup
+
+1. **Clone the repository**
+
+   ```bash
+   git clone https://github.com/your-username/job-application-tracker.git
+   cd job-application-tracker
+   ```
+
+2. **Create and activate a virtual environment**
+
+   ```bash
+   python -m venv venv
+   source venv/bin/activate  # Windows: venv\Scripts\activate
+   ```
+
+3. **Install dependencies**
+
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+4. **Create a `.env` file** in the project root and add the required environment variables (see [Environment Variables](#environment-variables) below)
+
+5. **Run migrations**
+
+   ```bash
+   python manage.py migrate
+   ```
+
+6. **Start the development server**
+
+   ```bash
+   python manage.py runserver
+   ```
+
+---
+
+## Environment Variables
+
+Create a `.env` file in the project root with the following variables:
+
+```env
+SECRET_KEY=your-django-secret-key
+DEBUG=True
+DATABASE_URL=your-postgres-url          # optional locally, defaults to SQLite
+STRIPE_SECRET_KEY=sk_test_...
+STRIPE_WEBHOOK_SECRET=whsec_...
+```
+
+On Heroku, set these via the dashboard or CLI:
+
+```bash
+heroku config:set SECRET_KEY=...
+heroku config:set STRIPE_SECRET_KEY=...
+heroku config:set STRIPE_WEBHOOK_SECRET=...
+```
+
+---
+
+## Testing
+
+Testing includes:
+
+- Manual functional testing
+- Form validation testing
+- Authentication flow testing
+- CRUD operation testing
+- Interview round workflow testing
+- Stripe payment flow testing
+
+Detailed testing documentation will be provided in a separate `TESTING.md` file.
+
+---
+
+## Deployment
+
+The application is deployed on **Heroku**.
+
+### Deployment Steps
+
+1. Push project to GitHub
+2. Connect GitHub repository to Heroku
+3. Set all required environment variables via `heroku config:set`
+4. Heroku installs dependencies from `requirements.txt` automatically
+5. Run migrations: `heroku run python manage.py migrate`
+6. Static files are collected automatically on deploy via `collectstatic`
+
+---
+
+## Credits
+
+Resources used during development include:
+
+- [Django Documentation](https://docs.djangoproject.com/)
+- [Bootstrap Documentation](https://getbootstrap.com/docs/)
+- [SortableJS](https://sortablejs.github.io/Sortable/)
+- [Stripe Documentation](https://stripe.com/docs)
+- StackOverflow discussions
+- Various UI and UX design references
