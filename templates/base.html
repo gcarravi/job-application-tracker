@@ -77,7 +77,7 @@
             <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100" alt="User" class="user-avatar">
             <div class="user-info">
                 <div class="user-name">{{ full_name }}</div>
-                <div class="user-plan">Free Plan</div>
+                <div class="user-plan">{% if user.profile.is_premium %}Premium{% else %}Free Plan{% endif %}</div>
             </div>
             <form method="post" action="{% url 'logout' %}">
                 {% csrf_token %}
@@ -106,7 +106,7 @@
                     <div class="user-dropdown-menu" id="userDropdownMenu">
                         <div class="user-dropdown-header">
                             <div class="user-dropdown-name">{{ full_name }}</div>
-                            <div class="user-dropdown-plan">Free Plan</div>
+                            <div class="user-dropdown-plan">{% if user.profile.is_premium %}Premium{% else %}Free Plan{% endif %}</div>
                         </div>
                         <div class="user-dropdown-divider"></div>
                         <form method="post" action="{% url 'logout' %}">

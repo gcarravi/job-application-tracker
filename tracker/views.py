@@ -114,11 +114,15 @@ def stripe_webhook(request):
 
         session = event['data']['object']
 
-        customer_email = session['customer_details']['email']
+        user_id = session.get('client_reference_id')
+        stripe_customer_id = session.get('customer')
 
-        user = User.objects.get(email=customer_email)
-        user.profile.is_premium = True
-        user.profile.save()
+        user = User.objects.filter(id=user_id).first()
+        if user:
+            user.profile.is_premium = True
+            if stripe_customer_id:
+                user.profile.stripe_customer_id = stripe_customer_id
+            user.profile.save()
 
     return HttpResponse(status=200)
 
@@ -288,11 +292,14 @@ def delete_contact(request, contact_id):
     return JsonResponse({"success": False}, status=400)
 
 
+@login_required
 def create_checkout_session(request):
 
     checkout_session = stripe.checkout.Session.create(
         payment_method_types=['card'],
         mode='subscription',
+        customer_email=request.user.email,
+        client_reference_id=str(request.user.id),
         line_items=[{
             'price': 'price_1T99hJC5ICaFnwSEAdv5gQEa',  # your Stripe price id
             'quantity': 1,

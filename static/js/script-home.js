@@ -14,7 +14,9 @@ function updateDate() {
 }
 
 // Initialize
-updateDate();
+if (document.getElementById('currentDay')) {
+    updateDate();
+}
 
 // User avatar dropdown
 const userAvatarBtn = document.getElementById('userAvatarBtn');
