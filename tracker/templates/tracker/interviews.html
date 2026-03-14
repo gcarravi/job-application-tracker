@@ -6,14 +6,7 @@
 {% block nav_interviews %}active{% endblock %}
 
 {% block extra_css %}
-<style>
-@media (max-width: 575px) {
-    .iv-page-outer { padding: 1rem 0.75rem 1.5rem; }
-    .iv-round-hdr { flex-wrap: wrap; row-gap: 0.25rem; }
-    .iv-round-hdr .iv-round-hdr-divider { display: none; }
-    .iv-round-hdr .iv-round-date { width: 100%; margin-top: 0.125rem; }
-}
-</style>
+<link rel="stylesheet" href="{% static 'css/style-interviews.css' %}">
 {% endblock %}
 
 {% block topbar_center %}
@@ -25,39 +18,39 @@
 {% block content %}
 
 {% if not applications %}
-    <div class="d-flex flex-column align-items-center justify-content-center" style="padding: 4rem 1rem; text-align: center;">
-        <div style="width:56px;height:56px;border-radius:50%;background:#f0fdfa;display:flex;align-items:center;justify-content:center;margin-bottom:1.25rem;">
-            <i class="fas fa-calendar" style="color:var(--teal);font-size:1.5rem;"></i>
+    <div class="d-flex flex-column align-items-center justify-content-center iv-empty">
+        <div class="iv-empty-icon">
+            <i class="fas fa-calendar"></i>
         </div>
-        <h3 style="font-size:1.125rem;font-weight:600;color:#111827;margin-bottom:0.5rem;">No active interviews</h3>
-        <p style="font-size:0.9rem;color:#6b7280;max-width:340px;">
+        <h3 class="iv-empty-title">No active interviews</h3>
+        <p class="iv-empty-text">
             Applications in the <strong>Interviewing</strong> column on your tracker will appear here with their interview rounds.
         </p>
-        <a href="{% url 'tracker' %}" class="btn-teal mt-3" style="text-decoration:none;">
+        <a href="{% url 'tracker' %}" class="btn-teal mt-3">
             <i class="fas fa-th me-1"></i> Go to Tracker
         </a>
     </div>
 
 {% else %}
 
-    <div class="iv-page-outer" style="padding: 1.5rem 1.5rem 2rem;">
+    <div class="iv-page-outer">
 
         <!-- Page header -->
-        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;margin-bottom:1.5rem;flex-wrap:wrap;">
-            <div style="display:flex;align-items:center;gap:0.875rem;">
-                <div style="width:2.5rem;height:2.5rem;border-radius:0.625rem;background:#f0fdfa;border:1px solid #99f6e4;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-                    <i class="fas fa-comments" style="color:var(--teal);font-size:1rem;"></i>
+        <div class="iv-page-header">
+            <div class="iv-page-header-left">
+                <div class="iv-page-icon">
+                    <i class="fas fa-comments"></i>
                 </div>
                 <div>
-                    <h2 style="font-size:1.0625rem;font-weight:700;color:#111827;margin:0;line-height:1.3;">Your Interviews</h2>
-                    <p style="font-size:0.8125rem;color:#6b7280;margin:0;">
-                        <strong style="color:#374151;">{{ applications|length }}</strong> active interview{{ applications|length|pluralize }}
+                    <h2 class="iv-page-title">Your Interviews</h2>
+                    <p class="iv-page-subtitle">
+                        <strong>{{ applications|length }}</strong> active interview{{ applications|length|pluralize }}
                         &nbsp;·&nbsp;
-                        <strong style="color:#374151;">{{ total_rounds }}</strong> round{{ total_rounds|pluralize }} tracked
+                        <strong>{{ total_rounds }}</strong> round{{ total_rounds|pluralize }} tracked
                     </p>
                 </div>
             </div>
-            <a href="{% url 'tracker' %}" class="btn-teal" style="text-decoration:none;flex-shrink:0;">
+            <a href="{% url 'tracker' %}" class="btn-teal">
                 <i class="fas fa-th me-1"></i>
                 <span class="d-none d-sm-inline">Go to Tracker</span>
             </a>
@@ -66,65 +59,65 @@
         <div class="d-flex flex-column gap-4">
             {% for app in applications %}
 
-            <div style="background:white;border:1px solid #e5e7eb;border-radius:1rem;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,0.04);">
+            <div class="iv-app-card">
 
                 <!-- Application header -->
-                <div style="padding:1.25rem 1.5rem;border-bottom:1px solid #f1f5f9;display:flex;align-items:center;gap:1rem;flex-wrap:wrap;">
-                    <div class="d-none d-sm-flex" style="width:2.5rem;height:2.5rem;border-radius:0.625rem;background:#f0fdfa;color:var(--teal);align-items:center;justify-content:center;font-weight:700;font-size:1.125rem;flex-shrink:0;">
+                <div class="iv-app-hdr">
+                    <div class="iv-app-avatar d-none d-sm-flex">
                         {{ app.company.name|first|upper }}
                     </div>
-                    <div style="flex:1;min-width:0;">
-                        <div style="font-size:1rem;font-weight:600;color:#111827;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ app.job_title }}</div>
-                        <div style="font-size:0.8125rem;color:#6b7280;display:flex;gap:0.75rem;flex-wrap:wrap;margin-top:0.375rem;">
-                            <span><i class="fas fa-building" style="color:#9ca3af;margin-right:0.3rem;"></i>{{ app.company.name }}</span>
-                            {% if app.company.location %}<span><i class="fas fa-map-marker-alt" style="color:#9ca3af;margin-right:0.3rem;"></i>{{ app.company.location }}</span>{% endif %}
-                            <span><i class="fas fa-calendar-alt" style="color:#9ca3af;margin-right:0.3rem;"></i>Applied {{ app.date_applied }}</span>
+                    <div class="iv-app-info">
+                        <div class="iv-app-title">{{ app.job_title }}</div>
+                        <div class="iv-app-meta">
+                            <span><i class="fas fa-building"></i>{{ app.company.name }}</span>
+                            {% if app.company.location %}<span><i class="fas fa-map-marker-alt"></i>{{ app.company.location }}</span>{% endif %}
+                            <span><i class="fas fa-calendar-alt"></i>Applied {{ app.date_applied }}</span>
                         </div>
                     </div>
-                    <span class="status-badge interviewing d-none d-sm-inline" style="flex-shrink:0;">Interviewing</span>
+                    <span class="status-badge interviewing d-none d-sm-inline">Interviewing</span>
                 </div>
 
                 <!-- Interview rounds -->
                 {% with rounds=app.interviews.all %}
                 {% if rounds %}
-                    <div style="padding:1rem 1.5rem;display:flex;flex-direction:column;gap:0.75rem;">
+                    <div class="iv-rounds-body">
                         {% for iv in rounds %}
-                        <div style="background:#f9fafb;border:1px solid #e5e7eb;border-radius:0.75rem;padding:1rem 1.25rem;">
+                        <div class="iv-round">
 
-                            <div class="iv-round-hdr" style="display:flex;align-items:center;gap:0.625rem;margin-bottom:0.875rem;">
-                                <span style="font-size:0.6875rem;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:var(--teal);">Round {{ forloop.counter }}</span>
-                                <div class="iv-round-hdr-divider" style="flex:1;height:1px;background:#d1fae5;"></div>
+                            <div class="iv-round-hdr">
+                                <span class="iv-round-label">Round {{ forloop.counter }}</span>
+                                <div class="iv-round-hdr-divider"></div>
                                 {% if iv.date %}
-                                    <span class="iv-round-date" style="font-size:0.75rem;font-weight:500;color:#6b7280;">
-                                        <i class="fas fa-clock" style="color:#9ca3af;margin-right:0.25rem;"></i>{{ iv.date|date:"D, d M Y · H:i" }}
+                                    <span class="iv-round-date">
+                                        <i class="fas fa-clock"></i>{{ iv.date|date:"D, d M Y · H:i" }}
                                     </span>
                                 {% endif %}
                             </div>
 
-                            <div style="display:flex;flex-wrap:wrap;gap:1.5rem;">
-                                <div style="min-width:120px;">
-                                    <div style="font-size:0.6875rem;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;color:#9ca3af;margin-bottom:0.25rem;">Type</div>
-                                    <div style="font-size:0.875rem;font-weight:500;color:#111827;">{{ iv.interview_type }}</div>
+                            <div class="iv-fields">
+                                <div class="iv-field">
+                                    <div class="iv-field-label">Type</div>
+                                    <div class="iv-field-value">{{ iv.interview_type }}</div>
                                 </div>
                                 {% if iv.result %}
-                                <div style="min-width:120px;">
-                                    <div style="font-size:0.6875rem;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;color:#9ca3af;margin-bottom:0.25rem;">Result</div>
-                                    <div style="font-size:0.875rem;font-weight:500;color:#111827;">{{ iv.result }}</div>
+                                <div class="iv-field">
+                                    <div class="iv-field-label">Result</div>
+                                    <div class="iv-field-value">{{ iv.result }}</div>
                                 </div>
                                 {% endif %}
                                 {% with interviewers=iv.interviewers.all %}
                                 {% if interviewers %}
-                                <div style="min-width:160px;">
-                                    <div style="font-size:0.6875rem;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;color:#9ca3af;margin-bottom:0.375rem;">Interviewer{{ interviewers|length|pluralize }}</div>
-                                    <div style="display:flex;flex-direction:column;gap:0.3rem;">
+                                <div class="iv-field iv-field--interviewers">
+                                    <div class="iv-field-label">Interviewer{{ interviewers|length|pluralize }}</div>
+                                    <div class="iv-contacts">
                                         {% for contact in interviewers %}
-                                        <div style="display:flex;align-items:center;gap:0.5rem;">
-                                            <div style="width:1.625rem;height:1.625rem;border-radius:50%;background:#f0fdfa;border:1px solid #99f6e4;display:flex;align-items:center;justify-content:center;font-size:0.5625rem;font-weight:700;color:var(--teal);flex-shrink:0;letter-spacing:0.02em;">
+                                        <div class="iv-contact">
+                                            <div class="iv-contact-avatar">
                                                 {{ contact.first_name|first|upper }}{{ contact.last_name|first|upper }}
                                             </div>
                                             <div>
-                                                <div style="font-size:0.8125rem;font-weight:500;color:#111827;line-height:1.2;">{{ contact.full_name }}</div>
-                                                {% if contact.job_title %}<div style="font-size:0.75rem;color:#9ca3af;">{{ contact.job_title }}</div>{% endif %}
+                                                <div class="iv-contact-name">{{ contact.full_name }}</div>
+                                                {% if contact.job_title %}<div class="iv-contact-role">{{ contact.job_title }}</div>{% endif %}
                                             </div>
                                         </div>
                                         {% endfor %}
@@ -133,9 +126,9 @@
                                 {% endif %}
                                 {% endwith %}
                                 {% if iv.notes %}
-                                <div style="flex:1;min-width:200px;">
-                                    <div style="font-size:0.6875rem;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;color:#9ca3af;margin-bottom:0.25rem;">Notes</div>
-                                    <div style="font-size:0.875rem;color:#374151;line-height:1.5;white-space:pre-wrap;">{{ iv.notes }}</div>
+                                <div class="iv-field iv-field--notes">
+                                    <div class="iv-field-label">Notes</div>
+                                    <div class="iv-field-value--notes">{{ iv.notes }}</div>
                                 </div>
                                 {% endif %}
                             </div>
@@ -144,9 +137,9 @@
                         {% endfor %}
                     </div>
                 {% else %}
-                    <div style="padding:1.25rem 1.5rem;font-size:0.875rem;color:#9ca3af;">
+                    <div class="iv-no-rounds">
                         <i class="fas fa-info-circle me-1"></i> No interview rounds added yet.
-                        <a href="{% url 'tracker' %}" style="color:var(--teal);text-decoration:none;margin-left:0.25rem;">Add one in the tracker.</a>
+                        <a href="{% url 'tracker' %}">Add one in the tracker.</a>
                     </div>
                 {% endif %}
                 {% endwith %}

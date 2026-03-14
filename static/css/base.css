@@ -12,6 +12,8 @@
     --teal: #0d9488;
     --teal-dark: #0f766e;
     --teal-light: #f0fdfa;
+    --teal-border: #99f6e4;        /* avatar / icon-box border on teal-light bg */
+    --teal-divider: #d1fae5;       /* horizontal divider line in round headers */
     --sidebar-width: 240px;
     --bg: #fafbfc;
     --bg-subtle: #f9fafb;
@@ -23,6 +25,7 @@
     --text-body: #374151;
     --text-dark: #1f2937;
     --secondary-color: #6366f1;
+    --shadow-xs: rgba(0, 0, 0, 0.04);  /* very subtle card shadow */
 }
 
 * {
