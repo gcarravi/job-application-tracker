@@ -1,7 +1,7 @@
 @import url('base.css');
 
 body {
-    background-color: var(--bg);
+    background-color: var(--bg-subtle);
     overflow-x: hidden;
 }
 
@@ -127,8 +127,8 @@ body {
 }
 
 .topbar-avatar {
-    background: #f0fdfa;
-    border: 1.5px solid #99f6e4;
+    background: var(--teal-light);
+    border: 1.5px solid var(--teal-border);
     color: var(--teal);
     font-weight: 700;
     font-size: 0.75rem;
@@ -478,7 +478,7 @@ body {
 }
 
 .app-item:hover {
-    background-color: var(--bg);
+    background-color: var(--bg-subtle);
 }
 
 .app-logo {
@@ -491,7 +491,7 @@ body {
     font-weight: 800;
     font-size: 0.95rem;
     flex-shrink: 0;
-    background-color: #f0fdfa;
+    background-color: var(--teal-light);
     color: var(--teal);
 }
 
@@ -545,7 +545,7 @@ body {
 }
 
 .interview-item:hover {
-    background-color: var(--bg);
+    background-color: var(--bg-subtle);
     border-color: var(--teal);
 }
 

@@ -4,6 +4,10 @@
     --white: #ffffff;
     --white-translucent: rgba(255, 255, 255, 0.9);
 
+    /* Moved from base.css — used only on the landing page */
+    --text-dark: #1f2937;
+    --secondary-color: #6366f1;     /* indigo accent for gradients */
+
     /* Teal scale (extends base.css teal vars) */
     --teal-deeper: #0c665f;         /* btn hover — one step darker than --teal-dark */
     --teal-accent: #5eead4;         /* feature card hover border */

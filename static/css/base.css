@@ -9,23 +9,30 @@
 }
 
 :root {
+    /* Teal scale */
     --teal: #0d9488;
     --teal-dark: #0f766e;
     --teal-light: #f0fdfa;
-    --teal-border: #99f6e4;        /* avatar / icon-box border on teal-light bg */
-    --teal-divider: #d1fae5;       /* horizontal divider line in round headers */
+    --teal-border: #99f6e4;     /* border on teal-light backgrounds (avatars, icon boxes, dividers) */
+
+    /* Layout */
     --sidebar-width: 240px;
-    --bg: #fafbfc;
+
+    /* Backgrounds */
     --bg-subtle: #f9fafb;
+
+    /* Borders */
     --border: #e5e7eb;
     --border-light: #f1f5f9;
+
+    /* Text */
     --text-primary: #111827;
     --text-secondary: #6b7280;
     --text-muted: #9ca3af;
     --text-body: #374151;
-    --text-dark: #1f2937;
-    --secondary-color: #6366f1;
-    --shadow-xs: rgba(0, 0, 0, 0.04);  /* very subtle card shadow */
+
+    /* Shadows */
+    --shadow-xs: rgba(0, 0, 0, 0.04);
 }
 
 * {

@@ -190,7 +190,7 @@
 .iv-round-hdr-divider {
     flex: 1;
     height: 1px;
-    background: var(--teal-divider);
+    background: var(--teal-border);
 }
 
 .iv-round-date {
