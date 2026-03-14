@@ -382,7 +382,17 @@ The page had no `<main>` element, so assistive technologies could not offer a "s
 
 
 
-### HTML Validation
+Lighthouse Report after all the fixes had been applied:
+
+
+![lighthouse report after fixes ](static/images/after-fixes-report.png)
+
+
+
+
+
+
+### W3C HTML validator
 
 HTML validated using the [W3C Markup Validation Service](https://validator.w3.org/).
 
