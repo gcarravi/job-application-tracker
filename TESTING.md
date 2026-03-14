@@ -243,6 +243,145 @@ The `RegisterForm` extends Django's built-in `UserCreationForm` with a required 
 
 ## Validation
 
+### Lighthouse
+
+Lighthouse audits were run against the deployed landing page. The following issues were identified and resolved.
+
+![lighthouse initial report ](static/images/lighthouse-initial-report.png)
+
+---
+
+#### Performance
+
+##### 1. Render-Blocking Requests — Est. savings: 340 ms
+
+All four CSS resources (Bootstrap, Bootstrap Icons, `base.css`, `style-landing.css`) were loaded with blocking `<link rel="stylesheet">` tags, preventing the browser from rendering until all had downloaded.
+
+**Fix:** Converted every stylesheet to a non-blocking preload pattern:
+```html
+<link rel="preload" href="..." as="style" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="..."></noscript>
+```
+Added inline critical CSS (`body`, `.navbar`, `.hero-section`) to prevent a flash of unstyled content (FOUC) while the deferred sheets load. Also removed the `@import url('base.css')` from `style-landing.css` (sequential blocking fetch) and linked `base.css` directly as a parallel `<link>` tag instead.
+
+---
+
+##### 2. LCP Request Discovery — Est. savings: varies
+
+The Largest Contentful Paint (LCP) element (the hero image) was not being prioritised by the browser, meaning it could be delayed behind lower-priority resources.
+
+**Fix:** Added `fetchpriority="high"` to the hero `<img>` tag so the browser fetches it immediately on navigation.
+
+---
+
+##### 3. Network Dependency Chain — Max critical path latency: 233 ms
+
+Two chained requests were extending the critical path: `bootstrap-icons.css` had to be fully parsed before the browser discovered and downloaded the `.woff2` font file.
+
+**Fix:** Three additions to `<head>` in `landing.html`:
+- `rel="preconnect"` to `cdn.jsdelivr.net` — establishes the TCP/TLS connection early, saving ~80 ms
+- `rel="dns-prefetch"` as a fallback for older browsers
+- `rel="preload"` for the Bootstrap Icons `.woff2` font — breaks the CSS→font chain so the font downloads in parallel with the CSS
+
+---
+
+##### 4. Improve Image Delivery — Est. savings: 146 KiB
+
+Both Unsplash images were requested at `w=1080` but displayed at approximately 636 px wide, downloading ~145 KiB more data than necessary.
+
+**Fix:** Updated both `<img>` tags with:
+- `src` reduced to `w=640` (the approximate display width)
+- `srcset` serving `640w` for standard screens and `1280w` for retina/2x displays
+- `sizes="(max-width: 991px) 100vw, 50vw"` so the browser selects the correct variant before downloading
+
+---
+
+##### 5. Document Request Latency — Est. savings: 14 KiB
+
+Django was not compressing HTML responses, meaning the HTML document was served uncompressed.
+
+**Fix:** Added `django.middleware.gzip.GZipMiddleware` as the first entry in `MIDDLEWARE` in `settings.py`. It must be first so it wraps all subsequent middleware responses. WhiteNoise already handles compression for static files (CSS/JS); this covers the remaining HTML document.
+
+---
+
+##### 6. Font Display — Est. savings: 20 ms
+
+The Bootstrap Icons CDN CSS does not include `font-display: swap`, causing the browser to block text rendering while the font file loads.
+
+**Fix:** Added a `@font-face` override at the top of `base.css` using the same family name and font file URLs as the CDN. The browser deduplicates the declarations and applies `font-display: swap` from our rule, so icons render immediately with a fallback font and swap in once the `.woff2` has loaded.
+
+---
+
+##### 7. Image Elements Without Explicit Width and Height
+
+Without `width` and `height` attributes, the browser cannot reserve space for images before they load, causing layout shifts (CLS).
+
+**Fix:** Added explicit dimensions matching each image's intrinsic aspect ratio:
+
+| Image | Dimensions | Aspect ratio |
+|-------|-----------|--------------|
+| Hero (portrait) | `width="640" height="960"` | 2:3 |
+| Benefits (landscape) | `width="640" height="360"` | 16:9 |
+
+`img-fluid` (`max-width: 100%; height: auto`) keeps them fully responsive; the attributes simply inform the browser of the ratio for layout reservation.
+
+---
+
+#### Accessibility
+
+##### 1. Insufficient Colour Contrast
+
+Several elements failed the WCAG AA minimum contrast ratio of 4.5:1 for normal text.
+
+**Fix:**
+
+| Element | Before | After | Contrast ratio |
+|---------|--------|-------|----------------|
+| `.btn-primary` background | `#0d9488` | `#0f766e` | 3.7:1 → 5.2:1 ✅ |
+| `.badge-custom` text | `#0d9488` on `#f0fdfa` | `#0f766e` on `#f0fdfa` | 3.6:1 → 5.0:1 ✅ |
+| `.btn-outline-secondary` text | `#6c757d` | `#343a40` | 4.4:1 → 10.5:1 ✅ |
+| `.cta-section .text-muted` | `#6c757d` | `#555e68` | 4.2:1 → 5.5:1 ✅ |
+
+The button colours remain visually teal; only the shade was darkened slightly.
+
+---
+
+##### 2. Links Without a Discernible Name
+
+The four social icon links in the footer contained only a `<i>` icon element with no visible or accessible label, making them unreadable by screen readers.
+
+**Fix:** Added `aria-label` to each `<a>` (e.g. `aria-label="Follow us on Twitter"`) and `aria-hidden="true"` to each `<i>` to prevent the icon glyph name from being announced redundantly.
+
+---
+
+##### 3. Heading Elements Not in Sequentially-Descending Order
+
+Section headings jumped from `h2` directly to `h5` (feature cards, steps, benefits) and `h6` (footer columns), skipping levels and breaking the document outline for screen readers.
+
+**Fix:** Changed all sub-section headings to `h3`. Bootstrap's `fs-5` and `fs-6` utility classes were added to preserve the original visual size:
+
+```
+h1  Land Your Dream Job Faster
+  h2  Stay Organised on your job hunt
+    h3  Centralized Dashboard, Smart Reminders, …  (was h5)
+  h2  How Trackwise Works
+    h3  Create Your Account, Add Applications, …   (was h5)
+  h2  Why Job Seekers Love Trackwise
+    h3  Save 5+ Hours Per Week, …                  (was h5)
+  h2  Ready to Transform Your Job Search?
+  h3  Product / Resources / Company                (was h6, footer nav)
+```
+
+---
+
+##### 4. Document Does Not Have a Main Landmark
+
+The page had no `<main>` element, so assistive technologies could not offer a "skip to main content" navigation shortcut.
+
+**Fix:** Wrapped all content between `<nav>` and `<footer>` in a `<main>` element.
+
+
+
 ### HTML Validation
 
 HTML validated using the [W3C Markup Validation Service](https://validator.w3.org/).
