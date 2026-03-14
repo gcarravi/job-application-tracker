@@ -1,3 +1,13 @@
+/* Override Bootstrap Icons @font-face to add font-display: swap.
+   The CDN CSS omits font-display, causing the browser to block text
+   rendering until the font loads. swap keeps text visible immediately. */
+@font-face {
+    font-family: "bootstrap-icons";
+    src: url("https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/fonts/bootstrap-icons.woff2?24e3eb84d0bcaf83d77f904c78ac1f47") format("woff2"),
+         url("https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/fonts/bootstrap-icons.woff?24e3eb84d0bcaf83d77f904c78ac1f47") format("woff");
+    font-display: swap;
+}
+
 :root {
     --teal: #0d9488;
     --teal-dark: #0f766e;
