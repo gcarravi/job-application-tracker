@@ -55,6 +55,8 @@ Users should be able to:
 - Store recruiter and interviewer contact details
 - Maintain notes related to applications and interviews
 - View all applications currently in the Interviewing stage
+- See analytics and statistics about their job search activity
+- Access help and FAQs from the sidebar
 
 ---
 
@@ -320,6 +322,32 @@ Contact information can include:
 
 Contacts can be linked to both applications and individual interview rounds, and can be reused across multiple opportunities.
 
+### Analytics
+
+The Analytics page gives users a data-driven overview of their job search activity.
+
+Metrics include:
+
+- **Total applications**, applied this week, and applied this month
+- **Interview rate** — percentage of applications that reached interview stage
+- **Response rate** — percentage of applications that received any response
+- **Offer rate** — percentage of applications that resulted in an offer
+- **Total interview rounds** logged
+
+Charts include:
+
+- **Applications per Month** — bar chart showing the last 6 months of activity
+- **Status Breakdown** — doughnut chart showing applications grouped by current status
+- **Application Funnel** — horizontal bar chart showing the drop-off from Total Applied → Got Interview → Received Offer
+
+### Help & Support
+
+A dedicated help page accessible from the sidebar, containing:
+
+- **Getting Started guide** — 4-step walkthrough for new users (add company, create application, track on board, log interviews)
+- **FAQ accordion** — answers to common questions covering board navigation, interview logging, contacts, subscription management, and mobile usage
+- **Contact support** — direct link to the support email
+
 ---
 
 ## Subscription & Payments
@@ -354,7 +382,6 @@ Redirected to payment success page
 
 Possible future enhancements include:
 
-- Application statistics and analytics dashboard
 - Search and filtering across applications
 - Email interview reminders
 - File uploads for CV versions
@@ -377,6 +404,7 @@ Possible future enhancements include:
 - Django
 - Bootstrap 5
 - SortableJS (drag-and-drop kanban)
+- Chart.js (analytics charts)
 - Stripe (payments)
 - WhiteNoise (static file serving)
 
