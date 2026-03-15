@@ -6,8 +6,9 @@ from django.test import TestCase, Client
 from django.urls import reverse
 from django.utils import timezone
 from django.contrib.auth.models import User
+from django.core.files.uploadedfile import SimpleUploadedFile
 
-from .models import Application, Company, Contact, Interview
+from .models import Application, Company, Contact, Interview, Document
 
 
 class PostViewTestBase(TestCase):
@@ -993,3 +994,201 @@ class StripeWebhookTests(PostViewTestBase):
             {'client_reference_id': str(self.user.id), 'customer': 'cus_test123'},
         )
         self.assertEqual(response.status_code, 200)
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# DOCUMENTS TESTS
+# ═══════════════════════════════════════════════════════════════════════════════
+
+def _fake_file():
+    return SimpleUploadedFile('cv.pdf', b'%PDF-1.4 fake content', content_type='application/pdf')
+
+
+# ── DocumentsView ─────────────────────────────────────────────────────────────
+
+class DocumentsViewGetTests(PostViewTestBase):
+
+    def test_renders_documents_page(self):
+        response = self.client.get(reverse('documents'))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'tracker/documents.html')
+
+    def test_requires_login(self):
+        self.client.logout()
+        response = self.client.get(reverse('documents'))
+        self.assertRedirects(response, f"{reverse('login')}?next={reverse('documents')}")
+
+    @patch('cloudinary.uploader.upload')
+    def test_shows_users_documents(self, mock_upload):
+        mock_upload.return_value = {'public_id': 'docs/cv1', 'version': 1, 'resource_type': 'raw', 'type': 'upload'}
+        doc = Document.objects.create(user=self.user, name='My CV', file=_fake_file(), file_type='cv')
+        response = self.client.get(reverse('documents'))
+        self.assertIn(doc, response.context['documents'])
+
+    @patch('cloudinary.uploader.upload')
+    def test_does_not_show_other_users_documents(self, mock_upload):
+        mock_upload.return_value = {'public_id': 'docs/other', 'version': 1, 'resource_type': 'raw', 'type': 'upload'}
+        other_doc = Document.objects.create(user=self.other_user, name='Other CV', file=_fake_file(), file_type='cv')
+        response = self.client.get(reverse('documents'))
+        self.assertNotIn(other_doc, response.context['documents'])
+
+
+# ── upload_document ───────────────────────────────────────────────────────────
+
+class UploadDocumentTests(PostViewTestBase):
+
+    def test_requires_login(self):
+        self.client.logout()
+        response = self.client.post(reverse('upload_document'), {'name': 'CV', 'file': _fake_file()})
+        self.assertEqual(response.status_code, 302)
+
+    def test_no_file_returns_400(self):
+        response = self.client.post(reverse('upload_document'), {'name': 'CV'})
+        self.assertEqual(response.status_code, 400)
+        self.assertJSONEqual(response.content, {'success': False, 'error': 'No file provided'})
+
+    def test_no_name_returns_400(self):
+        response = self.client.post(reverse('upload_document'), {'name': '', 'file': _fake_file()})
+        self.assertEqual(response.status_code, 400)
+        self.assertJSONEqual(response.content, {'success': False, 'error': 'Name is required'})
+
+    @patch('cloudinary.uploader.upload')
+    def test_valid_upload_creates_document(self, mock_upload):
+        mock_upload.return_value = {'public_id': 'docs/cv1', 'version': 1, 'resource_type': 'raw', 'type': 'upload'}
+        response = self.client.post(
+            reverse('upload_document'),
+            {'name': 'My CV', 'file_type': 'cv', 'file': _fake_file()},
+        )
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+        self.assertTrue(data['success'])
+        self.assertTrue(Document.objects.filter(name='My CV', user=self.user).exists())
+
+    @patch('cloudinary.uploader.upload')
+    def test_valid_upload_returns_document_fields(self, mock_upload):
+        mock_upload.return_value = {'public_id': 'docs/cv1', 'version': 1, 'resource_type': 'raw', 'type': 'upload'}
+        response = self.client.post(
+            reverse('upload_document'),
+            {'name': 'Portfolio', 'file_type': 'portfolio', 'file': _fake_file()},
+        )
+        data = response.json()
+        self.assertIn('id', data)
+        self.assertEqual(data['name'], 'Portfolio')
+        self.assertIn('url', data)
+        self.assertIn('created_at', data)
+
+
+# ── delete_document ───────────────────────────────────────────────────────────
+
+class DeleteDocumentTests(PostViewTestBase):
+
+    @patch('cloudinary.uploader.upload')
+    def setUp(self, mock_upload):
+        mock_upload.return_value = {'public_id': 'docs/cv1', 'version': 1, 'resource_type': 'raw', 'type': 'upload'}
+        super().setUp()
+        self.doc = Document.objects.create(user=self.user, name='My CV', file=_fake_file(), file_type='cv')
+
+    def test_deletes_document_and_returns_success(self):
+        url = reverse('delete_document', args=[self.doc.id])
+        response = self.client.post(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertJSONEqual(response.content, {'success': True})
+        self.assertFalse(Document.objects.filter(id=self.doc.id).exists())
+
+    def test_get_returns_400(self):
+        url = reverse('delete_document', args=[self.doc.id])
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 400)
+
+    def test_requires_login(self):
+        self.client.logout()
+        url = reverse('delete_document', args=[self.doc.id])
+        response = self.client.post(url)
+        self.assertEqual(response.status_code, 302)
+
+    @patch('cloudinary.uploader.upload')
+    def test_other_users_document_returns_404(self, mock_upload):
+        mock_upload.return_value = {'public_id': 'docs/other', 'version': 1, 'resource_type': 'raw', 'type': 'upload'}
+        other_doc = Document.objects.create(user=self.other_user, name='Other CV', file=_fake_file(), file_type='cv')
+        url = reverse('delete_document', args=[other_doc.id])
+        response = self.client.post(url)
+        self.assertEqual(response.status_code, 404)
+
+
+# ── get_documents_api ─────────────────────────────────────────────────────────
+
+class GetDocumentsApiTests(PostViewTestBase):
+
+    @patch('cloudinary.uploader.upload')
+    def setUp(self, mock_upload):
+        mock_upload.return_value = {'public_id': 'docs/cv1', 'version': 1, 'resource_type': 'raw', 'type': 'upload'}
+        super().setUp()
+        self.doc = Document.objects.create(user=self.user, name='My CV', file=_fake_file(), file_type='cv')
+
+    def test_returns_documents_as_json(self):
+        response = self.client.get(reverse('get_documents_api'))
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+        self.assertIn('documents', data)
+        self.assertEqual(len(data['documents']), 1)
+        self.assertEqual(data['documents'][0]['name'], 'My CV')
+
+    def test_requires_login(self):
+        self.client.logout()
+        response = self.client.get(reverse('get_documents_api'))
+        self.assertEqual(response.status_code, 302)
+
+    @patch('cloudinary.uploader.upload')
+    def test_does_not_return_other_users_documents(self, mock_upload):
+        mock_upload.return_value = {'public_id': 'docs/other', 'version': 1, 'resource_type': 'raw', 'type': 'upload'}
+        Document.objects.create(user=self.other_user, name='Other CV', file=_fake_file(), file_type='cv')
+        response = self.client.get(reverse('get_documents_api'))
+        data = response.json()
+        names = [d['name'] for d in data['documents']]
+        self.assertNotIn('Other CV', names)
+
+
+# ── update_job_documents ──────────────────────────────────────────────────────
+
+class UpdateJobDocumentsTests(PostViewTestBase):
+
+    @patch('cloudinary.uploader.upload')
+    def setUp(self, mock_upload):
+        mock_upload.return_value = {'public_id': 'docs/cv1', 'version': 1, 'resource_type': 'raw', 'type': 'upload'}
+        super().setUp()
+        self.doc = Document.objects.create(user=self.user, name='My CV', file=_fake_file(), file_type='cv')
+
+    def test_sets_documents_on_application(self):
+        url = reverse('update_job_documents', args=[self.application.id])
+        response = self._json_post(url, {'document_ids': [self.doc.id]})
+        self.assertEqual(response.status_code, 200)
+        self.assertJSONEqual(response.content, {'success': True})
+        self.assertIn(self.doc, self.application.documents.all())
+
+    def test_clears_documents_when_empty_list(self):
+        self.application.documents.add(self.doc)
+        url = reverse('update_job_documents', args=[self.application.id])
+        response = self._json_post(url, {'document_ids': []})
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(self.application.documents.count(), 0)
+
+    def test_requires_login(self):
+        self.client.logout()
+        url = reverse('update_job_documents', args=[self.application.id])
+        response = self._json_post(url, {'document_ids': []})
+        self.assertEqual(response.status_code, 302)
+
+    def test_other_users_application_returns_404(self):
+        other_company = Company.objects.create(user=self.other_user, name='Other Co')
+        other_app = Application.objects.create(
+            user=self.other_user, company=other_company,
+            job_title='Other Job', status='applied', date_applied=date.today(),
+        )
+        url = reverse('update_job_documents', args=[other_app.id])
+        response = self._json_post(url, {'document_ids': []})
+        self.assertEqual(response.status_code, 404)
+
+    def test_get_returns_400(self):
+        url = reverse('update_job_documents', args=[self.application.id])
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 400)

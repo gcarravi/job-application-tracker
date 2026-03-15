@@ -1,0 +1,327 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block page_title %}Documents - Trackwise{% endblock %}
+
+{% block nav_documents %}active{% endblock %}
+
+{% block extra_css %}
+<style>
+@media (max-width: 767px) {
+    .docs-page-wrap { padding: 1rem 0.75rem 1.5rem; }
+    .docs-table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    .doc-col-type, .doc-col-date { display: none; }
+}
+</style>
+{% endblock %}
+
+{% block topbar_center %}
+    <span class="topbar-title">Documents</span>
+{% endblock %}
+
+{% block topbar_actions %}{% endblock %}
+
+{% block content %}
+
+<div class="docs-page-wrap" style="padding: 1.5rem 1.5rem 2rem;">
+
+    <!-- Page header -->
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;margin-bottom:1.5rem;flex-wrap:wrap;">
+        <div style="display:flex;align-items:center;gap:0.875rem;">
+            <div style="width:2.5rem;height:2.5rem;border-radius:0.625rem;background:#f0fdfa;border:1px solid #99f6e4;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                <i class="fas fa-file-alt" style="color:var(--teal);font-size:1rem;"></i>
+            </div>
+            <div>
+                <h2 style="font-size:1.0625rem;font-weight:700;color:#111827;margin:0;line-height:1.3;">Your Documents</h2>
+                <p style="font-size:0.8125rem;color:#6b7280;margin:0;">Upload and manage your CVs, cover letters and other files.</p>
+            </div>
+        </div>
+        <button class="btn-teal" id="uploadDocBtn">
+            <i class="fas fa-upload me-1"></i> Upload Document
+        </button>
+    </div>
+
+    {% if not documents %}
+    <div class="d-flex flex-column align-items-center justify-content-center" style="padding: 4rem 1rem; text-align: center;">
+        <div style="width:56px;height:56px;border-radius:50%;background:#f0fdfa;display:flex;align-items:center;justify-content:center;margin-bottom:1.25rem;">
+            <i class="fas fa-file-alt" style="color:var(--teal);font-size:1.5rem;"></i>
+        </div>
+        <h3 style="font-size:1.125rem;font-weight:600;color:#111827;margin-bottom:0.5rem;">No documents yet</h3>
+        <p style="font-size:0.9rem;color:#6b7280;max-width:360px;">
+            Upload your CV, cover letters and portfolio files here. You can then attach them directly to your job applications.
+        </p>
+        <button class="btn-teal mt-3" id="uploadDocBtnEmpty">
+            <i class="fas fa-upload me-1"></i> Upload your first document
+        </button>
+    </div>
+
+    {% else %}
+
+    <!-- Table -->
+    <div class="docs-table-scroll" style="background:white;border:1px solid #e5e7eb;border-radius:0.875rem;overflow:hidden;">
+        <table style="width:100%;min-width:480px;border-collapse:collapse;">
+            <thead>
+                <tr style="border-bottom:1px solid #f1f5f9;">
+                    <th style="padding:0.75rem 1.25rem;text-align:left;font-size:0.6875rem;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:#9ca3af;">Name</th>
+                    <th class="doc-col-type" style="padding:0.75rem 1rem;text-align:left;font-size:0.6875rem;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:#9ca3af;">Type</th>
+                    <th class="doc-col-date" style="padding:0.75rem 1rem;text-align:left;font-size:0.6875rem;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:#9ca3af;">Uploaded</th>
+                    <th style="padding:0.75rem 1rem;width:5rem;"></th>
+                </tr>
+            </thead>
+            <tbody id="docsTableBody">
+                {% for doc in documents %}
+                <tr class="doc-row" id="doc-row-{{ doc.id }}"
+                    style="border-bottom:1px solid #f9fafb;transition:background 0.1s;"
+                    onmouseover="this.style.background='#fafafa'" onmouseout="this.style.background=''">
+
+                    <!-- Name -->
+                    <td style="padding:0.875rem 1.25rem;">
+                        <div style="display:flex;align-items:center;gap:0.75rem;">
+                            <div style="width:2rem;height:2rem;border-radius:0.375rem;background:#f0fdfa;border:1px solid #99f6e4;color:var(--teal);display:flex;align-items:center;justify-content:center;font-size:0.75rem;flex-shrink:0;">
+                                <i class="fas fa-file-alt"></i>
+                            </div>
+                            <span style="font-size:0.875rem;font-weight:600;color:#111827;">{{ doc.name }}</span>
+                        </div>
+                    </td>
+
+                    <!-- Type -->
+                    <td class="doc-col-type" style="padding:0.875rem 1rem;">
+                        <span style="font-size:0.8125rem;color:#374151;">{{ doc.get_file_type_display }}</span>
+                    </td>
+
+                    <!-- Date -->
+                    <td class="doc-col-date" style="padding:0.875rem 1rem;">
+                        <span style="font-size:0.8125rem;color:#6b7280;">{{ doc.created_at|date:"d M Y" }}</span>
+                    </td>
+
+                    <!-- Actions -->
+                    <td style="padding:0.875rem 1rem;text-align:right;">
+                        <div style="display:flex;gap:0.375rem;justify-content:flex-end;">
+                            <a href="{{ doc.file.url }}" target="_blank" rel="noopener"
+                               title="Download"
+                               style="background:none;border:1px solid #e5e7eb;border-radius:0.5rem;padding:0.3rem 0.55rem;cursor:pointer;color:#6b7280;font-size:0.75rem;transition:all 0.15s;text-decoration:none;display:inline-flex;align-items:center;"
+                               onmouseover="this.style.borderColor='var(--teal)';this.style.color='var(--teal)'"
+                               onmouseout="this.style.borderColor='#e5e7eb';this.style.color='#6b7280'">
+                                <i class="fas fa-download"></i>
+                            </a>
+                            <button class="delete-doc-btn"
+                                data-id="{{ doc.id }}"
+                                title="Delete"
+                                style="background:none;border:1px solid #e5e7eb;border-radius:0.5rem;padding:0.3rem 0.55rem;cursor:pointer;color:#9ca3af;font-size:0.75rem;transition:all 0.15s;"
+                                onmouseover="this.style.borderColor='#fca5a5';this.style.color='#ef4444'"
+                                onmouseout="this.style.borderColor='#e5e7eb';this.style.color='#9ca3af'">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </div>
+                    </td>
+
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    {% endif %}
+
+</div>
+
+<!-- Upload Modal -->
+<div class="modal fade" id="uploadDocModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border-radius:1rem;border:none;overflow:hidden;">
+            <div class="modal-app-header d-flex align-items-center justify-content-between">
+                <div class="d-flex align-items-center gap-2">
+                    <div class="modal-icon"><i class="fas fa-file-alt"></i></div>
+                    <h3 class="modal-app-title mb-0">Upload Document</h3>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" style="padding:1.25rem 1.5rem;">
+                <div class="mb-3">
+                    <label class="modal-label">Document Name <span class="iv-required">*</span></label>
+                    <input type="text" id="docNameInput" class="form-control" placeholder="e.g. Software Engineer CV 2026">
+                </div>
+                <div class="mb-3">
+                    <label class="modal-label">Document Type</label>
+                    <select id="docTypeSelect" class="form-control">
+                        <option value="cv">CV / Resume</option>
+                        <option value="cover_letter">Cover Letter</option>
+                        <option value="portfolio">Portfolio</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                <div class="mb-0">
+                    <label class="modal-label">File <span class="iv-required">*</span></label>
+                    <input type="file" id="docFileInput" class="form-control"
+                           accept=".pdf,.doc,.docx,.txt,.odt,.pages,.pptx,.png,.jpg,.jpeg">
+                    <p style="font-size:0.75rem;color:#9ca3af;margin-top:0.375rem;">
+                        PDF, Word, plain text, images and other common formats accepted.
+                    </p>
+                </div>
+                <div id="docUploadError" style="display:none;color:#ef4444;font-size:0.8125rem;margin-top:0.5rem;"></div>
+            </div>
+            <div class="modal-footer modal-app-footer d-flex justify-content-between">
+                <button type="button" class="btn-modal-cancel" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn-teal" id="saveDocBtn">
+                    <i class="fas fa-upload me-1"></i> Upload
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        for (let cookie of document.cookie.split(';')) {
+            cookie = cookie.trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+    const modal = new bootstrap.Modal(document.getElementById('uploadDocModal'));
+
+    function openUploadModal() {
+        document.getElementById('docNameInput').value = '';
+        document.getElementById('docTypeSelect').value = 'cv';
+        document.getElementById('docFileInput').value = '';
+        document.getElementById('docUploadError').style.display = 'none';
+        modal.show();
+    }
+
+    document.getElementById('uploadDocBtn').addEventListener('click', openUploadModal);
+    const emptyBtn = document.getElementById('uploadDocBtnEmpty');
+    if (emptyBtn) emptyBtn.addEventListener('click', openUploadModal);
+
+    document.getElementById('saveDocBtn').addEventListener('click', function () {
+        const name = document.getElementById('docNameInput').value.trim();
+        const file = document.getElementById('docFileInput').files[0];
+        const errEl = document.getElementById('docUploadError');
+
+        errEl.style.display = 'none';
+        if (!name) {
+            document.getElementById('docNameInput').style.borderColor = '#dc3545';
+            document.getElementById('docNameInput').focus();
+            return;
+        }
+        document.getElementById('docNameInput').style.borderColor = '';
+        if (!file) {
+            errEl.textContent = 'Please select a file.';
+            errEl.style.display = 'block';
+            return;
+        }
+
+        const btn = document.getElementById('saveDocBtn');
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Uploading…';
+
+        const formData = new FormData();
+        formData.append('name', name);
+        formData.append('file_type', document.getElementById('docTypeSelect').value);
+        formData.append('file', file);
+        formData.append('csrfmiddlewaretoken', getCookie('csrftoken'));
+
+        fetch('/documents/upload/', { method: 'POST', body: formData })
+            .then(r => r.json())
+            .then(data => {
+                if (data.success) {
+                    modal.hide();
+                    addDocRow(data);
+                } else {
+                    errEl.textContent = data.error || 'Upload failed.';
+                    errEl.style.display = 'block';
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fas fa-upload me-1"></i> Upload';
+                }
+            })
+            .catch(() => {
+                errEl.textContent = 'Upload failed. Please try again.';
+                errEl.style.display = 'block';
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-upload me-1"></i> Upload';
+            });
+    });
+
+    function addDocRow(doc) {
+        // Remove empty state if present and rebuild table if needed
+        const emptyState = document.querySelector('.d-flex.flex-column.align-items-center');
+        if (emptyState) {
+            window.location.reload();
+            return;
+        }
+
+        const tbody = document.getElementById('docsTableBody');
+        const tr = document.createElement('tr');
+        tr.className = 'doc-row';
+        tr.id = `doc-row-${doc.id}`;
+        tr.style.cssText = 'border-bottom:1px solid #f9fafb;transition:background 0.1s;';
+        tr.onmouseover = function() { this.style.background = '#fafafa'; };
+        tr.onmouseout = function() { this.style.background = ''; };
+        tr.innerHTML = `
+            <td style="padding:0.875rem 1.25rem;">
+                <div style="display:flex;align-items:center;gap:0.75rem;">
+                    <div style="width:2rem;height:2rem;border-radius:0.375rem;background:#f0fdfa;border:1px solid #99f6e4;color:var(--teal);display:flex;align-items:center;justify-content:center;font-size:0.75rem;flex-shrink:0;">
+                        <i class="fas fa-file-alt"></i>
+                    </div>
+                    <span style="font-size:0.875rem;font-weight:600;color:#111827;">${doc.name}</span>
+                </div>
+            </td>
+            <td class="doc-col-type" style="padding:0.875rem 1rem;">
+                <span style="font-size:0.8125rem;color:#374151;">${doc.file_type}</span>
+            </td>
+            <td class="doc-col-date" style="padding:0.875rem 1rem;">
+                <span style="font-size:0.8125rem;color:#6b7280;">${doc.created_at}</span>
+            </td>
+            <td style="padding:0.875rem 1rem;text-align:right;">
+                <div style="display:flex;gap:0.375rem;justify-content:flex-end;">
+                    <a href="${doc.url}" target="_blank" rel="noopener" title="Download"
+                       style="background:none;border:1px solid #e5e7eb;border-radius:0.5rem;padding:0.3rem 0.55rem;cursor:pointer;color:#6b7280;font-size:0.75rem;transition:all 0.15s;text-decoration:none;display:inline-flex;align-items:center;"
+                       onmouseover="this.style.borderColor='var(--teal)';this.style.color='var(--teal)'"
+                       onmouseout="this.style.borderColor='#e5e7eb';this.style.color='#6b7280'">
+                        <i class="fas fa-download"></i>
+                    </a>
+                    <button class="delete-doc-btn" data-id="${doc.id}" title="Delete"
+                       style="background:none;border:1px solid #e5e7eb;border-radius:0.5rem;padding:0.3rem 0.55rem;cursor:pointer;color:#9ca3af;font-size:0.75rem;transition:all 0.15s;"
+                       onmouseover="this.style.borderColor='#fca5a5';this.style.color='#ef4444'"
+                       onmouseout="this.style.borderColor='#e5e7eb';this.style.color='#9ca3af'">
+                        <i class="fas fa-trash-alt"></i>
+                    </button>
+                </div>
+            </td>
+        `;
+        tbody.insertBefore(tr, tbody.firstChild);
+        bindDelete(tr.querySelector('.delete-doc-btn'));
+    }
+
+    function bindDelete(btn) {
+        btn.addEventListener('click', function () {
+            if (!confirm('Delete this document?')) return;
+            const id = this.dataset.id;
+            fetch(`/documents/${id}/delete/`, {
+                method: 'POST',
+                headers: { 'X-CSRFToken': getCookie('csrftoken') }
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById(`doc-row-${id}`)?.remove();
+                    if (!document.querySelector('.doc-row')) window.location.reload();
+                }
+            });
+        });
+    }
+
+    document.querySelectorAll('.delete-doc-btn').forEach(bindDelete);
+});
+</script>
+{% endblock %}

@@ -12,7 +12,7 @@ from django.conf import settings
 import json
 from datetime import datetime, date, timedelta
 import calendar as _cal
-from .models import Company, Application, Interview, Contact
+from .models import Company, Application, Interview, Contact, Document
 from .forms import ApplicationForm
 import stripe
 
@@ -148,6 +148,7 @@ def get_job(request, job_id):
         "notes": job.notes or "",
         "recruiter_id": job.recruiter_id or "",
         "recruiter_name": job.recruiter.full_name if job.recruiter else "",
+        "document_ids": list(job.documents.values_list('id', flat=True)),
     }
 
     return JsonResponse(data)
@@ -324,8 +325,71 @@ def payment_cancel(request):
     return render(request, "payment_cancel.html")
 
 
+class DocumentsView(UserContextMixin, LoginRequiredMixin, TemplateView):
+    template_name = "tracker/documents.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["documents"] = Document.objects.filter(user=self.request.user).order_by('-created_at')
+        return context
+
+
+@login_required
+@csrf_exempt
+def upload_document(request):
+    if request.method == 'POST' and request.FILES.get('file'):
+        name = request.POST.get('name', '').strip()
+        file_type = request.POST.get('file_type', 'cv')
+        if not name:
+            return JsonResponse({'success': False, 'error': 'Name is required'}, status=400)
+        doc = Document.objects.create(
+            user=request.user,
+            name=name,
+            file=request.FILES['file'],
+            file_type=file_type,
+        )
+        return JsonResponse({
+            'success': True,
+            'id': doc.id,
+            'name': doc.name,
+            'file_type': doc.get_file_type_display(),
+            'url': doc.file.url,
+            'created_at': doc.created_at.strftime('%d %b %Y'),
+        })
+    return JsonResponse({'success': False, 'error': 'No file provided'}, status=400)
+
+
+@login_required
+@csrf_exempt
+def delete_document(request, doc_id):
+    if request.method == 'POST':
+        doc = get_object_or_404(Document, id=doc_id, user=request.user)
+        doc.delete()
+        return JsonResponse({'success': True})
+    return JsonResponse({'success': False}, status=400)
+
+
+@login_required
+def get_documents_api(request):
+    docs = Document.objects.filter(user=request.user).order_by('-created_at')
+    data = [{'id': d.id, 'name': d.name, 'file_type': d.get_file_type_display(), 'url': d.file.url} for d in docs]
+    return JsonResponse({'documents': data})
+
+
+@login_required
+@csrf_exempt
+def update_job_documents(request, job_id):
+    if request.method == 'POST':
+        application = get_object_or_404(Application, id=job_id, user=request.user)
+        data = json.loads(request.body)
+        doc_ids = data.get('document_ids', [])
+        application.documents.set(Document.objects.filter(id__in=doc_ids, user=request.user))
+        return JsonResponse({'success': True})
+    return JsonResponse({'success': False}, status=400)
+
+
 class LandingView(TemplateView):
-    template_name = "landing.html"     
+    template_name = "landing.html"
 
 
 class HomeView(UserContextMixin, LoginRequiredMixin, TemplateView):

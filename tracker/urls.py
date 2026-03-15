@@ -1,7 +1,7 @@
 from django.urls import path
 from . import views
 from .views import LandingView, HomeView
-from .views import TrackerBoardView, InterviewsView, ContactsView, HelpView, AnalyticsView
+from .views import TrackerBoardView, InterviewsView, ContactsView, HelpView, AnalyticsView, DocumentsView
 from .views import (
     CompanyListView,
     CompanyCreateView,
@@ -37,4 +37,9 @@ urlpatterns = [
     path("payment-cancel/", views.payment_cancel, name="payment_cancel"),
     path("help/", HelpView.as_view(), name="help"),
     path("analytics/", AnalyticsView.as_view(), name="analytics"),
+    path("documents/", DocumentsView.as_view(), name="documents"),
+    path("documents/upload/", views.upload_document, name="upload_document"),
+    path("documents/<int:doc_id>/delete/", views.delete_document, name="delete_document"),
+    path("documents/api/", views.get_documents_api, name="get_documents_api"),
+    path("update-job-documents/<int:job_id>/", views.update_job_documents, name="update_job_documents"),
 ]

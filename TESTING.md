@@ -15,12 +15,14 @@ This document covers all testing carried out on the Trackwise application, inclu
   - [Tracker GET View Tests](#tracker-get-view-tests)
   - [Tracker POST View Tests](#tracker-post-view-tests)
   - [Stripe Payment Tests](#stripe-payment-tests)
+  - [Documents Feature Tests](#documents-feature-tests)
 - [Manual Testing](#manual-testing)
   - [Authentication](#authentication)
   - [Job Tracker Board](#job-tracker-board)
   - [Interview Management](#interview-management)
   - [Company Management](#company-management)
   - [Contacts Directory](#contacts-directory)
+  - [Documents](#documents)
   - [Analytics Page](#analytics-page)
   - [Help & Support Page](#help--support-page)
   - [Subscription & Payments](#subscription--payments)
@@ -56,7 +58,7 @@ To run with verbose output:
 python manage.py test --verbosity=2
 ```
 
-**Current result:** 120 tests, 0 failures, 0 errors.
+**Current result:** 137 tests, 0 failures, 0 errors.
 
 To run only view tests:
 
@@ -493,6 +495,60 @@ Stripe API calls are mocked with `unittest.mock.patch` so no real network reques
 
 ---
 
+### Documents Feature Tests
+
+**File:** `tracker/test_views.py`
+
+Tests for the Documents feature: uploading files to Cloudinary, listing and deleting documents, and attaching documents to job applications. Cloudinary API calls are mocked so no real network requests are made.
+
+#### `DocumentsViewGetTests`
+
+| Test | Description | Expected Result | Pass/Fail |
+|------|-------------|-----------------|-----------|
+| `test_renders_documents_page` | GET `/documents/` | Returns 200 with `tracker/documents.html` | ✅ Pass |
+| `test_requires_login` | GET `/documents/` while logged out | Redirects to login | ✅ Pass |
+| `test_shows_users_documents` | User has a document | Document appears in context | ✅ Pass |
+| `test_does_not_show_other_users_documents` | Second user has a document | Other user's document not in context | ✅ Pass |
+
+#### `UploadDocumentTests`
+
+| Test | Description | Expected Result | Pass/Fail |
+|------|-------------|-----------------|-----------|
+| `test_requires_login` | POST while logged out | Redirects to login | ✅ Pass |
+| `test_no_file_returns_400` | POST with no file attached | Returns 400 with `{"success": false, "error": "No file provided"}` | ✅ Pass |
+| `test_no_name_returns_400` | POST with blank `name` field | Returns 400 with `{"success": false, "error": "Name is required"}` | ✅ Pass |
+| `test_valid_upload_creates_document` | POST with file and name (Cloudinary mocked) | Returns 200; Document record created in database | ✅ Pass |
+| `test_valid_upload_returns_document_fields` | POST with file (Cloudinary mocked) | Response JSON includes `id`, `name`, `url`, `created_at` | ✅ Pass |
+
+#### `DeleteDocumentTests`
+
+| Test | Description | Expected Result | Pass/Fail |
+|------|-------------|-----------------|-----------|
+| `test_deletes_document_and_returns_success` | POST `/documents/<id>/delete/` | Document deleted; returns `{"success": true}` | ✅ Pass |
+| `test_get_returns_400` | GET request | Returns 400 | ✅ Pass |
+| `test_requires_login` | POST while logged out | Redirects to login | ✅ Pass |
+| `test_other_users_document_returns_404` | Document belongs to another user | Returns 404 | ✅ Pass |
+
+#### `GetDocumentsApiTests`
+
+| Test | Description | Expected Result | Pass/Fail |
+|------|-------------|-----------------|-----------|
+| `test_returns_documents_as_json` | GET `/documents/api/` | Returns 200 with `documents` list containing the user's document | ✅ Pass |
+| `test_requires_login` | GET while logged out | Redirects to login | ✅ Pass |
+| `test_does_not_return_other_users_documents` | Second user has a document | Other user's document not in response | ✅ Pass |
+
+#### `UpdateJobDocumentsTests`
+
+| Test | Description | Expected Result | Pass/Fail |
+|------|-------------|-----------------|-----------|
+| `test_sets_documents_on_application` | POST with `document_ids` list | Document linked to application via M2M | ✅ Pass |
+| `test_clears_documents_when_empty_list` | POST with empty `document_ids` | All documents detached from application | ✅ Pass |
+| `test_requires_login` | POST while logged out | Redirects to login | ✅ Pass |
+| `test_other_users_application_returns_404` | Application belongs to another user | Returns 404 | ✅ Pass |
+| `test_get_returns_400` | GET request | Returns 400 | ✅ Pass |
+
+---
+
 ## Manual Testing
 
 ### Authentication
@@ -556,6 +612,22 @@ Stripe API calls are mocked with `unittest.mock.patch` so no real network reques
 | Edit contact | Click edit on a contact, update email, save | Updated email displayed | ✅ Pass |
 | Delete contact | Click delete on a contact, confirm | Contact removed | ✅ Pass |
 | Contact isolation | Log in as second user | Only own contacts visible | ✅ Pass |
+
+---
+
+### Documents
+
+| Test | Steps | Expected Result | Pass/Fail |
+|------|-------|-----------------|-----------|
+| Upload document | Navigate to `/documents/`, click `Upload Document`, fill in name and select a file, click Upload | Document appears in the list | ✅ Pass |
+| Upload without name | Submit upload form with blank name | Name field highlighted in red; upload not submitted | ✅ Pass |
+| Upload without file | Submit upload form with name but no file selected | Error message shown; document not created | ✅ Pass |
+| Download document | Click the download icon on a document row | File opens / downloads in a new tab | ✅ Pass |
+| Delete document | Click the delete icon on a document row, confirm | Document removed from the list | ✅ Pass |
+| Empty state | Visit `/documents/` with no documents | Empty state shown with upload prompt | ✅ Pass |
+| Attach document to application | Open an application in the tracker, go to the Documents tab, check a document, click Save | Document linked to the application | ✅ Pass |
+| Detach document from application | Uncheck a linked document, click Save | Document detached from the application | ✅ Pass |
+| Document isolation | Log in as a second user | Only own documents visible; cannot access other user's documents | ✅ Pass |
 
 ---
 
@@ -838,5 +910,5 @@ Tested using Chrome DevTools device emulation and on physical devices.
 
 | Issue | Status |
 |-------|--------|
-| Documents and Settings sidebar items are placeholders with no linked pages | Not yet implemented |
+| Settings sidebar item is a placeholder with no linked page | Not yet implemented |
 | Stripe subscription cancellation requires emailing support (no self-service portal) | By design for current version |

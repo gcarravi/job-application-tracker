@@ -96,6 +96,9 @@
                     <button class="modal-tab-btn" data-tab="tab-notes">
                         <i class="fas fa-sticky-note me-1"></i> Notes
                     </button>
+                    <button class="modal-tab-btn" data-tab="tab-documents">
+                        <i class="fas fa-file-alt me-1"></i> Documents
+                    </button>
                 </div>
 
                 <!-- TAB: EDIT (also the Add form) -->
@@ -181,6 +184,25 @@
                         <button type="button" class="btn-modal-cancel" data-bs-dismiss="modal">Cancel</button>
                         <button type="button" class="btn-teal" id="saveNotesBtn">
                             <i class="fas fa-save me-1"></i> Save Notes
+                        </button>
+                    </div>
+                </div>
+
+                <!-- TAB: DOCUMENTS -->
+                <div id="tab-documents" class="modal-tab-panel" style="display:none;">
+                    <div class="modal-app-body" style="overflow-y:auto;max-height:420px;">
+                        <p style="font-size:0.875rem;color:#6b7280;margin-bottom:1rem;">
+                            Attach documents from your library to this application.
+                            <a href="{% url 'documents' %}" style="color:var(--teal);">Manage documents</a>
+                        </p>
+                        <div id="documentCheckList">
+                            <p style="color:#9ca3af;font-size:0.875rem;">Loading…</p>
+                        </div>
+                    </div>
+                    <div class="modal-footer modal-app-footer">
+                        <button type="button" class="btn-modal-cancel" data-bs-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn-teal" id="saveDocumentsBtn">
+                            <i class="fas fa-save me-1"></i> Save
                         </button>
                     </div>
                 </div>

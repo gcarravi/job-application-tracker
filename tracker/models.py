@@ -58,6 +58,25 @@ class Contact(models.Model):
         return f"{self.first_name} {self.last_name}".strip() or self.first_name
 
 
+class Document(models.Model):
+
+    FILE_TYPE_CHOICES = [
+        ('cv', 'CV / Resume'),
+        ('cover_letter', 'Cover Letter'),
+        ('portfolio', 'Portfolio'),
+        ('other', 'Other'),
+    ]
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='documents')
+    name = models.CharField(max_length=255)
+    file = CloudinaryField('file', resource_type='raw')
+    file_type = models.CharField(max_length=50, choices=FILE_TYPE_CHOICES, default='cv')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.name
+
+
 class Application(models.Model):
 
     STATUS_CHOICES = [
@@ -78,6 +97,7 @@ class Application(models.Model):
     date_applied = models.DateField()
     notes = models.TextField(blank=True, null=True)
     recruiter = models.ForeignKey('Contact', on_delete=models.SET_NULL, null=True, blank=True, related_name='recruited_applications')
+    documents = models.ManyToManyField('Document', blank=True, related_name='applications')
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

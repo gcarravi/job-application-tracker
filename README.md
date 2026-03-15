@@ -220,12 +220,26 @@ Contacts represent external people involved in the hiring process, such as recru
 | | notes | Text (nullable) |
 | | created_at | DateTime |
 
+#### Document
+
+Users' uploaded files (CVs, cover letters, portfolios, etc.) stored on Cloudinary.
+
+| Key | Name | Type |
+|-----|------|------|
+| PK | id | Integer |
+| FK | user_id | Integer (User) |
+| | name | Varchar |
+| | file | CloudinaryField (resource_type='raw') |
+| | file_type | Varchar (cv / cover_letter / portfolio / other) |
+| | created_at | DateTime |
+
 #### Contact Relationships
 
 | Model | Relationship |
 |-------|-------------|
 | Application | Many-to-Many → Contact |
 | Interview | Many-to-Many → Contact |
+| Application | Many-to-Many → Document |
 
 ---
 
@@ -350,6 +364,16 @@ A dedicated help page accessible from the sidebar, containing:
 - **FAQ accordion** — answers to common questions covering board navigation, interview logging, contacts, subscription management, and mobile usage
 - **Contact support** — direct link to the support email
 
+### Documents
+
+Users can upload and manage their documents (CVs, cover letters, portfolios, and other files) from a dedicated Documents page.
+
+- Upload any document (PDF, Word, plain text, images, and other common formats) with a custom name and file type label
+- Documents are stored securely on Cloudinary using `resource_type='raw'`
+- Documents can be attached to individual job applications via the Documents tab in the tracker modal
+- Multiple documents can be linked to a single application and swapped between applications at any time
+- Upload and delete are handled via AJAX with no page reload
+
 ---
 
 ## Subscription & Payments
@@ -386,7 +410,6 @@ Possible future enhancements include:
 
 - Search and filtering across applications
 - Email interview reminders
-- File uploads for CV versions
 - Job board integrations
 - Calendar integration
 
@@ -408,7 +431,7 @@ Possible future enhancements include:
 - SortableJS (drag-and-drop kanban)
 - Chart.js (analytics charts)
 - Stripe (payments)
-- Cloudinary (profile photo storage)
+- Cloudinary (profile photo and document storage)
 - WhiteNoise (static file serving)
 
 ### Tools

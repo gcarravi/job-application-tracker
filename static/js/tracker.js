@@ -38,7 +38,7 @@ function switchTab(tabId) {
     document.querySelectorAll('.modal-tab-btn').forEach(btn => {
         btn.classList.toggle('active', btn.dataset.tab === tabId);
     });
-    ['tab-edit', 'tab-interview', 'tab-notes'].forEach(id => {
+    ['tab-edit', 'tab-interview', 'tab-notes', 'tab-documents'].forEach(id => {
         document.getElementById(id).style.display = id === tabId ? '' : 'none';
     });
 }
@@ -51,6 +51,7 @@ function setAddMode() {
     document.getElementById('modalTabBar').style.display = 'none';
     document.getElementById('tab-interview').style.display = 'none';
     document.getElementById('tab-notes').style.display = 'none';
+    document.getElementById('tab-documents').style.display = 'none';
     document.getElementById('tab-edit').style.display = '';
     document.getElementById('notesInEditTab').style.display = '';
     document.querySelectorAll('.modal-tab-btn').forEach((btn, i) => {
@@ -144,6 +145,25 @@ document.addEventListener("DOMContentLoaded", function () {
         );
         container.prepend(card);
         card.querySelector('.iv-date').focus();
+    });
+
+    // Save Documents button
+    document.getElementById('saveDocumentsBtn').addEventListener('click', function () {
+        const jobId = document.getElementById('jobIdInput').value;
+        if (!jobId) return;
+        const selectedIds = Array.from(document.querySelectorAll('.doc-attach-cb:checked')).map(cb => parseInt(cb.value));
+        fetch(`/update-job-documents/${jobId}/`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken') },
+            body: JSON.stringify({ document_ids: selectedIds })
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.success) {
+                const modalEl = document.getElementById('addJobModal');
+                bootstrap.Modal.getInstance(modalEl)?.hide();
+            }
+        });
     });
 
     // Save Notes button
@@ -405,10 +425,54 @@ function openEditModal(jobId) {
         document.getElementById('modalSubmitText').innerText = 'Save Changes';
 
         loadInterviews(data.id);
+        loadDocuments(data.id, data.document_ids || []);
 
         const modalEl = document.getElementById('addJobModal');
         const modal = new bootstrap.Modal(modalEl);
         modal.show();
+    });
+}
+
+
+// ===== DOCUMENTS TAB =====
+
+let allUserDocuments = [];
+
+function loadDocuments(jobId, attachedIds) {
+    fetch('/documents/api/')
+        .then(r => r.json())
+        .then(data => {
+            allUserDocuments = data.documents;
+            renderDocumentCheckList(attachedIds.map(String));
+        });
+}
+
+function renderDocumentCheckList(attachedIds) {
+    const container = document.getElementById('documentCheckList');
+    if (allUserDocuments.length === 0) {
+        container.innerHTML = '<p style="color:#9ca3af;font-size:0.875rem;">No documents in your library yet. <a href="/documents/" style="color:var(--teal);">Upload documents here</a>.</p>';
+        return;
+    }
+    container.innerHTML = '';
+    allUserDocuments.forEach(doc => {
+        const uid = `doc-cb-${doc.id}`;
+        const isChecked = attachedIds.includes(String(doc.id));
+        const row = document.createElement('div');
+        row.className = 'iv-interviewer-cb-row';
+        row.style.cssText = 'display:flex;align-items:center;gap:0.5rem;padding:0.5rem 0;border-bottom:1px solid #f3f4f6;';
+        row.innerHTML = `
+            <input type="checkbox" class="doc-attach-cb" id="${uid}" value="${doc.id}"${isChecked ? ' checked' : ''}>
+            <label for="${uid}" style="font-size:0.875rem;color:#111827;cursor:pointer;flex:1;margin:0;">
+                ${doc.name}
+                <span style="font-size:0.75rem;color:#9ca3af;margin-left:0.375rem;">${doc.file_type}</span>
+            </label>
+            <a href="${doc.url}" target="_blank" rel="noopener"
+               style="font-size:0.75rem;color:var(--teal);text-decoration:none;"
+               title="Download">
+                <i class="fas fa-download"></i>
+            </a>
+        `;
+        container.appendChild(row);
     });
 }
 
