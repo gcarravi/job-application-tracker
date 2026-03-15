@@ -5,11 +5,10 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
 from django.views.generic import TemplateView, ListView, CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.shortcuts import redirect, render, get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
 from django.conf import settings
-from django.http import JsonResponse, HttpResponse
 import json
 from datetime import datetime, date, timedelta
 import calendar as _cal
@@ -27,13 +26,6 @@ class UserContextMixin:
         context["full_name"] = f"{user.first_name} {user.last_name}".strip() or user.username
         context["user_initials"] = (user.first_name[:1] + user.last_name[:1]).upper() or user.username[:2].upper()
         return context
-
-
-# Create your views here.
-
-@login_required
-def dashboard(request):
-    return render(request, 'tracker/dashboard.html')
 
 
 # Define allowed statuses (matches the ones in the model)

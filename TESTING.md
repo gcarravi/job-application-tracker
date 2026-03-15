@@ -10,6 +10,10 @@ This document covers all testing carried out on the Trackwise application, inclu
 - [Automated Tests](#automated-tests)
   - [ApplicationForm Tests](#applicationform-tests)
   - [RegisterForm Tests](#registerform-tests)
+  - [Register View Tests](#register-view-tests)
+  - [Tracker GET View Tests](#tracker-get-view-tests)
+  - [Tracker POST View Tests](#tracker-post-view-tests)
+  - [Stripe Payment Tests](#stripe-payment-tests)
 - [Manual Testing](#manual-testing)
   - [Authentication](#authentication)
   - [Job Tracker Board](#job-tracker-board)
@@ -51,7 +55,21 @@ To run with verbose output:
 python manage.py test --verbosity=2
 ```
 
-**Current result:** 37 tests, 0 failures, 0 errors.
+**Current result:** 116 tests, 0 failures, 0 errors.
+
+To run only view tests:
+
+```bash
+python manage.py test tracker.test_views
+python manage.py test accounts.test_views
+```
+
+To run only form tests:
+
+```bash
+python manage.py test tracker.test_forms
+python manage.py test accounts.test_forms
+```
 
 ---
 
@@ -134,6 +152,326 @@ The `RegisterForm` extends Django's built-in `UserCreationForm` with a required 
 | `test_email_field_is_present` | Form contains an `email` field | `email` in `form.fields` | ✅ Pass |
 | `test_email_field_is_required` | Email field is not optional | `form.fields['email'].required` is `True` | ✅ Pass |
 | `test_expected_fields_present` | All four fields exist | `username`, `email`, `password1`, `password2` all in `form.fields` | ✅ Pass |
+
+---
+
+### Register View Tests
+
+**File:** `accounts/test_views.py`
+
+The `register` view handles account creation and automatically logs in the new user on success.
+
+#### `RegisterViewTests`
+
+| Test | Description | Expected Result | Pass/Fail |
+|------|-------------|-----------------|-----------|
+| `test_valid_registration_creates_user` | Valid form submitted | User record created in database | ✅ Pass |
+| `test_valid_registration_logs_user_in` | Valid form submitted | User is authenticated immediately after registration | ✅ Pass |
+| `test_valid_registration_redirects_to_home` | Valid form submitted | Redirects to `/home/` | ✅ Pass |
+| `test_mismatched_passwords_rerenders_form` | `password1 ≠ password2` | Form re-rendered with errors; no user created | ✅ Pass |
+| `test_missing_email_rerenders_form` | `email` left blank | Form re-rendered with errors; no user created | ✅ Pass |
+| `test_duplicate_username_rerenders_form` | Username already taken | Form re-rendered; only one user record exists | ✅ Pass |
+| `test_get_renders_blank_form` | GET request | Register page rendered with a blank form | ✅ Pass |
+
+---
+
+### Tracker GET View Tests
+
+**File:** `tracker/test_views.py`
+
+Tests for all GET-only views and API endpoints across the tracker app. All authenticated views are tested for login enforcement and data isolation between users.
+
+#### `LandingViewTests`
+
+| Test | Description | Expected Result | Pass/Fail |
+|------|-------------|-----------------|-----------|
+| `test_renders_landing_page` | GET `/` | Returns 200 with `landing.html` | ✅ Pass |
+| `test_accessible_without_login` | GET `/` while logged out | Returns 200 (public page) | ✅ Pass |
+
+#### `HomeViewGetTests`
+
+| Test | Description | Expected Result | Pass/Fail |
+|------|-------------|-----------------|-----------|
+| `test_renders_home_page` | GET `/home/` | Returns 200 with `home.html` | ✅ Pass |
+| `test_requires_login` | GET `/home/` while logged out | Redirects to login | ✅ Pass |
+| `test_context_contains_application_counts` | GET `/home/` | Context contains `total_applications`, `total_interviews`, `total_in_review`, `total_offers` | ✅ Pass |
+| `test_context_contains_recent_applications` | GET `/home/` | Context contains `recent_applications` including the user's application | ✅ Pass |
+| `test_context_contains_upcoming_interviews` | GET `/home/` | Context contains `upcoming_interviews` | ✅ Pass |
+| `test_context_does_not_include_other_users_data` | Second user has applications | `total_applications` is 1 (own data only) | ✅ Pass |
+
+#### `TrackerBoardViewGetTests`
+
+| Test | Description | Expected Result | Pass/Fail |
+|------|-------------|-----------------|-----------|
+| `test_renders_tracker_page` | GET `/tracker/` | Returns 200 with `tracker/tracker.html` | ✅ Pass |
+| `test_requires_login` | GET `/tracker/` while logged out | Redirects to login | ✅ Pass |
+| `test_context_has_applications_grouped_by_status` | GET `/tracker/` | Context has all 7 status keys; application in correct column | ✅ Pass |
+| `test_only_shows_users_applications` | Second user has applications | Other user's applications not in context | ✅ Pass |
+
+#### `InterviewsViewGetTests`
+
+| Test | Description | Expected Result | Pass/Fail |
+|------|-------------|-----------------|-----------|
+| `test_renders_interviews_page` | GET `/interviews/` | Returns 200 with `tracker/interviews.html` | ✅ Pass |
+| `test_requires_login` | GET `/interviews/` while logged out | Redirects to login | ✅ Pass |
+| `test_only_shows_interviewing_status_applications` | Application set to `interviewing` | Application appears in context | ✅ Pass |
+| `test_applied_applications_not_shown` | Application has status `applied` | Application not in context | ✅ Pass |
+| `test_context_contains_total_rounds` | GET `/interviews/` | Context contains `total_rounds` | ✅ Pass |
+
+#### `ContactsViewGetTests`
+
+| Test | Description | Expected Result | Pass/Fail |
+|------|-------------|-----------------|-----------|
+| `test_renders_contacts_page` | GET `/contacts/` | Returns 200 with `tracker/contacts.html` | ✅ Pass |
+| `test_requires_login` | GET `/contacts/` while logged out | Redirects to login | ✅ Pass |
+| `test_shows_users_contacts` | User has a contact | Contact appears in context | ✅ Pass |
+| `test_does_not_show_other_users_contacts` | Second user has a contact | Other user's contact not in context | ✅ Pass |
+
+#### `AnalyticsViewGetTests`
+
+| Test | Description | Expected Result | Pass/Fail |
+|------|-------------|-----------------|-----------|
+| `test_renders_analytics_page` | GET `/analytics/` | Returns 200 with `tracker/analytics.html` | ✅ Pass |
+| `test_requires_login` | GET `/analytics/` while logged out | Redirects to login | ✅ Pass |
+| `test_context_contains_stat_keys` | GET `/analytics/` | Context contains `total`, `this_week`, `this_month`, `conversion`, `response_rate`, `offer_rate`, `total_interviews`, `funnel` | ✅ Pass |
+| `test_total_reflects_users_applications_only` | Second user has applications | `total` is 1 (own data only) | ✅ Pass |
+
+#### `HelpViewGetTests`
+
+| Test | Description | Expected Result | Pass/Fail |
+|------|-------------|-----------------|-----------|
+| `test_renders_help_page` | GET `/help/` | Returns 200 with `tracker/help.html` | ✅ Pass |
+| `test_requires_login` | GET `/help/` while logged out | Redirects to login | ✅ Pass |
+
+#### `CompanyListViewGetTests`
+
+| Test | Description | Expected Result | Pass/Fail |
+|------|-------------|-----------------|-----------|
+| `test_renders_company_list` | GET `/companies/` | Returns 200 with `tracker/company_list.html` | ✅ Pass |
+| `test_requires_login` | GET `/companies/` while logged out | Redirects to login | ✅ Pass |
+| `test_shows_users_companies_only` | Second user has a company | Own company in context; other user's company not in context | ✅ Pass |
+
+#### `CompanyCreateViewGetTests`
+
+| Test | Description | Expected Result | Pass/Fail |
+|------|-------------|-----------------|-----------|
+| `test_renders_blank_company_form` | GET `/companies/add/` | Returns 200 with `tracker/company_form.html` | ✅ Pass |
+| `test_requires_login` | GET `/companies/add/` while logged out | Redirects to login | ✅ Pass |
+
+#### `CompanyUpdateViewGetTests`
+
+| Test | Description | Expected Result | Pass/Fail |
+|------|-------------|-----------------|-----------|
+| `test_renders_company_form_with_existing_data` | GET `/companies/<pk>/edit/` | Returns 200; response contains company name | ✅ Pass |
+| `test_other_users_company_returns_404` | GET edit URL for another user's company | Returns 404 | ✅ Pass |
+| `test_requires_login` | GET while logged out | Redirects to login | ✅ Pass |
+
+#### `CompanyDeleteViewGetTests`
+
+| Test | Description | Expected Result | Pass/Fail |
+|------|-------------|-----------------|-----------|
+| `test_renders_confirm_delete_page` | GET `/companies/<pk>/delete/` | Returns 200 with `tracker/company_confirm_delete.html` | ✅ Pass |
+| `test_other_users_company_returns_404` | GET delete URL for another user's company | Returns 404 | ✅ Pass |
+| `test_requires_login` | GET while logged out | Redirects to login | ✅ Pass |
+
+#### `GetJobTests`
+
+| Test | Description | Expected Result | Pass/Fail |
+|------|-------------|-----------------|-----------|
+| `test_returns_job_data_as_json` | GET `/get-job/<id>/` | Returns 200 with `job_title` and `company_name` | ✅ Pass |
+| `test_nonexistent_job_returns_404` | GET with unknown ID | Returns 404 | ✅ Pass |
+
+#### `GetInterviewsTests`
+
+| Test | Description | Expected Result | Pass/Fail |
+|------|-------------|-----------------|-----------|
+| `test_returns_interviews_as_json` | GET `/get-interviews/<app_id>/` | Returns 200 with `interviews` list | ✅ Pass |
+| `test_requires_login` | GET while logged out | Redirects to login | ✅ Pass |
+| `test_other_users_application_returns_404` | GET interviews for another user's application | Returns 404 | ✅ Pass |
+
+#### `GetContactsApiTests`
+
+| Test | Description | Expected Result | Pass/Fail |
+|------|-------------|-----------------|-----------|
+| `test_returns_contacts_as_json` | GET `/contacts/api/` | Returns 200 with `contacts` list | ✅ Pass |
+| `test_requires_login` | GET while logged out | Redirects to login | ✅ Pass |
+| `test_does_not_return_other_users_contacts` | Second user has a contact | Other user's contact not in response | ✅ Pass |
+
+---
+
+### Tracker POST View Tests
+
+**File:** `tracker/test_views.py`
+
+Tests for all POST endpoints. JSON endpoints are tested with `content_type='application/json'`. All `@login_required` views are tested for authentication enforcement and cross-user access control.
+
+#### `HomeViewPostTests`
+
+| Test | Description | Expected Result | Pass/Fail |
+|------|-------------|-----------------|-----------|
+| `test_valid_form_creates_application_and_redirects_to_tracker` | Valid form POST to `/home/` | Application created; redirects to `/tracker/` | ✅ Pass |
+| `test_invalid_form_rerenders_home` | Missing required fields | Re-renders `home.html` with errors | ✅ Pass |
+| `test_requires_login` | POST while logged out | Redirects to login | ✅ Pass |
+
+#### `TrackerBoardViewPostTests`
+
+| Test | Description | Expected Result | Pass/Fail |
+|------|-------------|-----------------|-----------|
+| `test_valid_form_creates_application_and_redirects` | Valid form POST to `/tracker/` | Application created; redirects to `/tracker/` | ✅ Pass |
+| `test_invalid_form_rerenders_tracker` | Missing required fields | Re-renders `tracker/tracker.html` with errors | ✅ Pass |
+| `test_requires_login` | POST while logged out | Redirects to login | ✅ Pass |
+
+#### `DeleteJobTests`
+
+| Test | Description | Expected Result | Pass/Fail |
+|------|-------------|-----------------|-----------|
+| `test_deletes_job_and_returns_success` | POST `/delete-job/<id>/` | Application deleted; returns `{"success": true}` | ✅ Pass |
+| `test_get_returns_400` | GET request | Returns 400 | ✅ Pass |
+| `test_nonexistent_job_returns_404` | POST with unknown ID | Returns 404 | ✅ Pass |
+
+#### `UpdateJobStatusTests`
+
+| Test | Description | Expected Result | Pass/Fail |
+|------|-------------|-----------------|-----------|
+| `test_updates_status_and_returns_success` | Valid status in JSON body | Status updated; returns `{"success": true}` | ✅ Pass |
+| `test_invalid_status_returns_400` | Unknown status value | Returns 400 | ✅ Pass |
+| `test_nonexistent_job_returns_404` | Unknown job ID | Returns 404 | ✅ Pass |
+| `test_invalid_json_returns_400` | Malformed request body | Returns 400 | ✅ Pass |
+| `test_get_returns_400` | GET request | Returns 400 | ✅ Pass |
+
+#### `UpdateJobTests`
+
+| Test | Description | Expected Result | Pass/Fail |
+|------|-------------|-----------------|-----------|
+| `test_updates_job_fields` | `job_title` and `salary_range` in body | Fields updated on application | ✅ Pass |
+| `test_sets_recruiter` | `recruiter_id` in body | Recruiter linked to application | ✅ Pass |
+| `test_clears_recruiter_when_empty` | `recruiter_id` set to `""` | Recruiter cleared | ✅ Pass |
+| `test_get_returns_400` | GET request | Returns 400 | ✅ Pass |
+| `test_nonexistent_job_returns_404` | Unknown job ID | Returns 404 | ✅ Pass |
+
+#### `SaveInterviewTests`
+
+| Test | Description | Expected Result | Pass/Fail |
+|------|-------------|-----------------|-----------|
+| `test_creates_interview_and_returns_id` | Valid JSON body with date | Interview created; `id` returned | ✅ Pass |
+| `test_missing_date_returns_400` | No `date` field | Returns 400 | ✅ Pass |
+| `test_invalid_date_returns_400` | Unparseable date string | Returns 400 | ✅ Pass |
+| `test_sets_interviewers` | `interviewer_ids` in body | Interviewers linked to interview | ✅ Pass |
+| `test_get_returns_400` | GET request | Returns 400 | ✅ Pass |
+| `test_requires_login` | POST while logged out | Redirects to login | ✅ Pass |
+| `test_other_users_application_returns_404` | Application belongs to another user | Returns 404 | ✅ Pass |
+
+#### `UpdateInterviewTests`
+
+| Test | Description | Expected Result | Pass/Fail |
+|------|-------------|-----------------|-----------|
+| `test_updates_interview_fields` | `interview_type`, `date`, `result`, `notes` in body | Fields updated | ✅ Pass |
+| `test_updates_interviewers` | `interviewer_ids` in body | Interviewers updated | ✅ Pass |
+| `test_get_returns_400` | GET request | Returns 400 | ✅ Pass |
+| `test_requires_login` | POST while logged out | Redirects to login | ✅ Pass |
+| `test_other_users_interview_returns_404` | Interview belongs to another user | Returns 404 | ✅ Pass |
+
+#### `DeleteInterviewTests`
+
+| Test | Description | Expected Result | Pass/Fail |
+|------|-------------|-----------------|-----------|
+| `test_deletes_interview_and_returns_success` | POST `/delete-interview/<id>/` | Interview deleted; returns `{"success": true}` | ✅ Pass |
+| `test_get_returns_400` | GET request | Returns 400 | ✅ Pass |
+| `test_requires_login` | POST while logged out | Redirects to login | ✅ Pass |
+| `test_other_users_interview_returns_404` | Interview belongs to another user | Returns 404 | ✅ Pass |
+
+#### `SaveContactTests`
+
+| Test | Description | Expected Result | Pass/Fail |
+|------|-------------|-----------------|-----------|
+| `test_creates_contact_and_returns_data` | Valid JSON body | Contact created; data returned | ✅ Pass |
+| `test_missing_first_name_returns_400` | No `first_name` field | Returns 400 | ✅ Pass |
+| `test_get_returns_400` | GET request | Returns 400 | ✅ Pass |
+| `test_requires_login` | POST while logged out | Redirects to login | ✅ Pass |
+
+#### `UpdateContactTests`
+
+| Test | Description | Expected Result | Pass/Fail |
+|------|-------------|-----------------|-----------|
+| `test_updates_contact_fields` | Updated fields in JSON body | Contact fields saved | ✅ Pass |
+| `test_get_returns_400` | GET request | Returns 400 | ✅ Pass |
+| `test_requires_login` | POST while logged out | Redirects to login | ✅ Pass |
+| `test_other_users_contact_returns_404` | Contact belongs to another user | Returns 404 | ✅ Pass |
+
+#### `DeleteContactTests`
+
+| Test | Description | Expected Result | Pass/Fail |
+|------|-------------|-----------------|-----------|
+| `test_deletes_contact_and_returns_success` | POST `/contacts/<id>/delete/` | Contact deleted; returns `{"success": true}` | ✅ Pass |
+| `test_get_returns_400` | GET request | Returns 400 | ✅ Pass |
+| `test_requires_login` | POST while logged out | Redirects to login | ✅ Pass |
+| `test_other_users_contact_returns_404` | Contact belongs to another user | Returns 404 | ✅ Pass |
+
+#### `CompanyCreateViewTests`
+
+| Test | Description | Expected Result | Pass/Fail |
+|------|-------------|-----------------|-----------|
+| `test_creates_company_and_redirects` | Valid form POST | Company created; redirects to company list | ✅ Pass |
+| `test_missing_name_rerenders_form` | `name` left blank | Re-renders form with errors | ✅ Pass |
+| `test_requires_login` | POST while logged out | Redirects to login | ✅ Pass |
+
+#### `CompanyUpdateViewTests`
+
+| Test | Description | Expected Result | Pass/Fail |
+|------|-------------|-----------------|-----------|
+| `test_updates_company_and_redirects` | Valid form POST | Company updated; redirects to company list | ✅ Pass |
+| `test_other_users_company_returns_404` | Company belongs to another user | Returns 404 | ✅ Pass |
+| `test_requires_login` | POST while logged out | Redirects to login | ✅ Pass |
+
+#### `CompanyDeleteViewTests`
+
+| Test | Description | Expected Result | Pass/Fail |
+|------|-------------|-----------------|-----------|
+| `test_deletes_company_and_redirects` | POST to delete confirmation | Company deleted; redirects to company list | ✅ Pass |
+| `test_other_users_company_returns_404` | Company belongs to another user | Returns 404 | ✅ Pass |
+| `test_requires_login` | POST while logged out | Redirects to login | ✅ Pass |
+
+---
+
+### Stripe Payment Tests
+
+**File:** `tracker/test_views.py`
+
+Stripe API calls are mocked with `unittest.mock.patch` so no real network requests are made. The webhook handler is tested by mocking `stripe.Webhook.construct_event` to return a controlled event payload.
+
+#### `PaymentSuccessViewTests`
+
+| Test | Description | Expected Result | Pass/Fail |
+|------|-------------|-----------------|-----------|
+| `test_renders_payment_success_page` | GET `/payment-success/` | Returns 200 with `payment_success.html` | ✅ Pass |
+| `test_accessible_without_login` | GET while logged out | Returns 200 (public page) | ✅ Pass |
+
+#### `PaymentCancelViewTests`
+
+| Test | Description | Expected Result | Pass/Fail |
+|------|-------------|-----------------|-----------|
+| `test_renders_payment_cancel_page` | GET `/payment-cancel/` | Returns 200 with `payment_cancel.html` | ✅ Pass |
+| `test_accessible_without_login` | GET while logged out | Returns 200 (public page) | ✅ Pass |
+
+#### `CreateCheckoutSessionTests`
+
+| Test | Description | Expected Result | Pass/Fail |
+|------|-------------|-----------------|-----------|
+| `test_redirects_to_stripe_checkout_url` | GET `/subscribe/` (Stripe mocked) | Redirects to the URL returned by Stripe | ✅ Pass |
+| `test_session_includes_user_id_as_client_reference` | GET `/subscribe/` | `client_reference_id` equals the logged-in user's ID | ✅ Pass |
+| `test_session_includes_user_email` | GET `/subscribe/` | `customer_email` equals the user's email address | ✅ Pass |
+| `test_session_uses_subscription_mode` | GET `/subscribe/` | `mode` is `"subscription"` | ✅ Pass |
+| `test_requires_login` | GET `/subscribe/` while logged out | Redirects to login | ✅ Pass |
+
+#### `StripeWebhookTests`
+
+| Test | Description | Expected Result | Pass/Fail |
+|------|-------------|-----------------|-----------|
+| `test_checkout_completed_grants_premium` | `checkout.session.completed` event for a known user | `profile.is_premium` set to `True`; returns 200 | ✅ Pass |
+| `test_checkout_completed_saves_stripe_customer_id` | `checkout.session.completed` event with customer ID | `profile.stripe_customer_id` saved | ✅ Pass |
+| `test_checkout_completed_unknown_user_returns_200` | `checkout.session.completed` with an unknown user ID | Returns 200 silently (no crash) | ✅ Pass |
+| `test_unhandled_event_type_returns_200_without_granting_premium` | Unhandled event type | Returns 200; `is_premium` remains `False` | ✅ Pass |
+| `test_webhook_accessible_without_login` | POST to webhook while logged out | Returns 200 (webhooks are unauthenticated by design) | ✅ Pass |
 
 ---
 
@@ -398,17 +736,17 @@ HTML validated using the [W3C Markup Validation Service](https://validator.w3.or
 
 | Page | Result |
 |------|--------|
-| Landing page | No errors |
-| Login page | No errors |
-| Register page | No errors |
-| Home / Dashboard | No errors |
-| Tracker board | No errors |
-| Interviews page | No errors |
-| Contacts page | No errors |
-| Analytics page | No errors |
-| Help & Support page | No errors |
-| Payment success page | No errors |
-| Payment cancel page | No errors |
+| Landing page | Document checking completed. No errors or warnings to show. |
+| Login page | Document checking completed. No errors or warnings to show. |
+| Register page | Document checking completed. No errors or warnings to show. |
+| Home page | Document checking completed. No errors or warnings to show |
+| Tracker board | Document checking completed. No errors or warnings to show. |
+| Interviews page | Document checking completed. No errors or warnings to show. |
+| Contacts page | Document checking completed. No errors or warnings to show. |
+| Analytics page | Document checking completed. No errors or warnings to show |
+| Help & Support page | Document checking completed. No errors or warnings to show. |
+| Payment success page | Document checking completed. No errors or warnings to show. |
+| Payment cancel page | Document checking completed. No errors or warnings to show. |
 
 ### CSS Validation
 
@@ -416,12 +754,15 @@ CSS validated using the [W3C CSS Validation Service](https://jigsaw.w3.org/css-v
 
 | File | Result |
 |------|--------|
-| `static/css/base.css` | No errors |
-| `static/css/style.css` | No errors |
+| `static/css/base.css` | No Error Found |
+| `static/css/style.css` | No Error Found |
 | `static/css/style-auth.css` | No errors |
-| `static/css/style-landing.css` | No errors |
-| `static/css/style-tracker.css` | No errors |
-| `static/css/payment.css` | No errors |
+| `static/css/style-landing.css` | No Error Found |
+| `static/css/style-tracker.css` | No Error Found |
+| `static/css/style-interviews.css` | No Error Found |
+| `static/css/style-analytics.css` | No Error Found |
+| `static/css/style-help.css` | No Error Found |
+| `static/css/payment.css` | No Error Found |
 
 ### JavaScript Validation
 
