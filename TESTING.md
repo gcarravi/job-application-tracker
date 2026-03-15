@@ -11,6 +11,7 @@ This document covers all testing carried out on the Trackwise application, inclu
   - [ApplicationForm Tests](#applicationform-tests)
   - [RegisterForm Tests](#registerform-tests)
   - [Register View Tests](#register-view-tests)
+  - [Upload Photo View Tests](#upload-photo-view-tests)
   - [Tracker GET View Tests](#tracker-get-view-tests)
   - [Tracker POST View Tests](#tracker-post-view-tests)
   - [Stripe Payment Tests](#stripe-payment-tests)
@@ -55,7 +56,7 @@ To run with verbose output:
 python manage.py test --verbosity=2
 ```
 
-**Current result:** 116 tests, 0 failures, 0 errors.
+**Current result:** 120 tests, 0 failures, 0 errors.
 
 To run only view tests:
 
@@ -172,6 +173,23 @@ The `register` view handles account creation and automatically logs in the new u
 | `test_missing_email_rerenders_form` | `email` left blank | Form re-rendered with errors; no user created | ✅ Pass |
 | `test_duplicate_username_rerenders_form` | Username already taken | Form re-rendered; only one user record exists | ✅ Pass |
 | `test_get_renders_blank_form` | GET request | Register page rendered with a blank form | ✅ Pass |
+
+---
+
+### Upload Photo View Tests
+
+**File:** `accounts/test_views.py`
+
+The `upload_photo` view handles profile photo uploads, saving the file to Cloudinary and returning the resulting URL. Cloudinary API calls are mocked with `unittest.mock.patch` so no real network requests are made during testing.
+
+#### `UploadPhotoViewTests`
+
+| Test | Description | Expected Result | Pass/Fail |
+|------|-------------|-----------------|-----------|
+| `test_requires_login` | POST while logged out | Redirects to login | ✅ Pass |
+| `test_no_file_returns_400` | POST with no file attached | Returns 400 with `{"success": false, "error": "No file provided"}` | ✅ Pass |
+| `test_valid_upload_returns_success` | POST with a JPEG file (Cloudinary mocked) | Returns 200 with `{"success": true, "url": "..."}` | ✅ Pass |
+| `test_valid_upload_saves_photo_to_profile` | POST with a JPEG file (Cloudinary mocked) | `profile.photo` is set and truthy after save | ✅ Pass |
 
 ---
 

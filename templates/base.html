@@ -70,7 +70,15 @@
         </nav>
 
         <div class="sidebar-footer">
-            <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100" alt="User" class="user-avatar">
+            <div class="sidebar-avatar-wrap" id="sidebarAvatarWrap" title="Change photo">
+                {% if user.profile.photo %}
+                    <img src="{{ user.profile.photo.url }}" alt="Profile photo" class="sidebar-avatar-photo" id="sidebarAvatarImg">
+                {% else %}
+                    <i class="fas fa-user-circle sidebar-avatar-icon" id="sidebarAvatarIcon"></i>
+                {% endif %}
+                <div class="sidebar-avatar-overlay"><i class="fas fa-camera"></i></div>
+            </div>
+            <input type="file" id="photoUploadInput" accept="image/*" style="display:none">
             <div class="user-info">
                 <div class="user-name">{{ full_name }}</div>
                 <div class="user-plan">{% if user.profile.is_premium %}Premium{% else %}Free Plan{% endif %}</div>
@@ -127,6 +135,41 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="{% static 'js/script-home.js' %}"></script>
+
+    <script>
+    (function () {
+        const wrap = document.getElementById('sidebarAvatarWrap');
+        const input = document.getElementById('photoUploadInput');
+        if (!wrap || !input) return;
+
+        wrap.addEventListener('click', () => input.click());
+
+        input.addEventListener('change', function () {
+            if (!this.files.length) return;
+            const formData = new FormData();
+            formData.append('photo', this.files[0]);
+            formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+
+            fetch('{% url "upload_photo" %}', { method: 'POST', body: formData })
+                .then(r => r.json())
+                .then(data => {
+                    if (data.success) {
+                        const icon = document.getElementById('sidebarAvatarIcon');
+                        let img = document.getElementById('sidebarAvatarImg');
+                        if (icon) icon.remove();
+                        if (!img) {
+                            img = document.createElement('img');
+                            img.id = 'sidebarAvatarImg';
+                            img.alt = 'Profile photo';
+                            img.className = 'sidebar-avatar-photo';
+                            wrap.insertBefore(img, wrap.firstChild);
+                        }
+                        img.src = data.url;
+                    }
+                });
+        });
+    })();
+    </script>
 
     {% block extra_js %}{% endblock %}
 

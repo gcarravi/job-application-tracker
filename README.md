@@ -156,7 +156,7 @@ This allows recruiters or interviewers to be reused across multiple applications
 
 #### UserProfile
 
-Extends the built-in User model with subscription information.
+Extends the built-in User model with subscription information and profile photo.
 
 | Key | Name | Type |
 |-----|------|------|
@@ -164,6 +164,7 @@ Extends the built-in User model with subscription information.
 | FK | user_id | Integer (User) |
 | | is_premium | Boolean |
 | | stripe_customer_id | Varchar (nullable) |
+| | photo | CloudinaryField (nullable) |
 
 #### Company
 
@@ -261,6 +262,7 @@ A public-facing marketing page introduces Trackwise to new visitors, outlines ke
 - User registration
 - Secure login and logout
 - Protected views — all app pages require authentication
+- Profile photo upload — users can upload a personal photo via the sidebar, stored on Cloudinary; defaults to a silhouette icon until a photo is set
 
 ### Job Tracker Board
 
@@ -406,6 +408,7 @@ Possible future enhancements include:
 - SortableJS (drag-and-drop kanban)
 - Chart.js (analytics charts)
 - Stripe (payments)
+- Cloudinary (profile photo storage)
 - WhiteNoise (static file serving)
 
 ### Tools
@@ -467,6 +470,9 @@ DEBUG=True
 DATABASE_URL=your-postgres-url          # optional locally, defaults to SQLite
 STRIPE_SECRET_KEY=sk_test_...
 STRIPE_WEBHOOK_SECRET=whsec_...
+CLOUDINARY_CLOUD_NAME=your-cloud-name
+CLOUDINARY_API_KEY=your-api-key
+CLOUDINARY_API_SECRET=your-api-secret
 ```
 
 On Heroku, set these via the dashboard or CLI:
@@ -475,6 +481,9 @@ On Heroku, set these via the dashboard or CLI:
 heroku config:set SECRET_KEY=...
 heroku config:set STRIPE_SECRET_KEY=...
 heroku config:set STRIPE_WEBHOOK_SECRET=...
+heroku config:set CLOUDINARY_CLOUD_NAME=...
+heroku config:set CLOUDINARY_API_KEY=...
+heroku config:set CLOUDINARY_API_SECRET=...
 ```
 
 ---
