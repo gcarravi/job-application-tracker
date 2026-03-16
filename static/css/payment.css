@@ -1,5 +1,12 @@
 @import url('base.css');
 
+/* Page-local colour tokens */
+:root {
+    --orange: #f97316;               /* cancel icon colour */
+    --orange-light: #fff7ed;         /* cancel icon background */
+    --teal-very-light: #ccfbf1;      /* premium badge border */
+}
+
 .payment-page {
     background: var(--bg-subtle);
 }
@@ -44,8 +51,8 @@
 }
 
 .result-icon.cancel {
-    background: #fff7ed;
-    color: #f97316;
+    background: var(--orange-light);
+    color: var(--orange);
 }
 
 .result-title {
@@ -116,7 +123,7 @@
     padding: 0.375rem 0.875rem;
     border-radius: 2rem;
     margin-bottom: 1.75rem;
-    border: 1px solid #ccfbf1;
+    border: 1px solid var(--teal-very-light);
 }
 
 .payment-note {

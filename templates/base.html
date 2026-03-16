@@ -103,8 +103,8 @@
 
             {% block topbar_center %}{% endblock %}
 
-            <div class="d-flex align-items-center gap-2 ms-auto">
-                {% block topbar_actions %}{% endblock %}
+            <div class="d-flex align-items-center gap-4 ms-auto">
+                {% block topbar_left_actions %}{% endblock %}
                 <div class="user-avatar-wrap" id="userAvatarWrap">
                     <div class="user-avatar topbar-avatar" id="userAvatarBtn">{{ user_initials }}</div>
                     <div class="user-dropdown-menu" id="userDropdownMenu">
@@ -121,6 +121,7 @@
                         </form>
                     </div>
                 </div>
+                {% block topbar_actions %}{% endblock %}
             </div>
         </div>
 

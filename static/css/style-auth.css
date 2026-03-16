@@ -1,11 +1,19 @@
 @import url('base.css');
 
+/* Page-local colour tokens */
+:root {
+    --auth-panel-dark: #0f172a;      /* left panel gradient start */
+    --auth-panel-teal: #134e4a;      /* left panel gradient mid */
+    --auth-stat-value: #5eead4;      /* left panel stat value text */
+    --auth-stat-label: #94a3b8;      /* left panel stat label text */
+}
+
 body {
     min-height: 100vh;
 }
 
 .left-panel {
-    background: linear-gradient(135deg, #0f172a 0%, #134e4a 60%, #0d9488 100%);
+    background: linear-gradient(135deg, var(--auth-panel-dark) 0%, var(--auth-panel-teal) 60%, var(--teal) 100%);
     color: white;
     padding: 3rem;
     display: flex;
@@ -35,7 +43,7 @@ body {
 
 .logo-icon {
     width: 36px; height: 36px; border-radius: 0.75rem;
-    background: linear-gradient(135deg, #0d9488, #6366f1);
+    background: linear-gradient(135deg, var(--teal), var(--indigo));
     display: flex; align-items: center; justify-content: center; font-weight: bold;
 }
 
@@ -46,7 +54,7 @@ body {
 }
 
 .main-content > p {
-    font-size: 1.125rem; color: #99f6e4; margin-bottom: 2.5rem;
+    font-size: 1.125rem; color: var(--teal-border); margin-bottom: 2.5rem;
 }
 
 .stat-pill {
@@ -56,8 +64,8 @@ body {
     display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;
 }
 
-.stat-value { font-size: 1.5rem; font-weight: 900; color: #5eead4; }
-.stat-label { color: #94a3b8; }
+.stat-value { font-size: 1.5rem; font-weight: 900; color: var(--auth-stat-value); }
+.stat-label { color: var(--auth-stat-label); }
 
 .right-panel {
     background-color: var(--bg-subtle); padding: 3rem 1.5rem;
@@ -68,7 +76,7 @@ body {
 
 .form-control {
     border-radius: 0.75rem; padding: 0.75rem 1rem;
-    border: 1px solid #d1d5db; font-size: 0.95rem;
+    border: 1px solid var(--gray-300); font-size: 0.95rem;
 }
 
 .form-control:focus {
@@ -103,4 +111,4 @@ body {
 .divider-text { font-size: 0.875rem; color: var(--text-muted); }
 
 .errorlist { list-style: none; padding: 0; margin: 0.375rem 0 0; }
-.errorlist li { font-size: 0.75rem; color: #dc2626; }
+.errorlist li { font-size: 0.75rem; color: var(--red); }

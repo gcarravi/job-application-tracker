@@ -33,6 +33,38 @@
 
     /* Shadows */
     --shadow-xs: rgba(0, 0, 0, 0.04);
+
+    /* Status colours — tracker board, status badges */
+    --status-wishlist: #1d7af3;
+    --status-applied: #6f42c1;
+    --status-interviewing: #198754;
+    --status-offer: #157347;
+    --status-rejected: #dc3545;
+    --status-ghosted: #6c757d;
+    --status-followup: #fd7e14;
+
+    /* Status light backgrounds — badge/pill fills */
+    --status-wishlist-light: #e8f1fe;
+    --status-applied-light: #f0ebff;
+    --status-interviewing-light: #e8f5ee;
+    --status-offer-light: #e8f3ed;
+    --status-rejected-light: #fde8eb;
+    --status-ghosted-light: #ebebec;
+    --status-followup-light: #fff0e0;
+
+    /* Dark theme — board footer, landing footer */
+    --dark-bg: #0d1117;
+    --dark-border: #21262d;
+    --dark-bg-hover: #161b22;
+    --dark-teal-accent: #2dd4bf;
+
+    /* Shared accent colours */
+    --indigo: #6366f1;               /* logo gradient, auth decorative elements */
+    --red: #dc2626;                  /* error text, danger hover */
+
+    /* Neutrals */
+    --gray-300: #d1d5db;             /* subtle icon / form border colour */
+    --placeholder: #c3c8cf;          /* form input placeholder text */
 }
 
 * {

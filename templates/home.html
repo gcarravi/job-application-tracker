@@ -9,11 +9,14 @@
     <span class="topbar-title">Job Hunt 2026</span>
 {% endblock %}
 
-{% block topbar_actions %}
+{% block topbar_left_actions %}
     <button class="notification-btn">
         <i class="fas fa-bell"></i>
         <span class="notification-badge">3</span>
     </button>
+{% endblock %}
+
+{% block topbar_actions %}
     <button class="btn-teal" data-bs-toggle="modal" data-bs-target="#addAppModal">
         <i class="fas fa-plus"></i>
         <span class="d-none d-sm-inline ms-1">Add Application</span>
