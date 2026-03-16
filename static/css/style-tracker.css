@@ -32,13 +32,12 @@
     }
 }
 
-/* Tablet (≥768px): 3 columns visible, accounting for sidebar */
+/* Tablet (≥768px): fixed 260px columns, snap-scroll */
 @media (min-width: 768px) {
     .board-column {
-        flex: 0 0 calc((100vw - var(--sidebar-width) - 3rem) / 3);
+        flex: 0 0 260px;
     }
 }
-
 
 .board-wrapper {
     background: var(--bg-subtle);
@@ -247,11 +246,11 @@
 }
 
 
-/* Desktop (≥992px): equal width, fill space, prevent extreme squishing */
-@media (min-width: 992px) {
+/* Desktop (≥1024px): equal width, fill space — sidebar is visible here */
+@media (min-width: 1024px) {
     .board-column {
         flex: 1 1 0;
-        min-width: 140px;
+        min-width: 160px;
     }
 }
 

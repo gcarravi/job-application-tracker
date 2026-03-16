@@ -7,9 +7,9 @@
 
 {% block extra_css %}
 <style>
+.contacts-table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
 @media (max-width: 767px) {
     .contacts-page-wrap { padding: 1rem 0.75rem 1.5rem; }
-    .contacts-table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
     .ct-col-phone, .ct-col-linkedin, .ct-col-notes { display: none; }
 }
 </style>
@@ -58,8 +58,9 @@
     {% else %}
 
     <!-- Table -->
-    <div class="contacts-table-scroll" style="background:white;border:1px solid #e5e7eb;border-radius:0.875rem;overflow:hidden;">
-        <table style="width:100%;min-width:520px;border-collapse:collapse;">
+    <div style="background:white;border:1px solid #e5e7eb;border-radius:0.875rem;overflow:hidden;">
+    <div class="contacts-table-scroll">
+        <table style="width:100%;min-width:720px;border-collapse:collapse;">
             <thead>
                 <tr style="border-bottom:1px solid #f1f5f9;">
                     <th style="padding:0.75rem 1.25rem;text-align:left;font-size:0.6875rem;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:#9ca3af;">Name</th>
@@ -106,7 +107,7 @@
                     </td>
 
                     <!-- Phone -->
-                    <td class="ct-col-phone" style="padding:0.875rem 1rem;">
+                    <td class="ct-col-phone" style="padding:0.875rem 1rem;white-space:nowrap;">
                         {% if contact.phone %}
                             <span style="font-size:0.875rem;color:#374151;">{{ contact.phone }}</span>
                         {% else %}
@@ -169,6 +170,7 @@
                 {% endfor %}
             </tbody>
         </table>
+    </div>
     </div>
 
     {% endif %}

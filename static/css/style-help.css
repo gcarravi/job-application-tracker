@@ -97,6 +97,13 @@
     padding: 1.25rem 1.25rem 1.25rem 1rem;
 }
 
+.gs-step-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+}
+
 .gs-step-icon {
     width: 40px;
     height: 40px;
@@ -105,7 +112,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-bottom: 2rem;
+    flex-shrink: 0;
     color: var(--teal);
     font-size: 1rem;
 }
@@ -130,7 +137,7 @@
     font-size: 0.9375rem;
     font-weight: 600;
     color: var(--text-primary);
-    margin-bottom: 0.375rem;
+    margin: 0;
 }
 
 .gs-step-desc {
