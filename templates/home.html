@@ -10,9 +10,11 @@
 {% endblock %}
 
 {% block topbar_left_actions %}
-    <button class="notification-btn">
+    <button class="notification-btn" data-bs-toggle="modal" data-bs-target="#notificationsModal">
         <i class="fas fa-bell"></i>
-        <span class="notification-badge">3</span>
+        {% if total_notifications > 0 %}
+            <span class="notification-badge">{{ total_notifications }}</span>
+        {% endif %}
     </button>
 {% endblock %}
 
@@ -175,6 +177,135 @@
 
 {% endblock %}
 
+{% block extra_css %}
+<style>
+/* ─── Notifications modal ─────────────────────────────────────────────── */
+.notif-dialog {
+    position: fixed !important;
+    top: 70px;
+    right: 1rem;
+    margin: 0;
+    max-width: 380px;
+    width: calc(100% - 2rem);
+}
+.notif-content {
+    border-radius: 1rem;
+    border: 1px solid var(--border);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+}
+.notif-header {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid var(--border-light);
+}
+.notif-title {
+    font-size: 0.9375rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+.notif-count-badge {
+    background: var(--teal);
+    color: white;
+    font-size: 0.6875rem;
+    font-weight: 700;
+    padding: 0.125rem 0.5rem;
+    border-radius: 99px;
+}
+.notif-body {
+    padding: 0.375rem 0;
+    max-height: 440px;
+    overflow-y: auto;
+}
+.notif-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    padding: 0.875rem 1.25rem;
+    transition: background 0.15s;
+}
+.notif-item + .notif-item {
+    border-top: 1px solid var(--border-light);
+}
+.notif-item:hover {
+    background: var(--bg-subtle);
+}
+.notif-icon {
+    width: 2rem;
+    height: 2rem;
+    border-radius: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8125rem;
+    flex-shrink: 0;
+    margin-top: 0.1rem;
+}
+.notif-icon-teal   { background: var(--teal-light);                color: var(--teal); }
+.notif-icon-blue   { background: var(--status-wishlist-light);     color: var(--status-wishlist); }
+.notif-icon-purple { background: var(--status-applied-light);      color: var(--status-applied); }
+.notif-icon-green  { background: var(--status-interviewing-light); color: var(--status-interviewing); }
+.notif-item-body {
+    flex: 1;
+    min-width: 0;
+}
+.notif-item-title {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 0.2rem;
+}
+.notif-item-text {
+    font-size: 0.8125rem;
+    color: var(--text-secondary);
+    line-height: 1.4;
+}
+.notif-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    margin-top: 0.375rem;
+}
+.notif-dot-high   { background: var(--logout-red); }
+.notif-dot-medium { background: var(--amber-dark); }
+.notif-empty {
+    text-align: center;
+    padding: 2.5rem 1rem;
+}
+.notif-empty-icon {
+    width: 3rem;
+    height: 3rem;
+    border-radius: 50%;
+    background: var(--teal-light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 0.875rem;
+}
+.notif-empty-icon i {
+    font-size: 1.25rem;
+    color: var(--teal);
+}
+.notif-empty-title {
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 0.25rem;
+}
+.notif-empty-text {
+    font-size: 0.8125rem;
+    color: var(--text-muted);
+}
+/* ─── Responsive: full-width on small screens ────────────────────────── */
+@media (max-width: 440px) {
+    .notif-dialog { right: 0; max-width: 100%; width: 100%; border-radius: 0; }
+    .notif-content { border-radius: 0 0 1rem 1rem; }
+}
+</style>
+{% endblock %}
+
 {% block extra_js %}
 
     <!-- Add Application Modal -->
@@ -248,5 +379,45 @@
         </div>
     </div>
 
+    <!-- Notifications Modal -->
+    <div class="modal fade" id="notificationsModal" tabindex="-1">
+        <div class="modal-dialog notif-dialog">
+            <div class="modal-content notif-content">
+                <div class="notif-header">
+                    <span class="notif-title">Notifications</span>
+                    {% if total_notifications > 0 %}
+                        <span class="notif-count-badge">{{ total_notifications }}</span>
+                    {% endif %}
+                    <button type="button" class="btn-close ms-auto" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="notif-body">
+                    {% if notifications %}
+                        {% for n in notifications %}
+                        <div class="notif-item">
+                            <div class="notif-icon notif-icon-{{ n.color }}">
+                                <i class="fas {{ n.icon }}"></i>
+                            </div>
+                            <div class="notif-item-body">
+                                <div class="notif-item-title">{{ n.title }}</div>
+                                <div class="notif-item-text">{{ n.text }}</div>
+                            </div>
+                            {% if n.urgency == 'high' %}
+                                <div class="notif-dot notif-dot-high"></div>
+                            {% elif n.urgency == 'medium' %}
+                                <div class="notif-dot notif-dot-medium"></div>
+                            {% endif %}
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="notif-empty">
+                            <div class="notif-empty-icon"><i class="fas fa-check"></i></div>
+                            <div class="notif-empty-title">All caught up!</div>
+                            <div class="notif-empty-text">No reminders right now. Keep up the great work.</div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
 
 {% endblock %}

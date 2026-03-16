@@ -16,6 +16,7 @@ This document covers all testing carried out on the Trackwise application, inclu
   - [Tracker POST View Tests](#tracker-post-view-tests)
   - [Stripe Payment Tests](#stripe-payment-tests)
   - [Documents Feature Tests](#documents-feature-tests)
+  - [Home Notifications Tests](#home-notifications-tests)
 - [Manual Testing](#manual-testing)
   - [Authentication](#authentication)
   - [Job Tracker Board](#job-tracker-board)
@@ -23,6 +24,7 @@ This document covers all testing carried out on the Trackwise application, inclu
   - [Company Management](#company-management)
   - [Contacts Directory](#contacts-directory)
   - [Documents](#documents)
+  - [Home Notifications](#home-notifications)
   - [Analytics Page](#analytics-page)
   - [Help & Support Page](#help--support-page)
   - [Subscription & Payments](#subscription--payments)
@@ -58,7 +60,7 @@ To run with verbose output:
 python manage.py test --verbosity=2
 ```
 
-**Current result:** 137 tests, 0 failures, 0 errors.
+**Current result:** 155 tests, 0 failures, 0 errors.
 
 To run only view tests:
 
@@ -549,6 +551,63 @@ Tests for the Documents feature: uploading files to Cloudinary, listing and dele
 
 ---
 
+### Home Notifications Tests
+
+**File:** `tracker/test_views.py` — `HomeViewNotificationsTests`
+
+Tests that `HomeView` correctly computes the `notifications` and `total_notifications` context values across all four notification categories. The `setUp` pushes the shared interview 30 days into the future to prevent interference with the 3-day upcoming-interview window.
+
+#### Context keys
+
+| Test | Description | Expected Result | Pass/Fail |
+|------|-------------|-----------------|-----------|
+| `test_context_contains_notifications_keys` | GET `/home/` | Context contains both `notifications` and `total_notifications` | ✅ Pass |
+
+#### Upcoming interview notifications
+
+| Test | Description | Expected Result | Pass/Fail |
+|------|-------------|-----------------|-----------|
+| `test_interview_within_3_days_generates_teal_notification` | Interview 36 hours away | One teal notification with company name as title | ✅ Pass |
+| `test_interview_beyond_3_days_excluded` | Interview 5 days away | No teal notifications | ✅ Pass |
+| `test_past_interview_excluded` | Interview 1 hour in the past | No teal notifications | ✅ Pass |
+| `test_interview_today_has_high_urgency` | Interview 2 hours away | Teal notification has `urgency = 'high'` | ✅ Pass |
+| `test_interview_in_2_days_has_medium_urgency` | Interview 2 days away | Teal notification has `urgency = 'medium'` | ✅ Pass |
+
+#### Stale applied application notifications
+
+| Test | Description | Expected Result | Pass/Fail |
+|------|-------------|-----------------|-----------|
+| `test_applied_5_days_ago_generates_blue_notification` | Application applied 6 days ago | One blue notification mentioning "follow-up" | ✅ Pass |
+| `test_applied_today_not_stale` | setUp application applied today | No blue notifications | ✅ Pass |
+| `test_applied_4_days_ago_not_stale` | Application applied 4 days ago | No blue notifications | ✅ Pass |
+| `test_stale_applied_notification_has_medium_urgency` | Stale application 7 days old | Blue notification has `urgency = 'medium'` | ✅ Pass |
+
+#### Wishlist reminder notifications
+
+| Test | Description | Expected Result | Pass/Fail |
+|------|-------------|-----------------|-----------|
+| `test_wishlist_14_days_old_generates_purple_notification` | Wishlist item 15 days old | One purple notification mentioning "apply" | ✅ Pass |
+| `test_wishlist_recent_excluded` | Wishlist item 5 days old | No purple notifications | ✅ Pass |
+| `test_wishlist_notification_has_low_urgency` | Wishlist item 20 days old | Purple notification has `urgency = 'low'` | ✅ Pass |
+
+#### Pending offer notifications
+
+| Test | Description | Expected Result | Pass/Fail |
+|------|-------------|-----------------|-----------|
+| `test_offer_application_generates_green_notification` | Application with status `offer` | One green notification | ✅ Pass |
+| `test_offer_notification_has_high_urgency` | Application with status `offer` | Green notification has `urgency = 'high'` | ✅ Pass |
+
+#### Count, empty state, and user isolation
+
+| Test | Description | Expected Result | Pass/Fail |
+|------|-------------|-----------------|-----------|
+| `test_total_notifications_matches_list_length` | Offer + stale application created | `total_notifications` equals `len(notifications)` | ✅ Pass |
+| `test_zero_notifications_when_none_qualify` | No qualifying data | `notifications` is `[]`, `total_notifications` is 0 | ✅ Pass |
+| `test_other_users_offer_not_included` | Second user has an offer application | No green notifications for logged-in user | ✅ Pass |
+| `test_other_users_stale_application_not_included` | Second user has a stale application | No blue notifications for logged-in user | ✅ Pass |
+
+---
+
 ## Manual Testing
 
 ### Authentication
@@ -628,6 +687,25 @@ Tests for the Documents feature: uploading files to Cloudinary, listing and dele
 | Attach document to application | Open an application in the tracker, go to the Documents tab, check a document, click Save | Document linked to the application | ✅ Pass |
 | Detach document from application | Uncheck a linked document, click Save | Document detached from the application | ✅ Pass |
 | Document isolation | Log in as a second user | Only own documents visible; cannot access other user's documents | ✅ Pass |
+
+---
+
+### Home Notifications
+
+| Test | Steps | Expected Result | Pass/Fail |
+|------|-------|-----------------|-----------|
+| Bell shows badge count | Add a stale application and an offer; go to `/home/` | Bell icon shows a number badge reflecting the total notification count | ✅ Pass |
+| Bell hidden when empty | No qualifying data exists | Bell icon has no badge | ✅ Pass |
+| Open notification panel | Click the bell icon | Notification panel slides in from the top-right | ✅ Pass |
+| Upcoming interview notification | Create an interview within the next 3 days | Teal calendar-check notification appears with company name and interview type | ✅ Pass |
+| Interview urgency today/tomorrow | Set interview date to today or tomorrow | Notification shows a red urgency dot | ✅ Pass |
+| Interview urgency 2–3 days | Set interview date to 2–3 days away | Notification shows an amber urgency dot | ✅ Pass |
+| Stale applied notification | Set an application to `Applied` status with a date 5+ days ago | Blue clock notification appears suggesting a follow-up | ✅ Pass |
+| Wishlist reminder | Add a wishlist application with a date 14+ days ago | Purple bookmark notification appears prompting to apply | ✅ Pass |
+| Offer reminder | Set an application to `Offer` status | Green trophy notification appears with high urgency dot | ✅ Pass |
+| Empty state | All applications are recent with no pending actions | "All caught up!" message with teal check icon | ✅ Pass |
+| Close panel | Click the × button or click outside the panel | Panel closes | ✅ Pass |
+| Panel is scrollable | More than ~6 notifications present | Panel body scrolls without growing taller than 440px | ✅ Pass |
 
 ---
 

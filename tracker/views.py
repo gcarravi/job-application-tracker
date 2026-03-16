@@ -438,6 +438,94 @@ class HomeView(UserContextMixin, LoginRequiredMixin, TemplateView):
             .order_by("-created_at")[:5]
         )
         context["form"] = ApplicationForm(user=user)
+
+        # ── Notifications ──────────────────────────────────────────────────
+        today = timezone.now().date()
+
+        # 1. Interviews in the next 3 days
+        soon_interviews = (
+            Interview.objects
+            .filter(
+                application__user=user,
+                date__gte=timezone.now(),
+                date__lte=timezone.now() + timedelta(days=3),
+            )
+            .select_related("application", "application__company")
+            .order_by("date")
+        )
+
+        # 2. Applications stale in "applied" for 5+ days
+        stale_apps = (
+            Application.objects
+            .filter(user=user, status="applied", date_applied__lte=today - timedelta(days=5))
+            .select_related("company")
+            .order_by("date_applied")[:5]
+        )
+
+        # 3. Wishlist items not acted on for 14+ days
+        wishlist_apps = (
+            Application.objects
+            .filter(user=user, status="wishlist", date_applied__lte=today - timedelta(days=14))
+            .select_related("company")
+            .order_by("date_applied")[:5]
+        )
+
+        # 4. Pending offers
+        offer_apps = (
+            Application.objects
+            .filter(user=user, status="offer")
+            .select_related("company")[:3]
+        )
+
+        notifications = []
+
+        for iv in soon_interviews:
+            days_until = (iv.date.date() - today).days
+            if days_until == 0:
+                when = "today"
+            elif days_until == 1:
+                when = "tomorrow"
+            else:
+                when = f"in {days_until} days"
+            notifications.append({
+                'icon': 'fa-calendar-check',
+                'color': 'teal',
+                'title': iv.application.company.name,
+                'text': f'{iv.interview_type} {when} · {iv.date.strftime("%d %b, %H:%M")}',
+                'urgency': 'high' if days_until <= 1 else 'medium',
+            })
+
+        for app in stale_apps:
+            days_stale = (today - app.date_applied).days
+            notifications.append({
+                'icon': 'fa-clock',
+                'color': 'blue',
+                'title': app.company.name,
+                'text': f'Applied {days_stale} days ago — consider sending a follow-up',
+                'urgency': 'medium',
+            })
+
+        for app in wishlist_apps:
+            days_old = (today - app.date_applied).days
+            notifications.append({
+                'icon': 'fa-bookmark',
+                'color': 'purple',
+                'title': app.company.name,
+                'text': f'Wishlisted {days_old} days ago — ready to apply?',
+                'urgency': 'low',
+            })
+
+        for app in offer_apps:
+            notifications.append({
+                'icon': 'fa-trophy',
+                'color': 'green',
+                'title': app.company.name,
+                'text': f'Offer for {app.job_title} — don\'t leave them waiting!',
+                'urgency': 'high',
+            })
+
+        context['notifications'] = notifications
+        context['total_notifications'] = len(notifications)
         return context
     
 

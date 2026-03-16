@@ -364,6 +364,25 @@ A dedicated help page accessible from the sidebar, containing:
 - **FAQ accordion** — answers to common questions covering board navigation, interview logging, contacts, subscription management, and mobile usage
 - **Contact support** — direct link to the support email
 
+### Home Notifications
+
+The home page bell icon surfaces time-sensitive reminders based on live application data. Clicking the bell opens a notification panel that drops down from the top-right of the topbar.
+
+Four categories of notification are generated automatically:
+
+| Category | Trigger | Urgency |
+|----------|---------|---------|
+| **Upcoming interview** | An interview is scheduled within the next 3 days | High (today/tomorrow) or Medium (2–3 days) |
+| **Stale application** | An application has been in "Applied" status for 5 or more days with no update | Medium |
+| **Forgotten wishlist** | A wishlist item has been sitting unactioned for 14 or more days | Low |
+| **Pending offer** | Any application is in "Offer" status | High |
+
+- Notifications are computed server-side in `HomeView` — no extra API calls required
+- The badge count on the bell reflects the total number of active notifications and is hidden when the count is zero
+- Each notification shows a colour-coded icon, a title (company name), and a descriptive message
+- High-urgency items carry a red dot; medium-urgency items carry an amber dot
+- The panel shows an "All caught up!" empty state when no reminders qualify
+
 ### Documents
 
 Users can upload and manage their documents (CVs, cover letters, portfolios, and other files) from a dedicated Documents page.
