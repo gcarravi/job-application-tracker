@@ -16,11 +16,19 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from django.http import HttpResponse
 # from tracker.views import app_tracker
+
+def google_site_verification(request):
+    return HttpResponse(
+        'google-site-verification: googleb9d7c30d8878a464.html',
+        content_type='text/html'
+    )
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     # path('tracker/', app_tracker, name='tracker'),
+    path('googleb9d7c30d8878a464.html', google_site_verification),
     path('accounts/', include('accounts.urls')),
     path('', include('tracker.urls')),
 ]
