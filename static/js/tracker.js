@@ -1,6 +1,8 @@
 console.log("TRACKER JS LOADED");
 
-
+// Reads a value from the browser's cookies by name. In this app it's used exclusively to retrieve Django's CSRF token: 'X-CSRFToken': getCookie('csrftoken')
+// Django sets a cookie called csrftoken automatically. Every fetch() POST request in tracker.js must include this token in the request header, otherwise Django rejects the request with a 403 Forbidden error.
+// On regular HTML forms, {% csrf_token %} handles this automatically by inserting a hidden <input>. But because the tracker uses AJAX (fetch()), there's no form being submitted — so the token has to be pulled manually from the cookie and added to the request header instead.
 function getCookie(name) {
     let cookieValue = null;
 
@@ -33,7 +35,7 @@ const STATUS_LABELS = {
 let userContacts = [];
 
 
-// ===== TAB SWITCHING =====
+// ===== TAB SWITCHING: hides/shows the relevant div panels =====
 function switchTab(tabId) {
     document.querySelectorAll('.modal-tab-btn').forEach(btn => {
         btn.classList.toggle('active', btn.dataset.tab === tabId);
@@ -78,7 +80,7 @@ function populateContactSelect(selectEl, selectedId) {
     });
 }
 
-
+// Form reset, tab clicks, column footer clicks, Add Interview Round button, Save Documents, Save Notes
 document.addEventListener("DOMContentLoaded", function () {
 
     const statusField = document.getElementById("id_status");
@@ -196,7 +198,7 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 
-// Initialize Sortable in JS for drag and drop of the cards
+// Initialises SortableJS drag-and-drop on all .board-body columns
 document.addEventListener('DOMContentLoaded', function() {
 
     const columns = document.querySelectorAll('.board-body');
@@ -240,7 +242,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-
+// Handles the form submit event (decides create vs. AJAX edit based on whether jobIdInput has a value)
 document.addEventListener("DOMContentLoaded", function () {
 
     const form = document.getElementById("jobForm");
@@ -300,7 +302,8 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 
-// JS helper to handle empty states
+// JS helper to handle empty states. It removes any existing "No applications" message, then adds one back only if no job cards remain. This keeps the empty state accurate without a page reload
+
 function updateEmptyState(columnBody) {
     if (!columnBody) return;
     columnBody.querySelectorAll('.empty-state').forEach(el => el.remove());
@@ -312,7 +315,7 @@ function updateEmptyState(columnBody) {
     }
 }
 
-
+// Watches the status <select> for changes and fires the live status update + card move
 document.addEventListener('DOMContentLoaded', function () {
 
     const statusSelect = document.querySelector('[name="status"]');
@@ -385,7 +388,7 @@ function deleteJob(event, jobId) {
     .catch(err => console.error('Delete error:', err));
 }
 
-
+// fires two fetch() calls in parallel using Promise.all() — one to get the job data, one to get the user's contacts
 function openEditModal(jobId) {
     Promise.all([
         fetch(`/get-job/${jobId}/`).then(r => r.json()),

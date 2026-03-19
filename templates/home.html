@@ -101,18 +101,18 @@
                     </a>
                 </div>
                 <div>
-                    {% for app in recent_applications %}
+                    {% for app in recent_applications %}  <!--is a Django QuerySet from the view-->
                     <div class="app-item">
-                        <div class="app-logo">{{ app.company.name|first|upper }}</div>
+                        <div class="app-logo">{{ app.company.name|first|upper }}</div>  <!--Django template filter: takes the first character and uppercases it, used to generate the letter avatar-->
                         <div class="app-info">
                             <div class="app-title">{{ app.job_title }}</div>
                             <div class="app-company">
                                 {{ app.company.name }}{% if app.company.location %} · <i class="fas fa-map-marker-alt" style="font-size: 0.625rem;"></i> {{ app.company.location }}{% endif %}
                             </div>
                         </div>
-                        <span class="status-badge {{ app.status }}">{{ app.get_status_display }}</span>
+                        <span class="status-badge {{ app.status }}">{{ app.get_status_display }}</span>  <!--Django's built-in method on model fields with choices= defined-->
                     </div>
-                    {% empty %}
+                    {% empty %}  <!--Django tag that renders its block only when the loop list is empty (no applications yet)-->
                     <div style="font-size: 0.875rem; color: #9ca3af; text-align: center; padding: 1.5rem 0;">
                         No applications yet
                     </div>
@@ -312,8 +312,8 @@
     <div class="modal fade" id="addAppModal" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content modal-app">
-                <form method="POST" action="{% url 'home' %}">
-                    {% csrf_token %}
+                <form method="POST" action="{% url 'home' %}"> <!--Django reverse URL lookup: finds the URL mapped to the name='home' pattern in urls.py-->
+                    {% csrf_token %}  <!--Django security feature. Inserts a hidden input with a unique token to prevent Cross-Site Request Forgery attacks. Django rejects any POST without a valid token-->
                     <div class="modal-header modal-app-header">
                         <div class="d-flex align-items-center gap-2">
                             <div class="modal-icon">
