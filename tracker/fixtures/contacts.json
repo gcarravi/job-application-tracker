@@ -1,0 +1,184 @@
+[
+    {
+        "model": "tracker.contact",
+        "pk": null,
+        "fields": {
+            "user": 2,
+            "first_name": "Sarah",
+            "last_name": "Mitchell",
+            "email": "sarah.mitchell@spotify.com",
+            "phone": "+44 7700 900123",
+            "job_title": "Talent Acquisition Partner",
+            "linkedin_url": "https://www.linkedin.com/in/sarah-mitchell",
+            "notes": "Recruiter for the Senior UI Designer role at Spotify. Very responsive.",
+            "created_at": "2026-01-20T10:00:00Z"
+        }
+    },
+    {
+        "model": "tracker.contact",
+        "pk": null,
+        "fields": {
+            "user": 2,
+            "first_name": "James",
+            "last_name": "Okafor",
+            "email": "james.okafor@revolut.com",
+            "phone": "+44 7700 900456",
+            "job_title": "Head of Design",
+            "linkedin_url": "https://www.linkedin.com/in/james-okafor",
+            "notes": "Interviewed me for the Lead Product Designer role. Very technical, focused on systems thinking.",
+            "created_at": "2026-01-22T10:00:00Z"
+        }
+    },
+    {
+        "model": "tracker.contact",
+        "pk": null,
+        "fields": {
+            "user": 2,
+            "first_name": "Priya",
+            "last_name": "Sharma",
+            "email": "priya.sharma@bbc.co.uk",
+            "phone": "+44 7700 900789",
+            "job_title": "HR Business Partner",
+            "linkedin_url": "https://www.linkedin.com/in/priya-sharma-bbc",
+            "notes": "Main point of contact at BBC for the UX Designer — News role.",
+            "created_at": "2026-01-28T10:00:00Z"
+        }
+    },
+    {
+        "model": "tracker.contact",
+        "pk": null,
+        "fields": {
+            "user": 2,
+            "first_name": "Tom",
+            "last_name": "Fletcher",
+            "email": "tom.fletcher@sky.com",
+            "phone": "",
+            "job_title": "Design Director",
+            "linkedin_url": "https://www.linkedin.com/in/tom-fletcher-sky",
+            "notes": "Met at a UX conference. Referred me to the Sky UI Designer opening.",
+            "created_at": "2026-01-22T11:00:00Z"
+        }
+    },
+
+    {
+        "model": "tracker.contact",
+        "pk": null,
+        "fields": {
+            "user": 3,
+            "first_name": "Emma",
+            "last_name": "Clarke",
+            "email": "emma.clarke@google.com",
+            "phone": "+44 7911 123456",
+            "job_title": "Technical Recruiter",
+            "linkedin_url": "https://www.linkedin.com/in/emma-clarke-google",
+            "notes": "Recruiting contact at Google. Reached out via LinkedIn about the UX Designer role.",
+            "created_at": "2026-01-10T10:00:00Z"
+        }
+    },
+    {
+        "model": "tracker.contact",
+        "pk": null,
+        "fields": {
+            "user": 3,
+            "first_name": "Daniel",
+            "last_name": "Webb",
+            "email": "daniel.webb@deliveroo.com",
+            "phone": "+44 7911 654321",
+            "job_title": "Senior Product Manager",
+            "linkedin_url": "https://www.linkedin.com/in/daniel-webb",
+            "notes": "Internal contact at Deliveroo. Helped me understand the team structure before applying.",
+            "created_at": "2026-01-25T10:00:00Z"
+        }
+    },
+    {
+        "model": "tracker.contact",
+        "pk": null,
+        "fields": {
+            "user": 3,
+            "first_name": "Laura",
+            "last_name": "Nguyen",
+            "email": "laura.nguyen@spotify.com",
+            "phone": "",
+            "job_title": "People Operations Manager",
+            "linkedin_url": "https://www.linkedin.com/in/laura-nguyen-spotify",
+            "notes": "HR contact for the Spotify Design Systems role. Set up the initial screening call.",
+            "created_at": "2026-02-05T10:00:00Z"
+        }
+    },
+    {
+        "model": "tracker.contact",
+        "pk": null,
+        "fields": {
+            "user": 3,
+            "first_name": "Marcus",
+            "last_name": "Reid",
+            "email": "marcus.reid@agency.co.uk",
+            "phone": "+44 7700 112233",
+            "job_title": "Recruitment Consultant",
+            "linkedin_url": "https://www.linkedin.com/in/marcus-reid",
+            "notes": "Independent recruiter who sent over the Amazon Interaction Designer brief.",
+            "created_at": "2026-02-01T09:00:00Z"
+        }
+    },
+
+    {
+        "model": "tracker.contact",
+        "pk": null,
+        "fields": {
+            "user": 4,
+            "first_name": "Sophie",
+            "last_name": "Hawkins",
+            "email": "sophie.hawkins@hsbc.com",
+            "phone": "+44 7800 200100",
+            "job_title": "Talent Partner",
+            "linkedin_url": "https://www.linkedin.com/in/sophie-hawkins-hsbc",
+            "notes": "HSBC recruiter managing the Senior UX Designer process. Quick to respond.",
+            "created_at": "2026-01-15T10:00:00Z"
+        }
+    },
+    {
+        "model": "tracker.contact",
+        "pk": null,
+        "fields": {
+            "user": 4,
+            "first_name": "Ravi",
+            "last_name": "Patel",
+            "email": "ravi.patel@rolls-royce.com",
+            "phone": "+44 7800 200200",
+            "job_title": "UX Lead",
+            "linkedin_url": "https://www.linkedin.com/in/ravi-patel-rr",
+            "notes": "Interviewer at Rolls-Royce. Gave feedback that they wanted more aerospace domain knowledge.",
+            "created_at": "2026-01-12T10:00:00Z"
+        }
+    },
+    {
+        "model": "tracker.contact",
+        "pk": null,
+        "fields": {
+            "user": 4,
+            "first_name": "Natalie",
+            "last_name": "Brooks",
+            "email": "natalie.brooks@deliveroo.com",
+            "phone": "",
+            "job_title": "HR Coordinator",
+            "linkedin_url": null,
+            "notes": "Sent the rejection email for the Deliveroo Product Designer — Consumer role.",
+            "created_at": "2026-01-20T10:00:00Z"
+        }
+    },
+    {
+        "model": "tracker.contact",
+        "pk": null,
+        "fields": {
+            "user": 4,
+            "first_name": "Chris",
+            "last_name": "Adeyemi",
+            "email": "chris.adeyemi@revolut.com",
+            "phone": "+44 7800 200300",
+            "job_title": "Senior Product Designer",
+            "linkedin_url": "https://www.linkedin.com/in/chris-adeyemi",
+            "notes": "Internal referral at Revolut. Passed on my CV to the hiring manager.",
+            "created_at": "2026-01-20T10:00:00Z"
+        }
+    }
+]
