@@ -89,6 +89,8 @@ def update_job(request, job_id):
             job.job_title = data["job_title"]
         if "salary_range" in data:
             job.salary_range = data["salary_range"]
+        if "date_applied" in data and data["date_applied"]:
+            job.date_applied = data["date_applied"]
         if "recruiter_id" in data:
             rid = data["recruiter_id"]
             if rid:

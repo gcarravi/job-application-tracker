@@ -267,6 +267,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 notes: document.querySelector('[name="notes"]').value,
                 job_title: document.querySelector('[name="job_title"]').value,
                 salary_range: document.querySelector('[name="salary_range"]').value,
+                date_applied: document.querySelector('[name="date_applied"]').value,
                 recruiter_id: document.getElementById('recruiterSelect').value,
             })
         })
