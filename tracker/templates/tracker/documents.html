@@ -6,13 +6,7 @@
 {% block nav_documents %}active{% endblock %}
 
 {% block extra_css %}
-<style>
-@media (max-width: 767px) {
-    .docs-page-wrap { padding: 1rem 0.75rem 1.5rem; }
-    .docs-table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
-    .doc-col-type, .doc-col-date { display: none; }
-}
-</style>
+<link rel="stylesheet" href="{% static 'css/style-documents.css' %}">
 {% endblock %}
 
 {% block topbar_center %}
@@ -23,17 +17,17 @@
 
 {% block content %}
 
-<div class="docs-page-wrap" style="padding: 1.5rem 1.5rem 2rem;">
+<div class="docs-page-wrap">
 
     <!-- Page header -->
-    <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;margin-bottom:1.5rem;flex-wrap:wrap;">
-        <div style="display:flex;align-items:center;gap:0.875rem;">
-            <div style="width:2.5rem;height:2.5rem;border-radius:0.625rem;background:#f0fdfa;border:1px solid #99f6e4;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-                <i class="fas fa-file-alt" style="color:var(--teal);font-size:1rem;"></i>
+    <div class="doc-page-header">
+        <div class="doc-page-header-left">
+            <div class="doc-page-icon">
+                <i class="fas fa-file-alt"></i>
             </div>
             <div>
-                <h2 style="font-size:1.0625rem;font-weight:700;color:#111827;margin:0;line-height:1.3;">Your Documents</h2>
-                <p style="font-size:0.8125rem;color:#6b7280;margin:0;">Upload and manage your CVs, cover letters and other files.</p>
+                <h2 class="doc-page-title">Your Documents</h2>
+                <p class="doc-page-subtitle">Upload and manage your CVs, cover letters and other files.</p>
             </div>
         </div>
         <button class="btn-teal" id="uploadDocBtn">
@@ -42,12 +36,12 @@
     </div>
 
     {% if not documents %}
-    <div class="d-flex flex-column align-items-center justify-content-center" style="padding: 4rem 1rem; text-align: center;">
-        <div style="width:56px;height:56px;border-radius:50%;background:#f0fdfa;display:flex;align-items:center;justify-content:center;margin-bottom:1.25rem;">
-            <i class="fas fa-file-alt" style="color:var(--teal);font-size:1.5rem;"></i>
+    <div class="doc-empty">
+        <div class="doc-empty-icon">
+            <i class="fas fa-file-alt"></i>
         </div>
-        <h3 style="font-size:1.125rem;font-weight:600;color:#111827;margin-bottom:0.5rem;">No documents yet</h3>
-        <p style="font-size:0.9rem;color:#6b7280;max-width:360px;">
+        <h3 class="doc-empty-title">No documents yet</h3>
+        <p class="doc-empty-text">
             Upload your CV, cover letters and portfolio files here. You can then attach them directly to your job applications.
         </p>
         <button class="btn-teal mt-3" id="uploadDocBtnEmpty">
@@ -58,58 +52,51 @@
     {% else %}
 
     <!-- Table -->
-    <div class="docs-table-scroll" style="background:white;border:1px solid #e5e7eb;border-radius:0.875rem;overflow:hidden;">
-        <table style="width:100%;min-width:480px;border-collapse:collapse;">
+    <div class="doc-table-wrap">
+    <div class="docs-table-scroll">
+        <table class="doc-table">
             <thead>
-                <tr style="border-bottom:1px solid #f1f5f9;">
-                    <th style="padding:0.75rem 1.25rem;text-align:left;font-size:0.6875rem;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:#9ca3af;">Name</th>
-                    <th class="doc-col-type" style="padding:0.75rem 1rem;text-align:left;font-size:0.6875rem;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:#9ca3af;">Type</th>
-                    <th class="doc-col-date" style="padding:0.75rem 1rem;text-align:left;font-size:0.6875rem;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:#9ca3af;">Uploaded</th>
-                    <th style="padding:0.75rem 1rem;width:5rem;"></th>
+                <tr class="doc-thead-row">
+                    <th class="doc-th">Name</th>
+                    <th class="doc-th doc-col-type">Type</th>
+                    <th class="doc-th doc-col-date">Uploaded</th>
+                    <th class="doc-th doc-th-actions"></th>
                 </tr>
             </thead>
             <tbody id="docsTableBody">
                 {% for doc in documents %}
-                <tr class="doc-row" id="doc-row-{{ doc.id }}"
-                    style="border-bottom:1px solid #f9fafb;transition:background 0.1s;"
-                    onmouseover="this.style.background='#fafafa'" onmouseout="this.style.background=''">
+                <tr class="doc-row" id="doc-row-{{ doc.id }}">
 
                     <!-- Name -->
-                    <td style="padding:0.875rem 1.25rem;">
-                        <div style="display:flex;align-items:center;gap:0.75rem;">
-                            <div style="width:2rem;height:2rem;border-radius:0.375rem;background:#f0fdfa;border:1px solid #99f6e4;color:var(--teal);display:flex;align-items:center;justify-content:center;font-size:0.75rem;flex-shrink:0;">
+                    <td class="doc-td">
+                        <div class="doc-name-inner">
+                            <div class="doc-file-icon">
                                 <i class="fas fa-file-alt"></i>
                             </div>
-                            <span style="font-size:0.875rem;font-weight:600;color:#111827;">{{ doc.name }}</span>
+                            <span class="doc-name-text">{{ doc.name }}</span>
                         </div>
                     </td>
 
                     <!-- Type -->
-                    <td class="doc-col-type" style="padding:0.875rem 1rem;">
-                        <span style="font-size:0.8125rem;color:#374151;">{{ doc.get_file_type_display }}</span>
+                    <td class="doc-td doc-col-type">
+                        <span class="doc-type-text">{{ doc.get_file_type_display }}</span>
                     </td>
 
                     <!-- Date -->
-                    <td class="doc-col-date" style="padding:0.875rem 1rem;">
-                        <span style="font-size:0.8125rem;color:#6b7280;">{{ doc.created_at|date:"d M Y" }}</span>
+                    <td class="doc-td doc-col-date">
+                        <span class="doc-date-text">{{ doc.created_at|date:"d M Y" }}</span>
                     </td>
 
                     <!-- Actions -->
-                    <td style="padding:0.875rem 1rem;text-align:right;">
-                        <div style="display:flex;gap:0.375rem;justify-content:flex-end;">
+                    <td class="doc-td doc-actions-cell">
+                        <div class="doc-actions-inner">
                             <a href="{{ doc.file.url }}" target="_blank" rel="noopener"
-                               title="Download"
-                               style="background:none;border:1px solid #e5e7eb;border-radius:0.5rem;padding:0.3rem 0.55rem;cursor:pointer;color:#6b7280;font-size:0.75rem;transition:all 0.15s;text-decoration:none;display:inline-flex;align-items:center;"
-                               onmouseover="this.style.borderColor='var(--teal)';this.style.color='var(--teal)'"
-                               onmouseout="this.style.borderColor='#e5e7eb';this.style.color='#6b7280'">
+                               class="doc-download-btn" title="Download">
                                 <i class="fas fa-download"></i>
                             </a>
                             <button class="delete-doc-btn"
                                 data-id="{{ doc.id }}"
-                                title="Delete"
-                                style="background:none;border:1px solid #e5e7eb;border-radius:0.5rem;padding:0.3rem 0.55rem;cursor:pointer;color:#9ca3af;font-size:0.75rem;transition:all 0.15s;"
-                                onmouseover="this.style.borderColor='#fca5a5';this.style.color='#ef4444'"
-                                onmouseout="this.style.borderColor='#e5e7eb';this.style.color='#9ca3af'">
+                                title="Delete">
                                 <i class="fas fa-trash-alt"></i>
                             </button>
                         </div>
@@ -119,6 +106,7 @@
                 {% endfor %}
             </tbody>
         </table>
+    </div>
     </div>
 
     {% endif %}
@@ -154,11 +142,11 @@
                     <label class="modal-label">File <span class="iv-required">*</span></label>
                     <input type="file" id="docFileInput" class="form-control"
                            accept=".pdf,.doc,.docx,.txt,.odt,.pages,.pptx,.png,.jpg,.jpeg">
-                    <p style="font-size:0.75rem;color:#9ca3af;margin-top:0.375rem;">
+                    <p class="doc-upload-hint">
                         PDF, Word, plain text, images and other common formats accepted.
                     </p>
                 </div>
-                <div id="docUploadError" style="display:none;color:#ef4444;font-size:0.8125rem;margin-top:0.5rem;"></div>
+                <div id="docUploadError" class="doc-upload-error"></div>
             </div>
             <div class="modal-footer modal-app-footer d-flex justify-content-between">
                 <button type="button" class="btn-modal-cancel" data-bs-dismiss="modal">Cancel</button>
@@ -253,8 +241,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     function addDocRow(doc) {
-        // Remove empty state if present and rebuild table if needed
-        const emptyState = document.querySelector('.d-flex.flex-column.align-items-center');
+        const emptyState = document.querySelector('.doc-empty');
         if (emptyState) {
             window.location.reload();
             return;
@@ -264,36 +251,28 @@ document.addEventListener('DOMContentLoaded', function () {
         const tr = document.createElement('tr');
         tr.className = 'doc-row';
         tr.id = `doc-row-${doc.id}`;
-        tr.style.cssText = 'border-bottom:1px solid #f9fafb;transition:background 0.1s;';
-        tr.onmouseover = function() { this.style.background = '#fafafa'; };
-        tr.onmouseout = function() { this.style.background = ''; };
         tr.innerHTML = `
-            <td style="padding:0.875rem 1.25rem;">
-                <div style="display:flex;align-items:center;gap:0.75rem;">
-                    <div style="width:2rem;height:2rem;border-radius:0.375rem;background:#f0fdfa;border:1px solid #99f6e4;color:var(--teal);display:flex;align-items:center;justify-content:center;font-size:0.75rem;flex-shrink:0;">
+            <td class="doc-td">
+                <div class="doc-name-inner">
+                    <div class="doc-file-icon">
                         <i class="fas fa-file-alt"></i>
                     </div>
-                    <span style="font-size:0.875rem;font-weight:600;color:#111827;">${doc.name}</span>
+                    <span class="doc-name-text">${doc.name}</span>
                 </div>
             </td>
-            <td class="doc-col-type" style="padding:0.875rem 1rem;">
-                <span style="font-size:0.8125rem;color:#374151;">${doc.file_type}</span>
+            <td class="doc-td doc-col-type">
+                <span class="doc-type-text">${doc.file_type}</span>
             </td>
-            <td class="doc-col-date" style="padding:0.875rem 1rem;">
-                <span style="font-size:0.8125rem;color:#6b7280;">${doc.created_at}</span>
+            <td class="doc-td doc-col-date">
+                <span class="doc-date-text">${doc.created_at}</span>
             </td>
-            <td style="padding:0.875rem 1rem;text-align:right;">
-                <div style="display:flex;gap:0.375rem;justify-content:flex-end;">
-                    <a href="${doc.url}" target="_blank" rel="noopener" title="Download"
-                       style="background:none;border:1px solid #e5e7eb;border-radius:0.5rem;padding:0.3rem 0.55rem;cursor:pointer;color:#6b7280;font-size:0.75rem;transition:all 0.15s;text-decoration:none;display:inline-flex;align-items:center;"
-                       onmouseover="this.style.borderColor='var(--teal)';this.style.color='var(--teal)'"
-                       onmouseout="this.style.borderColor='#e5e7eb';this.style.color='#6b7280'">
+            <td class="doc-td doc-actions-cell">
+                <div class="doc-actions-inner">
+                    <a href="${doc.url}" target="_blank" rel="noopener"
+                       class="doc-download-btn" title="Download">
                         <i class="fas fa-download"></i>
                     </a>
-                    <button class="delete-doc-btn" data-id="${doc.id}" title="Delete"
-                       style="background:none;border:1px solid #e5e7eb;border-radius:0.5rem;padding:0.3rem 0.55rem;cursor:pointer;color:#9ca3af;font-size:0.75rem;transition:all 0.15s;"
-                       onmouseover="this.style.borderColor='#fca5a5';this.style.color='#ef4444'"
-                       onmouseout="this.style.borderColor='#e5e7eb';this.style.color='#9ca3af'">
+                    <button class="delete-doc-btn" data-id="${doc.id}" title="Delete">
                         <i class="fas fa-trash-alt"></i>
                     </button>
                 </div>

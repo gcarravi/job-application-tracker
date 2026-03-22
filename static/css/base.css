@@ -61,6 +61,8 @@
     /* Shared accent colours */
     --indigo: #6366f1;               /* logo gradient, auth decorative elements */
     --red: #dc2626;                  /* error text, danger hover */
+    --danger: #ef4444;               /* delete button text on hover */
+    --danger-light: #fca5a5;         /* delete button border on hover */
 
     /* Neutrals */
     --gray-300: #d1d5db;             /* subtle icon / form border colour */

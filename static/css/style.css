@@ -11,7 +11,7 @@
 
 body {
     background-color: var(--bg-subtle);
-    overflow-x: hidden;
+    overflow-x: clip;
 }
 
 /* Sidebar */
