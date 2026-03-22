@@ -9,7 +9,7 @@
         <div class="board-body flex-grow-1 overflow-auto" data-status="{{ status_value }}">
             {% for app in apps %}
                 <div class="job-card" data-job-id="{{ app.id }}" data-status="{{ app.status }}" onclick="openEditModal('{{ app.id }}')">
-                    <button class="job-delete-btn" onclick="deleteJob(event, '{{ app.id }}')">
+                    <button class="job-delete-btn" onclick="deleteJob(event, '{{ app.id }}')" title="Delete application">
                         <i class="fas fa-times"></i>
                     </button>
                     <div class="job-company">{{ app.company.name }}</div>

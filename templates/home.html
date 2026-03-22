@@ -10,7 +10,7 @@
 {% endblock %}
 
 {% block topbar_left_actions %}
-    <button class="notification-btn" data-bs-toggle="modal" data-bs-target="#notificationsModal">
+    <button class="notification-btn" data-bs-toggle="modal" data-bs-target="#notificationsModal" title="Notifications">
         <i class="fas fa-bell"></i>
         {% if total_notifications > 0 %}
             <span class="notification-badge">{{ total_notifications }}</span>
@@ -19,7 +19,7 @@
 {% endblock %}
 
 {% block topbar_actions %}
-    <button class="btn-teal" data-bs-toggle="modal" data-bs-target="#addAppModal">
+    <button class="btn-teal" data-bs-toggle="modal" data-bs-target="#addAppModal" title="Add new application">
         <i class="fas fa-plus"></i>
         <span class="d-none d-sm-inline ms-1">Add Application</span>
     </button>
@@ -321,7 +321,7 @@
                             </div>
                             <h4 class="modal-title modal-app-title">New Application</h4>
                         </div>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" title="Close"></button>
                     </div>
                     <div class="modal-body modal-app-body">
                         {% if form.errors %}
