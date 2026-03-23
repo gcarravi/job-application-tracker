@@ -359,6 +359,23 @@ body {
     text-decoration: none;
 }
 
+.btn-confirm-delete {
+    background-color: var(--danger);
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    font-family: inherit;
+}
+
+.btn-confirm-delete:hover {
+    background-color: var(--red);
+}
+
 .notification-btn {
     position: relative;
     width: 36px;
