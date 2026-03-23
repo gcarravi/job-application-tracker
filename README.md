@@ -38,6 +38,8 @@ The application focuses on:
 - Organisation of job applications
 - Clear visual tracking of application stages
 - Maintaining records of interviews and recruiter contacts
+- Uploading and attaching CVs, cover letters, and other documents to applications
+- Smart notifications that surface upcoming interviews, stale applications, and pending offers
 - Providing a secure and personalised dashboard for each user
 
 ---
@@ -54,6 +56,9 @@ Users should be able to:
 - Record multiple interview rounds per application
 - Store recruiter and interviewer contact details
 - Maintain notes related to applications and interviews
+- Upload and manage CVs, cover letters, and portfolio files
+- Attach documents directly to individual job applications
+- Receive smart notifications about upcoming interviews, stale applications, and pending offers
 - View all applications currently in the Interviewing stage
 - See analytics and statistics about their job search activity
 - Access help and FAQs from the sidebar
@@ -112,7 +117,10 @@ The application uses a relational database structure designed around the job app
 - A User can create multiple Applications
 - A Company can have multiple Applications
 - An Application can have multiple Interviews
-- Contacts can be linked to both Applications and Interviews
+- An Application can have one Recruiter (a Contact assigned as the main recruiter)
+- An Interview can have multiple Interviewers (Contacts)
+- A User can upload multiple Documents
+- An Application can have multiple Documents attached to it
 
 ### Entity Relationship Diagram (ERD)
 
@@ -120,12 +128,16 @@ The application uses a relational database structure designed around the job app
 User
  │
  ├── Company
- │     └── Application
- │            └── Interview
+ │     └── Application ──── Document (M2M)
+ │            │
+ │            ├── Interview
+ │            │      └── Contact (M2M, interviewers)
+ │            │
+ │            └── Contact (FK, recruiter)
  │
- └── Contact
-       ↑         ↑
-  Application  Interview
+ ├── Contact
+ │
+ └── Document
 ```
 
 ### Relationships
@@ -134,12 +146,15 @@ User
 |---|---|---|
 | User | Company | One-to-Many |
 | User | Application | One-to-Many |
+| User | Contact | One-to-Many |
+| User | Document | One-to-Many |
 | Company | Application | One-to-Many |
 | Application | Interview | One-to-Many |
-| Application | Contact | Many-to-Many |
-| Interview | Contact | Many-to-Many |
+| Application | Contact (recruiter) | Many-to-One (FK) |
+| Application | Document | Many-to-Many |
+| Interview | Contact (interviewers) | Many-to-Many |
 
-This allows recruiters or interviewers to be reused across multiple applications and interview rounds.
+This allows contacts and documents to be reused across multiple applications and interview rounds.
 
 ### Database Tables
 
@@ -154,7 +169,7 @@ This allows recruiters or interviewers to be reused across multiple applications
 | | is_active | Boolean |
 | | date_joined | DateTime |
 
-#### UserProfile
+#### Profile
 
 Extends the built-in User model with subscription information and profile photo.
 
@@ -184,11 +199,13 @@ Extends the built-in User model with subscription information and profile photo.
 | PK | id | Integer |
 | FK | user_id | Integer (User) |
 | FK | company_id | Integer (Company) |
+| FK | recruiter_id | Integer (Contact, nullable) |
+| M2M | documents | Document |
 | | job_title | Varchar |
-| | salary_range | Varchar |
-| | status | Varchar |
+| | salary_range | Varchar (nullable) |
+| | status | Varchar (wishlist / applied / interviewing / offer / rejected / ghosted / follow_up) |
 | | date_applied | Date |
-| | notes | Text |
+| | notes | Text (nullable) |
 | | created_at | DateTime |
 
 #### Interview
@@ -197,10 +214,11 @@ Extends the built-in User model with subscription information and profile photo.
 |-----|------|------|
 | PK | id | Integer |
 | FK | application_id | Integer (Application) |
-| | interview_type | Varchar |
+| M2M | interviewers | Contact |
+| | interview_type | Varchar (Human Resources / Design Interview / Technical Interview / Technical Hands On / Final) |
 | | date | DateTime |
-| | notes | Text |
-| | result | Varchar |
+| | notes | Text (nullable) |
+| | result | Varchar (nullable) |
 | | created_at | DateTime |
 
 #### Contact
@@ -250,13 +268,17 @@ User registers
       ↓
 User logs in
       ↓
+User uploads CVs / cover letters to Documents
+      ↓
 User creates company
       ↓
-User adds job application
+User adds job application (and optionally attaches documents)
       ↓
 Application appears on tracker board
       ↓
 User drags cards between status columns
+      ↓
+Notifications surface upcoming interviews, stale applications, and pending offers
       ↓
 User records interview rounds
       ↓
@@ -284,10 +306,13 @@ The tracker page provides a kanban-style layout that groups applications by stat
 
 Status columns include:
 
+- Wishlist
 - Applied
 - Interviewing
 - Offer
 - Rejected
+- Ghosted
+- Follow Up
 
 Each application card displays:
 
