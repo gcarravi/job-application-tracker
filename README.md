@@ -456,6 +456,7 @@ Possible future enhancements include:
 - Email interview reminders
 - Job board integrations
 - Calendar integration
+- Self-service subscription management via the Stripe Customer Portal — allowing Premium users to cancel, update their payment method, or view invoices without contacting support
 
 ---
 
